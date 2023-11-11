@@ -13,7 +13,7 @@ def auth_middleware():
    if 'user_id' not in session:
        return redirect(url_for('login'))
 
-connection_string = f"mongo db ka url aaega"
+connection_string = f"mongodb+srv://Alpha131:{passw}@cluster0.blmd3q2.mongodb.net/?retryWrites=true&w=majority"
 def MongoDB(collection_name):
     client = MongoClient(connection_string)
     db = client.get_database('SIH')
