@@ -1,0 +1,8 @@
+flask
+python-dotenv
+openai
+langchain
+pandas
+numpy
+pymongo
+chainlit
