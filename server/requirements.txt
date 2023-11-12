@@ -6,3 +6,6 @@ pandas
 numpy
 pymongo
 chainlit
+flask-sqlalchemy
+flask-bcrypt
+flask-session
