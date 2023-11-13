@@ -1,59 +1,87 @@
-import React from 'react';
-
 import {
   Box,
   Flex,
   Avatar,
-//   Text,
   Button,
   Menu,
   MenuButton,
   MenuList,
   MenuItem,
   MenuDivider,
-//   useDisclosure,
-  useColorModeValue,
-  Stack,
   useColorMode,
-  Center,
-} from '@chakra-ui/react'
-import { MoonIcon, SunIcon } from '@chakra-ui/icons'
-
-interface Props {
-  children: React.ReactNode
-}
-
-const NavLink = (props: Props) => {
-  const { children } = props
-
-  return (
-    <Box
-      as="a"
-      px={2}
-      py={1}
-      rounded={'md'}
-      _hover={{
-        textDecoration: 'none',
-        bg: useColorModeValue('gray.200', 'gray.700'),
-      }}
-      href={'#'}>
-      {children}
-    </Box>
-  )
-}
+  Stack,
+  useColorModeValue,
+  HStack,
+  Center
+} from '@chakra-ui/react';
+import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { MdExplore, MdContactPhone } from "react-icons/md";
+import { BsFire } from "react-icons/bs";
 
 export default function Nav() {
-  const { colorMode, toggleColorMode } = useColorMode()
-//   const { isOpen, onOpen, onClose } = useDisclosure()
+  const { colorMode, toggleColorMode } = useColorMode();
+
   return (
     <>
       <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
           <Box>Logo</Box>
 
-          <Flex alignItems={'center'}>
-            <Stack direction={'row'} spacing={7}>
-              <Button onClick={toggleColorMode}>
+          <Flex alignItems={'center'} justifyContent={'center'}>
+            <Stack direction={'row'} spacing={24}>
+              <Box
+                as="a"
+                px={2}
+                py={1}
+                rounded={'md'}
+                _hover={{
+                  textDecoration: 'none',
+                  bg: useColorModeValue('gray.200', 'gray.700'),
+                }}
+                href={'/home'}
+              >
+                <HStack spacing={2}>
+                    <MdExplore size={24}/>
+                    <span>Explore</span>
+                  </HStack>
+              </Box>
+              <Box
+                as="a"
+                px={2}
+                py={1}
+                rounded={'md'}
+                _hover={{
+                  textDecoration: 'none',
+                  bg: useColorModeValue('gray.200', 'gray.700'),
+                }}
+                href={'/trending'}
+              >
+                <HStack spacing={2}>
+                    <BsFire size={24}/>
+                    <span>Trending</span>
+                  </HStack>
+              </Box>
+              <Box
+                as="a"
+                px={2}
+                py={1}
+                rounded={'md'}
+                _hover={{
+                  textDecoration: 'none',
+                  bg: useColorModeValue('gray.200', 'gray.700'),
+                }}
+                href={'#'}
+              >
+                <HStack spacing={2}>
+                    <MdContactPhone size={24}/>
+                    <span>Contact Us</span>
+                  </HStack>
+              </Box>
+              </ Stack>
+            </ Flex>
+
+            < Flex alignItems={'center'} >
+              <Button onClick={toggleColorMode} mr={4}>
                 {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
               </Button>
 
@@ -63,7 +91,8 @@ export default function Nav() {
                   rounded={'full'}
                   variant={'link'}
                   cursor={'pointer'}
-                  minW={0}>
+                  minW={0}
+                >
                   <Avatar
                     size={'sm'}
                     src={'https://avatars.dicebear.com/api/male/username.svg'}
@@ -88,10 +117,9 @@ export default function Nav() {
                   <MenuItem>Logout</MenuItem>
                 </MenuList>
               </Menu>
-            </Stack>
           </Flex>
         </Flex>
       </Box>
     </>
-  )
+  );
 }

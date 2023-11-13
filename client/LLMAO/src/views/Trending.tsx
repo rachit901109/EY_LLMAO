@@ -1,5 +1,4 @@
-import React from 'react';
-import { Box, Center, Input, Heading, Button, useColorModeValue, Grid } from '@chakra-ui/react';
+import { Grid } from '@chakra-ui/react';
 import Navbar from '../components/navbar';
 import MyCard from '../components/myCard';
 
