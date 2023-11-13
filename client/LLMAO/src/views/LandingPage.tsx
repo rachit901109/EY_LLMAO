@@ -10,6 +10,8 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
+
 
 export default function SplitScreen() {
   return (
@@ -44,6 +46,7 @@ export default function SplitScreen() {
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Sapiente, totam rem? Facere cupiditate atque expedita magnam. Quis iusto officiis repellat consequuntur, consectetur blanditiis facilis saepe consequatur autem doloremque necessitatibus incidunt provident quia quas praesentium, velit omnis quae ea odio placeat nisi, perferendis mollitia ducimus molestiae. Numquam sequi impedit incidunt laboriosam?
             </Text>
             <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
+            <Link to="/login">
               <Button
                 rounded={'full'}
                 bg={'blue.400'}
@@ -54,6 +57,7 @@ export default function SplitScreen() {
               >
                 Get Started
               </Button>
+            </Link>
               <Button rounded={'full'}>Read More</Button>
             </Stack>
           </Stack>

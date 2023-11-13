@@ -3,6 +3,7 @@ import Login from './views/Login'; // adjust the path to your Login component as
 import Signup from './views/Signup'
 import Home from './views/Home';
 import LandingPage from './views/LandingPage'
+import Trending from './views/Trending';
 
 function App() {
   return (
@@ -10,9 +11,10 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/home" element={<Home />} />
         <Route path="/landingpage" element={<LandingPage />} />
+        <Route path="/trending" element={<Trending />} />
       </Routes>
     </Router>
   );
