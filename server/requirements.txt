@@ -9,3 +9,4 @@ chainlit
 flask-sqlalchemy
 flask-bcrypt
 flask-session
+flask-cors
