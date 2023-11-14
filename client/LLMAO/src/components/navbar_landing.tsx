@@ -14,10 +14,8 @@ import {
   useColorModeValue,
   Center
 } from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 
 export default function Nav() {
-  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <>
@@ -66,11 +64,6 @@ export default function Nav() {
               >
                 Contact
               </Box>
-
-              <Button onClick={toggleColorMode}>
-                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              </Button>
-
               <Menu>
                 <MenuButton
                   as={Button}
