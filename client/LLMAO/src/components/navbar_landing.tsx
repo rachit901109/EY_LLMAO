@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   Flex,
@@ -11,12 +12,9 @@ import {
   useColorMode,
   Stack,
   useColorModeValue,
-  HStack,
   Center
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { MdExplore, MdContactPhone } from "react-icons/md";
-import { BsFire } from "react-icons/bs";
 
 export default function Nav() {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -27,8 +25,8 @@ export default function Nav() {
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
           <Box>Logo</Box>
 
-          <Flex alignItems={'center'} justifyContent={'center'}>
-            <Stack direction={'row'} spacing={24}>
+          <Flex alignItems={'center'}>
+            <Stack direction={'row'} spacing={7}>
               <Box
                 as="a"
                 px={2}
@@ -38,28 +36,9 @@ export default function Nav() {
                   textDecoration: 'none',
                   bg: useColorModeValue('gray.200', 'gray.700'),
                 }}
-                href={'/home'}
+                href={'#'}
               >
-                <HStack spacing={2}>
-                    <MdExplore size={24}/>
-                    <span>Explore</span>
-                  </HStack>
-              </Box>
-              <Box
-                as="a"
-                px={2}
-                py={1}
-                rounded={'md'}
-                _hover={{
-                  textDecoration: 'none',
-                  bg: useColorModeValue('gray.200', 'gray.700'),
-                }}
-                href={'/trending'}
-              >
-                <HStack spacing={2}>
-                    <BsFire size={24}/>
-                    <span>Trending</span>
-                  </HStack>
+                Dashboard
               </Box>
               <Box
                 as="a"
@@ -72,16 +51,23 @@ export default function Nav() {
                 }}
                 href={'#'}
               >
-                <HStack spacing={2}>
-                    <MdContactPhone size={24}/>
-                    <span>Contact Us</span>
-                  </HStack>
+                About
               </Box>
-              </ Stack>
-            </ Flex>
+              <Box
+                as="a"
+                px={2}
+                py={1}
+                rounded={'md'}
+                _hover={{
+                  textDecoration: 'none',
+                  bg: useColorModeValue('gray.200', 'gray.700'),
+                }}
+                href={'#'}
+              >
+                Contact
+              </Box>
 
-            < Flex alignItems={'center'} >
-              <Button onClick={toggleColorMode} mr={4}>
+              <Button onClick={toggleColorMode}>
                 {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
               </Button>
 
@@ -117,6 +103,7 @@ export default function Nav() {
                   <MenuItem>Logout</MenuItem>
                 </MenuList>
               </Menu>
+            </Stack>
           </Flex>
         </Flex>
       </Box>

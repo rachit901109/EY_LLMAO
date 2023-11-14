@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Center, Input, Heading, Button, useColorModeValue } from '@chakra-ui/react';
 import Navbar from '../components/navbar';
 
@@ -12,7 +11,7 @@ function Home() {
   return (
     <div>
       <Navbar />
-      <Center height="100vh" flexDirection="column">
+      <Center height="90vh" flexDirection="column">
         <Box textAlign="center">
           <Heading as="h1" size="xl" mb={4}>
             Learn Anything
