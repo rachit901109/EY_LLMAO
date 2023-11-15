@@ -1,39 +1,54 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Box, Text, Button, Radio, RadioGroup, RadioButton, Icon, Center, HStack, Stack } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
 
 const Quiz = ({ data }) => {
- const [currentQuestion, setCurrentQuestion] = useState(0);
- const [selectedOption, setSelectedOption] = useState(null);
- const [showAnswer, setShowAnswer] = useState(false);
- const [value, setValue] = React.useState(selectedOption)
+  const navigate = useNavigate();
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [value, setValue] = useState(null)
+  const [textToDisplay, setTextToDisplay] = useState('Default')
+  const [isDisabled, setIsDisabled] = useState(false);
 
- const handleNext = () => {
-  setCurrentQuestion(currentQuestion + 1);
-  setSelectedOption(null);
-  setShowAnswer(false);
- };
+  const handleNext = () => {
+    setCurrentQuestion(currentQuestion + 1);
+    setShowAnswer(false);
+    setValue(null);
+    setIsDisabled(false);
+  };
 
- const handlePrevious = () => {
-  setCurrentQuestion(currentQuestion - 1);
-  setSelectedOption(null);
-  setShowAnswer(false);
- };
 
- const handleSubmit = () => {
-  setShowAnswer(true);
- };
+  const handleSubmit = () => {
+    setShowAnswer(true);
+    setIsDisabled(true);
+    if (value === data[currentQuestion].correctAnswer) {
+      setTextToDisplay('Spot on! You picked the Correct Answer:');
+    }
+    else {
+      setTextToDisplay('Sorry, Your Answer is wrong! Correct Answer:');
+    }
+  };
 
- return (
-  <>
-    <Center>
-      <Box width="80vw" my={8} >
-        <Text fontSize={18}>{data[currentQuestion].question}</Text>
-      </Box>
-    </Center>
-    <Center>
+  const handleFinish = () => {
+    navigate('/home');
+    console.log('Quiz finished!');
+  };
+
+  return (
+    <>
+      <Center>
+        <Box width="80vw" my={8} >
+          <Text fontSize={18}>{data[currentQuestion].question}</Text>
+        </Box>
+      </Center>
+      <Center>
         <Box width="80vw" my={8}>
-          <RadioGroup onChange={setValue} value={value} >
+          <RadioGroup isDisabled={isDisabled} key={currentQuestion} onChange={(value) => {
+            setValue(value);
+            setShowAnswer(false);
+          }}
+            value={value} >
             <Stack alignItems="flex-start" direction={'column'} >
               {data[currentQuestion].options.map((option, index) => (
                 <Radio key={index} value={option}>{option}</Radio>
@@ -42,35 +57,35 @@ const Quiz = ({ data }) => {
           </RadioGroup>
         </Box>
       </Center>
-    <Center>
-    <Button onClick={handleSubmit}>Submit</Button>
-    </Center>
-
-    {showAnswer && (
       <Center>
-      <Box display="flex" alignItems="center">
-        {value === data[currentQuestion].correctAnswer ? (
-          <Icon as={CheckIcon} color="green.500" />
-        ) : (
-          <Icon as={CloseIcon} color="red.500" />
-        )}
-        <Text>{data[currentQuestion].explanation}</Text>
-      </Box>
+        <Button onClick={handleSubmit} isDisabled={value === null}>Submit</Button>
       </Center>
-    )}
 
-    <Box position="fixed" bottom="0" left="0" right="0" p={4} boxShadow="md">
-      <HStack justifyContent="space-between">
-        <Button onClick={handlePrevious} disabled={currentQuestion === 0}>
-          Previous
+      {showAnswer && (
+        <Center>
+          <Box display="flex" alignItems="center">
+            {value === data[currentQuestion].correctAnswer ? (
+              <Icon as={CheckIcon} color="green.500" />
+            ) : (
+              value === null ? '' :
+                <Icon as={CloseIcon} color="red.500" />
+            )}
+            <Text mx={2}>{textToDisplay}</Text>
+            {value !== null && (
+              <Text>{data[currentQuestion].correctAnswer}. {data[currentQuestion].explanation}</Text>
+            )}
+          </Box>
+        </Center>
+      )}
+
+
+      <Box position="fixed" bottom="0" right="0" p={4}>
+        <Button onClick={currentQuestion === data.length - 1 ? handleFinish : handleNext}>
+          {currentQuestion === data.length - 1 ? 'Finish' : 'Next'}
         </Button>
-        <Button onClick={handleNext} disabled={currentQuestion === data.length - 1}>
-          Next
-        </Button>
-      </HStack>
-    </Box>
-  </>
- );
+      </Box>
+    </>
+  );
 };
 
 export default Quiz;

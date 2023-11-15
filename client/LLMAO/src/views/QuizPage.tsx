@@ -15,16 +15,15 @@ const quizData = [
     {
         question: 'Question 2',
         options: ['Hello', 'How ', 'Does', 'This'],
-        correctAnswer: 'Option 1',
-        explanation: 'Explanation for Question 1',
+        correctAnswer: 'Hello',
+        explanation: 'Explanation for Question 2',
       },
       {
         question: 'Question 3',
         options: ['Page', 'Looks', 'To', 'You'],
-        correctAnswer: 'Option 2',
-        explanation: 'Explanation for Question 1',
+        correctAnswer: 'Looks',
+        explanation: 'Explanation for Question 3',
       },
-    // Add more questions as needed
    ];
 
 function App() {
