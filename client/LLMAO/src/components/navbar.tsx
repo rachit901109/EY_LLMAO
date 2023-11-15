@@ -70,7 +70,7 @@ export default function Nav() {
                   textDecoration: 'none',
                   bg: useColorModeValue('gray.200', 'gray.700'),
                 }}
-                href={'#'}
+                href={'/contact'}
               >
                 <HStack spacing={2}>
                     <MdContactPhone size={24}/>

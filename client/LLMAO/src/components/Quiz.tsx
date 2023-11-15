@@ -80,7 +80,12 @@ const Quiz = ({ data }) => {
 
 
       <Box position="fixed" bottom="0" right="0" p={4}>
-        <Button onClick={currentQuestion === data.length - 1 ? handleFinish : handleNext}>
+        <Button _hover={{
+            transform: 'translateY(-4px)',
+            boxShadow: 'dark-lg',
+          }}
+          bgGradient="linear(to-t, blue.400, pink.400)" 
+          boxShadow='lg' onClick={currentQuestion === data.length - 1 ? handleFinish : handleNext}>
           {currentQuestion === data.length - 1 ? 'Finish' : 'Next'}
         </Button>
       </Box>
