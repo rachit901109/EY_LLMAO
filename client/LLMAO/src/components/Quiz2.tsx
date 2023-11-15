@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Box, Text, Button, Radio, RadioGroup, RadioButton, Icon, Center, HStack, Stack } from '@chakra-ui/react';
+import { Box, Text, Button, Radio, RadioGroup, RadioButton, Icon, Center, VStack, HStack } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 
 const Quiz = ({ data }) => {
  const [currentQuestion, setCurrentQuestion] = useState(0);
  const [selectedOption, setSelectedOption] = useState(null);
  const [showAnswer, setShowAnswer] = useState(false);
- const [value, setValue] = React.useState(selectedOption)
+
+ const handleOptionChange = (e) => {
+  setSelectedOption(e.target.value);
+ };
 
  const handleNext = () => {
   setCurrentQuestion(currentQuestion + 1);
@@ -32,16 +35,18 @@ const Quiz = ({ data }) => {
       </Box>
     </Center>
     <Center>
-        <Box width="80vw" my={8}>
-          <RadioGroup onChange={setValue} value={value} >
-            <Stack alignItems="flex-start" direction={'column'} >
-              {data[currentQuestion].options.map((option, index) => (
-                <Radio key={index} value={option}>{option}</Radio>
-              ))}
-            </Stack>
-          </RadioGroup>
-        </Box>
-      </Center>
+      <Box width="80vw" my={8}>
+        <RadioGroup onChange={handleOptionChange} value={selectedOption}>
+          <VStack alignItems="flex-start">
+            {data[currentQuestion].options.map((option, index) => (
+              <Radio key={index} value={option} >
+               {option}
+              </Radio>
+            ))}
+          </VStack>
+        </RadioGroup>
+      </Box>
+    </Center>
     <Center>
     <Button onClick={handleSubmit}>Submit</Button>
     </Center>
@@ -49,7 +54,7 @@ const Quiz = ({ data }) => {
     {showAnswer && (
       <Center>
       <Box display="flex" alignItems="center">
-        {value === data[currentQuestion].correctAnswer ? (
+        {selectedOption === data[currentQuestion].correctAnswer ? (
           <Icon as={CheckIcon} color="green.500" />
         ) : (
           <Icon as={CloseIcon} color="red.500" />
