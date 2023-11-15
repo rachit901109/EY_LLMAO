@@ -4,6 +4,7 @@ import Signup from './views/Signup'
 import Home from './views/Home';
 import LandingPage from './views/LandingPage'
 import Trending from './views/Trending';
+import Modules from './views/Modules'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/landingpage" element={<LandingPage />} />
         <Route path="/trending" element={<Trending />} />
+        <Route path="/modules" element={<Modules />} />
       </Routes>
     </Router>
   );
