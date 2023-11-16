@@ -17,7 +17,7 @@ import PlayStoreBadge from '../assets/images/PlayStoreBadge.png'
 
 const ListHeader = ({ children }: { children: ReactNode }) => {
   return (
-    <Text fontWeight={'bold'} fontSize={'lg'} mb={2}>
+    <Text fontWeight={'bold'} color={useColorModeValue('black', 'purple.600')} fontSize={'lg'} mb={2}>
       {children}
     </Text>
   )
@@ -35,7 +35,7 @@ const SocialButton = ({
 }) => {
   return (
     <chakra.button
-      bg={useColorModeValue('black', 'whiteAlpha.100')}
+      bg={useColorModeValue('black', 'purple.600')}
       rounded={'full'}
       w={8}
       h={8}
@@ -48,7 +48,7 @@ const SocialButton = ({
       transition={'background 0.3s ease'}
       _hover={{
         color: 'black',
-        bg: useColorModeValue('white', 'whiteAlpha.200'),
+        bg: useColorModeValue('white', 'white'),
       }}>
       <VisuallyHidden>{label}</VisuallyHidden>
       {children}
@@ -60,7 +60,7 @@ export default function LargeWithAppLinksAndSocial() {
   return (
     <Box
       bg={useColorModeValue('purple.700', 'gray.900')}
-      color={useColorModeValue('white', 'gray.200')}>
+      color={useColorModeValue('white', 'white')}>
       <Container as={Stack} maxW={'6xl'} py={5} mx={'auto'} px={0}>
         <SimpleGrid px={0} columns={{ base: 1, sm: 2, md: 5 }} spacing={10}>
           <Stack align={'flex-start'}>
