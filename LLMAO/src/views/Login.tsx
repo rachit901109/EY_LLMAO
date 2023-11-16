@@ -55,13 +55,14 @@ const Login = () => {
       <Navbar_Landing />
       <Flex minHeight='100vh' bg={useColorModeValue('purple.300', 'purple.800')} width='full' align='center' justifyContent='center'>
         <Box
-          borderWidth={1}
+          borderWidth={5}
           px={4}
           py={10}
           bg={useColorModeValue('white', 'gray.900')}
           width='full'
+          shadow="dark-lg"
           maxWidth='500px'
-          borderColor={'purple.900'}
+          borderColor={useColorModeValue('purple.400', 'gray.900')}
           borderRadius={16}
           textAlign='center'
           boxShadow='lg'
@@ -81,15 +82,15 @@ const Login = () => {
                   <FormErrorMessage color={useColorModeValue('purple.600', 'white')}>{errors.email?.message}</FormErrorMessage>
                 </FormControl>
 
-                <FormControl mt={4} isInvalid={!!errors.password}>
+                <FormControl  mt={4} isInvalid={!!errors.password}>
                   <FormLabel>Password</FormLabel>
-                  <Input type='password' placeholder='Enter your password' {...register('password')} />
+                  <Input  type='password' placeholder='Enter your password' {...register('password')} />
                   <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
                 </FormControl>
 
                 <HStack justifyContent='space-between' mt={4}>
                   <Box>
-                    <Checkbox>Remember Me</Checkbox>
+                    <Checkbox colorScheme='purple'>Remember Me</Checkbox>
                   </Box>
                   <Box>
                     <Link color={useColorModeValue('purple.400', 'gray.500')}>Forgot your password?</Link>

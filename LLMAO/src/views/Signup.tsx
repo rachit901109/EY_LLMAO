@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -8,19 +9,15 @@ import {
   FormHelperText,
   FormLabel,
   GridItem,
-  Heading,
   Input,
   InputGroup,
-  InputRightElement,
   Progress,
-  useColorMode,
   useColorModeValue,
-  SimpleGrid,
   Radio,
   RadioGroup,
   Stack,
   useToast,
-  Textarea,
+  Text,
   Select,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
@@ -28,7 +25,6 @@ import Navbar_Landing from '../components/navbar_landing';
 import Footer from '../components/footer'
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useState } from "react";
 
 const form1Schema = yup.object().shape({
   firstName: yup.string().required("First name is required"),
@@ -53,17 +49,15 @@ const form2Schema = yup.object().shape({
   interest: yup.string().required('Interest is required'),
 });
 
-
-const Form1 = ({ register, errors }) => {
+const Form1 = ({ register, errors }: { register: any; errors: any }) => {
   const [show, setShow] = useState(false);
-  const handleClick = () => setShow(!show);
   return (
     <>
-      <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
-        User Registration
-      </Heading>
+      <Text w="80vh" fontSize={'50px'} className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} textAlign={"center"} fontWeight="normal" mb="2%">
+        <b>User Registration</b>
+      </Text>
       <Flex>
-        <FormControl isInvalid={errors.firstName} mr="5%">
+        <FormControl isInvalid={!!errors.firstName} mr="5%">
           <FormLabel htmlFor="first-name" fontWeight={"normal"}>
             First name
           </FormLabel>
@@ -73,7 +67,7 @@ const Form1 = ({ register, errors }) => {
           </FormErrorMessage>
         </FormControl>
 
-        <FormControl isInvalid={errors.lastName}>
+        <FormControl isInvalid={!!errors.lastName}>
           <FormLabel htmlFor="last-name" fontWeight={"normal"}>
             Last name
           </FormLabel>
@@ -83,33 +77,27 @@ const Form1 = ({ register, errors }) => {
           </FormErrorMessage>
         </FormControl>
       </Flex>
-      <FormControl isInvalid={errors.email} mt="2%">
-        <FormLabel htmlFor="email" fontWeight={"normal"}>
+      <FormControl isInvalid={!!errors.email} mt="2%">
+        <FormLabel htmlFor="email"  fontWeight={"normal"}>
           Email address
         </FormLabel>
-        <Input id="email" type="email" {...register("email")} />
+        <Input id="email" placeholder="Email address" type="email" {...register("email")} />
         <FormHelperText>We&apos;ll never share your email.</FormHelperText>
         <FormErrorMessage>
           {errors.email && errors.email.message}
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl isInvalid={errors.password}>
+      <FormControl isInvalid={!!errors.password}>
         <FormLabel htmlFor="password" fontWeight={"normal"} mt="2%">
           Password
         </FormLabel>
         <InputGroup size="md">
           <Input
-            pr="4.5rem"
             type={show ? "text" : "password"}
             placeholder="Enter password"
             {...register("password")}
           />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? "Hide" : "Show"}
-            </Button>
-          </InputRightElement>
         </InputGroup>
         <FormErrorMessage>
           {errors.password && errors.password.message}
@@ -119,25 +107,21 @@ const Form1 = ({ register, errors }) => {
   );
 };
 
-const Form2 = ({ register, errors }) => {
+const Form2 = ({ register, errors }: { register: any; errors: any }) => {
   return (
     <>
-      <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
+      <Text w="80vh" fontSize={'50px'} className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} textAlign={"center"} fontWeight="normal" mb="2%">
         User Details
-      </Heading>
-      <FormControl as={GridItem} colSpan={[6, 3]} isInvalid={errors.country}>
+      </Text>
+      <FormControl as={GridItem} colSpan={[6, 3]} isInvalid={!!errors.country} mb={4}>
         <FormLabel
           htmlFor="country"
-          fontSize="sm"
           fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: "gray.50",
-          }}
         >
           Country / Region
         </FormLabel>
         <Select
+          colorScheme='purple'
           id="country"
           name="country"
           autoComplete="country"
@@ -157,10 +141,8 @@ const Form2 = ({ register, errors }) => {
           {errors.country && errors.country.message}
         </FormErrorMessage>
       </FormControl>
-
-
-
-      <FormControl isInvalid={errors.city}>
+        
+      <FormControl isInvalid={!!errors.city} mb={4}>
         <FormLabel htmlFor="city">City</FormLabel>
         <Input id="city" {...register("city")} />
         <FormErrorMessage>
@@ -168,7 +150,7 @@ const Form2 = ({ register, errors }) => {
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl isInvalid={errors.state}>
+      <FormControl isInvalid={!!errors.state} mb={4}>
         <FormLabel htmlFor="state">State</FormLabel>
         <Input id="state" {...register("state")} />
         <FormErrorMessage>
@@ -176,9 +158,9 @@ const Form2 = ({ register, errors }) => {
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl isInvalid={errors.gender}>
+      <FormControl isInvalid={!!errors.gender} mb={4}>
         <FormLabel htmlFor="gender">Gender</FormLabel>
-        <RadioGroup {...register('gender')}>
+        <RadioGroup colorScheme='purple' {...register('gender')}>
           <Stack direction="row">
             <Radio value="male">Male</Radio>
             <Radio value="female">Female</Radio>
@@ -190,7 +172,7 @@ const Form2 = ({ register, errors }) => {
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl isInvalid={errors.age}>
+      <FormControl isInvalid={!!errors.age} mb={4}>
         <FormLabel htmlFor="age">Age</FormLabel>
         <Input id="age" type="number" {...register('age')} />
         <FormErrorMessage>
@@ -198,20 +180,18 @@ const Form2 = ({ register, errors }) => {
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl isInvalid={errors.interest}>
+      <FormControl isInvalid={!!errors.interest} mb={4}>
         <FormLabel htmlFor="interest">Interest</FormLabel>
         <Input id="interest" {...register('interest')} />
         <FormErrorMessage>
           {errors.interest && errors.interest.message}
         </FormErrorMessage>
       </FormControl>
-
-
     </>
   );
 };
 
-export default function Multistep() {
+const Signup = () => {
   const toast = useToast();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(50);
@@ -228,7 +208,7 @@ export default function Multistep() {
         : yupResolver(form2Schema)
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = (data: { [key: string]: any }) => {
     toast({
       title: 'Account created.',
       description: "We've created your account for you.",
@@ -242,51 +222,66 @@ export default function Multistep() {
   return (
     <div>
       <Navbar_Landing />
-      <Box borderWidth="1px"
-        rounded="lg"
-        shadow="1px 1px 3px rgba(0,0,0,0.3)"
-        maxWidth={800}
-        p={6}
-        m="10px auto">
-        <Progress colorScheme="teal" size="sm" value={progress} hasStripe mb="5%" mx="5%" isAnimated />
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {step === 1 && <Form1 register={register} errors={errors} />}
-          {step === 2 && <Form2 register={register} errors={errors} />}
-          <ButtonGroup mt="5%" w="100%">
-            <Flex w="100%" justifyContent="space-between">
-              <Flex>
-                {step > 1 && (
-                  <Button
-                    onClick={() => {
-                      setStep(step - 1);
-                      setProgress(progress - 50);
-                    }}
-                  >
-                    Previous
-                  </Button>
-                )}
-                {step < 2 && (
-                  <Button
-                    onClick={async () => {
-                      const isValid = await trigger();
-                      if (isValid) {
-                        setStep(step + 1);
-                        setProgress(progress + 50);
-                      }
-                    }}
-                  >
-                    Next
-                  </Button>
+      <Flex
+      minHeight='100vh' bg={useColorModeValue('purple.300', 'purple.800')} width='full' align='center' justifyContent='center'>
+        <Box borderWidth={5}
+          rounded="lg"
+          my={10}
+          bg={useColorModeValue('white', 'gray.900')}
+          shadow="dark-lg"
+          maxWidth={800}
+          borderColor={useColorModeValue('purple.400', 'gray.900')}
+          p={6}>
+          <Progress colorScheme="purple" size="sm" value={progress} hasStripe mb="5%" mx="5%" isAnimated />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {step === 1 && <Form1 register={register} errors={errors} />}
+            {step === 2 && <Form2 register={register} errors={errors} />}
+            <ButtonGroup mt="5%" w="100%">
+              <Flex w="100%" justifyContent="space-between">
+                <Flex>
+                  {step > 1 && (
+                    <Button
+                    variant="outline"
+                    colorScheme="purple" _hover={{bg:useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
+                      onClick={() => {
+                        setStep(step - 1);
+                        setProgress(progress - 50);
+                      }}
+                    >
+                      Previous
+                    </Button>
+                  )}
+                  {step < 2 && (
+                    <Button
+                    variant="outline"
+                    colorScheme="purple" _hover={{bg:useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
+                      onClick={async () => {
+                        const isValid = await trigger();
+                        if (isValid) {
+                          setStep(step + 1);
+                          setProgress(progress + 50);
+                        }
+                      }}
+                    >
+                      Next
+                    </Button>
+                  )}
+                </Flex>
+                {step === 2 && (
+                  <Button 
+                  variant="outline"
+                    colorScheme="purple" _hover={{bg:useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
+                  type="submit">Submit</Button>
                 )}
               </Flex>
-              {step === 2 && (
-                <Button type="submit">Submit</Button>
-              )}
-            </Flex>
-          </ButtonGroup>
-        </form>
-      </Box>
+            </ButtonGroup>
+          </form>
+        </Box>
+      </Flex>
+
       <Footer />
     </div>
   );
 }
+
+export default Signup;
