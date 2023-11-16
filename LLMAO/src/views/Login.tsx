@@ -1,15 +1,14 @@
 import React from 'react';
-
+import Navbar_Landing from '../components/navbar_landing';
+import Footer from '../components/footer'
 import {
-  ThemeProvider,
-  theme,
-  ColorModeProvider,
-  CSSReset,
   Box,
   Flex,
   IconButton,
-  useColorMode,
   Heading,
+  HStack,
+  useColorMode,
+  useColorModeValue,
   Text,
   Link,
   FormControl,
@@ -25,116 +24,90 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-const VARIANT_COLOR = 'teal';
-
 const schema = yup.object().shape({
   email: yup.string().email('Invalid email').required('Email is required'),
   password: yup.string().min(8, 'Password must be at least 8 characters').required('Password is required'),
 });
 
-const App = () => {
-  return (
-    <ThemeProvider theme={theme}>
-      <ColorModeProvider>
-        <CSSReset />
-        <LoginArea />
-      </ColorModeProvider>
-    </ThemeProvider>
-  );
-};
-
-const LoginArea = () => {
-  return (
-    <Flex minHeight='100vh' width='full' align='center' justifyContent='center'>
-      <Box
-        borderWidth={1}
-        px={4}
-        width='full'
-        maxWidth='500px'
-        borderRadius={16}
-        textAlign='center'
-        boxShadow='lg'
-      >
-        <ThemeSelector />
-        <Box p={4}>
-          <LoginHeader />
-          <LoginForm />
-        </Box>
-      </Box>
-    </Flex>
-  );
-};
-
-const ThemeSelector = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
-
-  return (
-    <Box textAlign='right' py={4}>
-      <IconButton
-        icon={colorMode === 'light' ? 'moon' : 'sun'}
-        onClick={toggleColorMode}
-        variant='ghost'
-      />
-    </Box>
-  );
-};
-
-const LoginHeader = () => {
+const Login = () => {
   const navigate = useNavigate();
 
   const handleCreateAccountClick = () => {
     navigate('/signup');
   };
 
-  return (
-    <Box textAlign='center'>
-      <Heading>Login to Your Account</Heading>
-      <Text>
-        Or <Link color={`${VARIANT_COLOR}.500`} onClick={handleCreateAccountClick}>create an account here</Link>
-      </Text>
-    </Box>
-  );
-};
-
-const LoginForm = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data) => {
+  interface FormData {
+    email: string;
+    password: string;
+   }
+   
+   const onSubmit = (data: FormData) => {
     console.log(data);
-  };
+    // Perform login logic here
+   };
 
   return (
-    <Box my={8} textAlign='left'>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormControl isInvalid={errors.email}>
-          <FormLabel>Email address</FormLabel>
-          <Input type='email' placeholder='Enter your email address' {...register('email')} />
-          <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
-        </FormControl>
-
-        <FormControl mt={4} isInvalid={errors.password}>
-          <FormLabel>Password</FormLabel>
-          <Input type='password' placeholder='Enter your password' {...register('password')} />
-          <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
-        </FormControl>
-
-        <Stack isInline justifyContent='space-between' mt={4}>
+    <div>
+      <Navbar_Landing />
+      <Flex minHeight='100vh' bg={useColorModeValue('purple.300', 'purple.800')} width='full' align='center' justifyContent='center'>
+        <Box
+          borderWidth={1}
+          px={4}
+          py={10}
+          bg={useColorModeValue('white', 'gray.900')}
+          width='full'
+          maxWidth='500px'
+          borderColor={'purple.900'}
+          borderRadius={16}
+          textAlign='center'
+          boxShadow='lg'
+        >
           <Box>
-            <Checkbox>Remember Me</Checkbox>
-          </Box>
-          <Box>
-            <Link color={`${VARIANT_COLOR}.500`}>Forgot your password?</Link>
-          </Box>
-        </Stack>
+            <Box textAlign='center'>
+              <Text className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} fontSize={'50px'}><b>Login to Your Account</b></Text>
+              <Text>
+                Or <Link color={useColorModeValue('purple.400', 'gray.500')} onClick={handleCreateAccountClick}>create an account here</Link>
+              </Text>
+            </Box>
+            <Box my={8} textAlign='left'>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <FormControl isInvalid={!!errors.email}>
+                  <FormLabel>Email address</FormLabel>
+                  <Input type='email' placeholder='Enter your email address' {...register('email')} />
+                  <FormErrorMessage color={useColorModeValue('purple.600', 'white')}>{errors.email?.message}</FormErrorMessage>
+                </FormControl>
 
-        <Button colorScheme="teal" variant="outline" type="submit" width="full" mt={4}>
-                Login
-        </Button>
-      </form>
-    </Box>
+                <FormControl mt={4} isInvalid={!!errors.password}>
+                  <FormLabel>Password</FormLabel>
+                  <Input type='password' placeholder='Enter your password' {...register('password')} />
+                  <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
+                </FormControl>
+
+                <HStack justifyContent='space-between' mt={4}>
+                  <Box>
+                    <Checkbox>Remember Me</Checkbox>
+                  </Box>
+                  <Box>
+                    <Link color={useColorModeValue('purple.400', 'gray.500')}>Forgot your password?</Link>
+                  </Box>
+                </HStack>
+
+                <Button colorScheme="purple" _hover={{bg:useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }} variant="outline" type="submit" width="full" mt={4}>
+                  Login
+                </Button>
+              </form>
+            </Box>
+          </Box>
+        </Box>
+      </Flex>
+      <Footer />
+    </div>
+
   );
 };
 
-export default App;
+export default Login;

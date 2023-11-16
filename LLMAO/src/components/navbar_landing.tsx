@@ -16,11 +16,13 @@ import {
   Icon,
   Center
 } from '@chakra-ui/react';
-import {PhoneIcon } from "@chakra-ui/icons";
+import {PhoneIcon,MoonIcon, SunIcon } from "@chakra-ui/icons";
+
 import Logo from '../assets/images/Logo2.svg'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSignIn,faUserPlus,faIdCard } from '@fortawesome/free-solid-svg-icons';
 export default function Nav() {
+  const { colorMode, toggleColorMode } = useColorMode();
 
   return (
     <>
@@ -34,31 +36,36 @@ export default function Nav() {
             <Stack direction={'row'} spacing={7}>
             <Box
                 as="a"
-                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.300'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/login'}
+                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.600'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/login'}
               >
                 <FontAwesomeIcon style={{marginRight:"6px", marginBottom:"1px"}} icon={faSignIn} />
                 <b>Sign In</b>
               </Box>
               <Box
                 as="a"
-                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.300'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/signup'}
+                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.600'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/singup'}
               >
                 <FontAwesomeIcon style={{marginRight:"6px", marginBottom:"1px"}} icon={faUserPlus} />
                 <b>Sign Up</b>
               </Box>
               <Box
                 as="a"
-                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.300'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/login'}
+                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.600'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/login'}
               >
                 <FontAwesomeIcon style={{marginRight:"6px", marginBottom:"1px"}} icon={faIdCard} />
                 <b>About Us</b>
               </Box>
               <Box
                 as="a"
-                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.300'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/login'}
+                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.600'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/login'}
               >
                 <PhoneIcon mr={2} mb={1} ></PhoneIcon>
                 <b>Contact Us</b>
+              </Box>
+              <Box>
+              <Button onClick={toggleColorMode} _hover={{bg: useColorModeValue('purple.500', 'purple.600'),transform: "scale(1.05)"}} mr={4} transition="transform 0.3s" bg={'rgba(0,0,0,0)'}>
+                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+              </Button>
               </Box>
             </Stack>
           </Flex>

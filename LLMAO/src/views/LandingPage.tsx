@@ -9,12 +9,15 @@ import feat4 from '../assets/images/feat4.jpg'
 import Typewriter from 'typewriter-effect';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+
 // import Blob from '../components/Blob'
 import {
   Box,
   Button,
   Flex,
   Heading,
+  useColorMode,
+  useColorModeValue,
   Image,
   Stack,
   Text,
@@ -37,7 +40,7 @@ export default function SplitScreen() {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.7,
+        duration: 0.4,
         ease: "easeInOut",
         yoyo: 3, // Repeats the animation 3 times
       },
@@ -57,6 +60,7 @@ export default function SplitScreen() {
                 position={'relative'}
                 color={'white'}
                 px={2}
+                py={2}
                 className='main-heading'
                 bg={'purple.500'}
               >
@@ -80,18 +84,20 @@ export default function SplitScreen() {
               <Link to="/login">
                 <Button
                   rounded={'full'}
-                  bg={'purple.400'}
+                  bg= {useColorModeValue('purple.400', 'purple.600')}
                   color={'white'}
                   _hover={{
-                    bg: 'purple.700',
+                    bg: useColorModeValue('purple.700', 'purple.900'),
+                    color: useColorModeValue('white', 'white'),
                   }}
                 >
                   Get Started
                 </Button>
               </Link>
-              <Button rounded={'full'} bg={'gray.300'}
+              <Button rounded={'full'} color={useColorModeValue('black', 'purple.600')} bg={useColorModeValue('gray.300', 'white')}
                 _hover={{
-                  bg: 'gray.500',
+                  bg: useColorModeValue('gray.600', 'gray.600'),
+                  color: useColorModeValue('white', 'black'),
                 }}>Read More</Button>
             </Stack>
           </Stack>
@@ -119,7 +125,7 @@ export default function SplitScreen() {
           direction={{ base: 'column', md: 'row' }}
           align="center"
           mb={10}
-          bg={"purple.200"}
+          bg={useColorModeValue('purple.300', 'purple.600')}
           justify="center"
           boxShadow="lg" // Add a shadow to the card
           borderRadius="lg" // Round the corners of the card
@@ -161,7 +167,7 @@ export default function SplitScreen() {
         direction={{ base: 'column', md: 'row' }}
         align="center"
         mb={10}
-        bg={"purple.200"}
+        bg={useColorModeValue('purple.300', 'purple.600')}
         justify="center"
         boxShadow="lg" // Add a shadow to the card
         borderRadius="lg" // Round the corners of the card
@@ -203,7 +209,7 @@ export default function SplitScreen() {
         direction={{ base: 'column', md: 'row' }}
         align="center"
         mb={10}
-        bg={"purple.200"}
+        bg={useColorModeValue('purple.300', 'purple.600')}
         justify="center"
         boxShadow="lg" // Add a shadow to the card
         borderRadius="lg" // Round the corners of the card
@@ -245,7 +251,7 @@ export default function SplitScreen() {
         direction={{ base: 'column', md: 'row' }}
         align="center"
         mb={10}
-        bg={"purple.200"}
+        bg={useColorModeValue('purple.300', 'purple.600')}
         justify="center"
         boxShadow="lg" // Add a shadow to the card
         borderRadius="lg" // Round the corners of the card
