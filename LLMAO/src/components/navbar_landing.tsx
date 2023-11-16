@@ -43,7 +43,7 @@ export default function Nav() {
               </Box>
               <Box
                 as="a"
-                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.600'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/singup'}
+                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{textDecoration: 'none',transform: "scale(1.05)",color: 'white' , bg: useColorModeValue('purple.500', 'purple.600'),}} transition="transform 0.3s" _active={{ bg: 'purple.500'}} href={'/signup'}
               >
                 <FontAwesomeIcon style={{marginRight:"6px", marginBottom:"1px"}} icon={faUserPlus} />
                 <b>Sign Up</b>
