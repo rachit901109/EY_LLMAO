@@ -235,7 +235,7 @@ export default function Multistep() {
   };
 
   return (
-    <Box  borderWidth="1px"
+    <Box  borderWidth="10px"
         rounded="lg"
         shadow="1px 1px 3px rgba(0,0,0,0.3)"
         maxWidth={800}

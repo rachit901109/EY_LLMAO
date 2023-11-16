@@ -103,7 +103,6 @@ const LoginForm = () => {
 
   const onSubmit = (data) => {
     console.log(data);
-    // Perform login logic here
   };
 
   return (
