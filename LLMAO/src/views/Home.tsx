@@ -1,5 +1,5 @@
 import { Box, Center, Input, Heading, Button, useColorModeValue } from '@chakra-ui/react';
-import Navbar from '../components/navbar';
+import Navbar from '../components/navbar_landing';
 
 function Home() {
   const onLearnClick = () => {
@@ -11,7 +11,7 @@ function Home() {
   return (
     <div>
       <Navbar />
-      <Center height="90vh" flexDirection="column">
+      <Center height="91vh" flexDirection="column" bg={useColorModeValue('purple.300', 'gray.900')}>
         <Box textAlign="center">
           <Heading as="h1" size="xl" mb={4}>
             Learn Anything
@@ -26,7 +26,7 @@ function Home() {
             transform: 'translateY(-4px)',
             boxShadow: 'dark-lg',
           }}
-          bgGradient="linear(to-t, blue.400, pink.400)" 
+          bgGradient="linear(to-b, blue.500, pink.500)" 
           boxShadow='lg'
           onClick={onLearnClick}
           mt={4}

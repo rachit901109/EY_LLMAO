@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardHeader, CardBody, CardFooter, Heading, Text, Stack, Divider, ButtonGroup, Button, Flex } from '@chakra-ui/react';
+import { Card, CardHeader, CardBody, CardFooter, Heading, Text, Stack, Divider, ButtonGroup, Button, Flex ,useColorMode, useColorModeValue,} from '@chakra-ui/react';
 import { HiAcademicCap } from "react-icons/hi";
 import { TfiArrowTopRight } from "react-icons/tfi";
 
@@ -10,7 +10,7 @@ interface CardProps {
 
 const MyCard: React.FC<CardProps> = ({ title, content }) => {
  return (
-   <Card boxShadow='2xl' height={'400px'} width="300px" mt={8} mr={4} ml={4}>
+   <Card boxShadow='dark-lg' height={'400px'} width="300px" mt={8} mr={4} ml={4} bg={useColorModeValue('purple.300', 'purple.800')} >
      <CardHeader>
        <Flex justify="center" align="center">
          <HiAcademicCap size={48} />
