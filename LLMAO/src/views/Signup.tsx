@@ -224,7 +224,7 @@ const Signup = () => {
       <Navbar_Landing />
       <Flex
       minHeight='100vh' bg={useColorModeValue('purple.300', 'purple.800')} width='full' align='center' justifyContent='center'>
-        <Box borderWidth={5}
+        <Box 
           rounded="lg"
           my={10}
           bg={useColorModeValue('white', 'gray.900')}

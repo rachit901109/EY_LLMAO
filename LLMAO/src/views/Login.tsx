@@ -55,7 +55,6 @@ const Login = () => {
       <Navbar_Landing />
       <Flex minHeight='100vh' bg={useColorModeValue('purple.300', 'purple.800')} width='full' align='center' justifyContent='center'>
         <Box
-          borderWidth={5}
           px={4}
           py={10}
           bg={useColorModeValue('white', 'gray.900')}
@@ -65,9 +64,8 @@ const Login = () => {
           borderColor={useColorModeValue('purple.400', 'gray.900')}
           borderRadius={16}
           textAlign='center'
-          boxShadow='lg'
         >
-          <Box>
+          <Box >
             <Box textAlign='center'>
               <Text className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} fontSize={'50px'}><b>Login to Your Account</b></Text>
               <Text>
