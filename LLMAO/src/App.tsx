@@ -7,6 +7,8 @@ import Trending from './views/Trending';
 import Modules from './views/Modules'
 import QuizPage from './views/QuizPage'
 import Contact from './views/Contact'
+import Content from './views/Content'
+
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
         <Route path="/modules" element={<Modules />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/content" element={<Content />} />
       </Routes>
     </Router>
   );

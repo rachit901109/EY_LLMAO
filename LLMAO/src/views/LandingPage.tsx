@@ -260,7 +260,7 @@ export default function SplitScreen() {
       >
 
         <Box ml={5} p={0}>
-          <Text className='heading' fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }}>
+          <Text className='feature-heading' fontSize={{ base: '2xl', md: '3xl', lg: '4xl' }}>
             <b>Rewarding Engagement with Badges and Certificates</b>
           </Text>
           <Text textAlign={'justify'} className='content' fontSize={{ base: 'md', lg: 'lg' }} mt={4}>
