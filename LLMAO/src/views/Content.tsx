@@ -113,11 +113,7 @@ const Sidebar = ({ data, setSelectedSubject }: { data: Data; setSelectedSubject:
      <VStack align="start" spacing={4} w={'100vh'} shadow={"dark-lg"} bg={useColorModeValue('white', 'white')} color={useColorModeValue('black', 'white')}>
        <Box w="full" bg={useColorModeValue('purple.500', 'white')} p={5}>
          <Text className='main-heading' textAlign={'center'} color={useColorModeValue('white', 'white')} fontSize={30}>
-<<<<<<< HEAD
-           <b>Contents</b>
-=======
            <b>Lessons</b>
->>>>>>> 8cf2ad0612048604fd716a34617929db75b1faad
          </Text>
        </Box>
        <Box px={3}>
