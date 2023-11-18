@@ -1,8 +1,22 @@
-import { Tab, Tabs, TabList, TabPanel, TabPanels } from '@chakra-ui/react';
+import { Tab, Tabs, TabList, TabPanel, TabPanels, SlideFade } from '@chakra-ui/react';
 import Navbar from '../components/navbar_landing';
 import CourseCard from '../components/CourseCard';
+import { useState, useEffect } from 'react';  
+
 
 function Home() {
+
+  const [tabIndex, setTabIndex] = useState(0);
+  const [inProp, setInProp] = useState(false);
+
+  const handleTabsChange = (index:number) => {
+    setTabIndex(index);
+    setInProp(false);
+  };
+
+  useEffect(() => {
+    setInProp(true);
+  }, [tabIndex]);
 
   const ongoing_courses : {[key:string] : string} = {
     "Introduction to Machine Learning": "Machine Learning (ML) is a subfield of artificial intelligence (AI) that focuses on developing algorithms and models that enable computers to learn from data and make predictions or decisions without explicit programming. The goal of machine learning is to enable computers to automatically improve their performance on a task through experience.",
@@ -21,12 +35,10 @@ const completed_courses : {[key : string]: string} = {
   "Introduction to Data Science with Python": "Introduction to Data Science with Python covers the foundational principles of data science using the Python programming language. Topics include data exploration, visualization, and basic statistical analysis. Participants gain essential skills for extracting meaningful insights from diverse datasets."
 };
 
-
-
   return (
     <div>
       <Navbar />
-      <Tabs my={4} isFitted variant='enclosed'>
+      <Tabs my={4} isFitted variant='enclosed' index={tabIndex} onChange={handleTabsChange}>
         <TabList borderBottom='0'>
           <Tab _selected={{ bgColor: 'purple.500' , color: 'white'}} >Recommended Courses</Tab>
           <Tab _selected={{ bgColor: 'purple.500' , color: 'white'}}>In Progress</Tab>
@@ -35,17 +47,23 @@ const completed_courses : {[key : string]: string} = {
         <TabPanels>
           <TabPanel>
             {Object.keys(recommended_courses).map((courseTitle) => (
-              <CourseCard courseTitle={courseTitle} content={recommended_courses[courseTitle]} buttonText= {'Start Learning'} />
+              <SlideFade in={inProp} transition={{enter: {duration: 0.7}}} offsetY='50px' >
+                <CourseCard courseTitle={courseTitle} content={recommended_courses[courseTitle]} buttonText= {'Start Learning'} />
+              </SlideFade>
             ))}
           </TabPanel>
           <TabPanel>
-          {Object.keys(ongoing_courses).map((courseTitle) => (
-              <CourseCard courseTitle={courseTitle} content={ongoing_courses[courseTitle]} buttonText= {'Continue Learning'} />
+            {Object.keys(ongoing_courses).map((courseTitle) => (
+              <SlideFade in={inProp} transition={{enter: {duration: 0.7}}} offsetY='50px' >
+                <CourseCard courseTitle={courseTitle} content={ongoing_courses[courseTitle]} buttonText= {'Continue Learning'} />
+              </SlideFade>
             ))}
           </TabPanel>
           <TabPanel>
-          {Object.keys(completed_courses).map((courseTitle) => (
-              <CourseCard courseTitle={courseTitle} content={completed_courses[courseTitle]} buttonText= {'Review Course'} />
+            {Object.keys(completed_courses).map((courseTitle) => (
+              <SlideFade in={inProp} transition={{enter: {duration: 0.7}}} offsetY='50px' >
+                <CourseCard courseTitle={courseTitle} content={completed_courses[courseTitle]} buttonText= {'Review Course'} />
+              </SlideFade>
             ))}
           </TabPanel>
         </TabPanels>
