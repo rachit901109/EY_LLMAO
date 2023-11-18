@@ -56,7 +56,7 @@ const MyCard: React.FC<CardProps> = ({ title, content }) => {
       <Flex justify="center" align="center">
         <CardFooter>
           <ButtonGroup spacing="2">
-            <Button variant="solid"  onClick={handleStartLearning} bg={useColorModeValue('purple.600', 'purple.800')} borderColor={"purple.800"}  colorScheme="purple" color={"black"} size={'md'}>
+            <Button bg={'purple.500'} _hover={{bg:useColorModeValue('purple.800', 'purple.800'), color: useColorModeValue('white', 'white'), transform: "scale(1.05)" }} variant="outline"  onClick={handleStartLearning} size={'md'}>
               Start Learning <TfiArrowTopRight />
             </Button>
           </ButtonGroup>
