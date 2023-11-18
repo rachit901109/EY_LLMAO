@@ -5,7 +5,7 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import generate_module_summary
+from server.users.utils import generate_module_summary,generate_content,generate_submodules
 
 users = Blueprint(name='users', import_name=__name__)
 
@@ -139,75 +139,75 @@ def delete():
 
 
 # query route
-@users.route('/query/<string:topicname>', methods=['GET'])
+@users.route('/query2/<string:topicname>/<string:level>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def query(topicname):
+def query(topicname,level):
     # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+    # user_id = session.get("user_id", None)
+    # if user_id is None:
+    #     return jsonify({"message": "User not logged in", "response":False}), 401
     
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+    # # check if user exists
+    # user = User.query.get(user_id)
+    # if user is None:
+    #     return jsonify({"message": "User not found", "response":False}), 404
     
-    # add user query to database
-    new_user_query = Query(query_name=topicname, user_id=user_id)
-    user.queries.append(new_user_query)
-    db.session.commit()
-
+    # # add user query to database
+    # new_user_query = Query(query_name=topicname, user_id=user_id)
+    # user.queries.append(new_user_query)
+    # db.session.commit()
+    text = generate_module_summary(topic=topicname,level=level)
+    print(text)
     # implement content generation for topic name
 
-    beg_content = {"module 1": "content for module 1 begineer level", "module 2": "content for module 2 begineer level", "module 3": "content for module 3 begineer level"}
-    inter_content = {"module 1": "content for module 1 intermediate level", "module 2": "content for module 2 intermediate level", "module 3": "content for module 3 intermediate level"}
-    adv_content = {"module 1": "content for module 1 advanced level", "module 2": "content for module 2 advanced level", "module 3": "content for module 3 advanced level"}
+    # beg_content = {"module 1": "content for module 1 begineer level", "module 2": "content for module 2 begineer level", "module 3": "content for module 3 begineer level"}
+    # inter_content = {"module 1": "content for module 1 intermediate level", "module 2": "content for module 2 intermediate level", "module 3": "content for module 3 intermediate level"}
+    # adv_content = {"module 1": "content for module 1 advanced level", "module 2": "content for module 2 advanced level", "module 3": "content for module 3 advanced level"}
 
-    topic_content = {"beginner": beg_content, "intermediate": inter_content, "advance": adv_content}
+    # topic_content = {"beginner": beg_content, "intermediate": inter_content, "advance": adv_content}
 
     # Save content to content directory
-    content_dir = os.path.join(os.getcwd(), "content")
-    if not os.path.exists(content_dir):
-        os.makedirs(content_dir)
+    # content_dir = os.path.join(os.getcwd(), "content")
+    # if not os.path.exists(content_dir):
+    #     os.makedirs(content_dir)
 
     # Save content to topicname.json file
-    file_path = os.path.join(content_dir, topicname + ".json")
-    with open(file_path, "w") as file:
-        json.dump(topic_content, file, indent=4)
+    # file_path = os.path.join(content_dir, topicname + ".json")
+    # with open(file_path, "w") as file:
+    #     json.dump(topic_content, file, indent=4)
 
     # return response
-    return jsonify({"message": "Query successful", "content": topic_content, "response":True}), 200
+    return jsonify({"message": "Query successful", "content": text, "response":True}), 200
 
 
 
 # New route for querying by topic and level
-@users.route('/query/<string:topicname>/<string:level>', methods=['GET'])
-def query_by_level(topicname, level):
-    # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+@users.route('/query2/<string:topicname>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def query_by_level(topicname):
+    # # check if user is logged in
+    # user_id = session.get("user_id", None)
+    # if user_id is None:
+    #     return jsonify({"message": "User not logged in", "response":False}), 401
     
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+    # # check if user exists
+    # user = User.query.get(user_id)
+    # if user is None:
+    #     return jsonify({"message": "User not found", "response":False}), 404
 
     # Check if the topicname.json file exists
-    file_path = os.path.join(os.getcwd(), "content", f"{topicname}.json")
-    if not os.path.exists(file_path):
-        return jsonify({"message": "Topic not found", "response": False}), 404
+    # file_path = os.path.join(os.getcwd(), "content", f"{topicname}.json")
+    # if not os.path.exists(file_path):
+    #     return jsonify({"message": "Topic not found", "response": False}), 404
 
     # Load content from the topicname.json file
-    with open(file_path, "r") as file:
-        topic_content = json.load(file)
-
-    # Check if the requested level exists in the content
-    if level not in topic_content:
-        return jsonify({"message": "Level not found", "response": False}), 404
-
+    # with open(file_path, "r") as file:
+    #     topic_content = json.load(file)
+    submodules = generate_submodules(topicname)
+    print(submodules)
+    content = generate_content(submodules)
     # Return content for the requested level
-    return jsonify({"message": "Query successful", "content": topic_content[level], "response": True}), 200
+    return jsonify({"message": "Query successful", "content": content, "response": True}), 200
 
 
 

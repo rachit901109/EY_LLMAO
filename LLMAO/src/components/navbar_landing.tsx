@@ -4,20 +4,21 @@ import {
   Flex,
   Image,
   Stack,
+  Text,
   HStack,
   useColorModeValue,
   Link
 } from '@chakra-ui/react';
-import axios from 'axios'; 
+import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { PhoneIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 
 import { MdExplore } from "react-icons/md";
 import { BsFire } from "react-icons/bs";
-import Logo from '../assets/images/Logo2.svg'
+import Logo from '../assets/images/Logo2.jpg'
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignIn, faUserPlus, faIdCard,faSignOut } from '@fortawesome/free-solid-svg-icons';
+import { faSignIn, faUserPlus, faSignOut, faHome } from '@fortawesome/free-solid-svg-icons';
 export default function Nav() {
   const [authenticated, setAuthenticated] = useState(false);
   const navigate = useNavigate();
@@ -37,17 +38,22 @@ export default function Nav() {
       console.error(error);
     }
   };
-  
+
 
   return (
     <>
       <Box bg={useColorModeValue('rgba(0,0,0,0)', 'rgba(0,0,0,0)')} px={4} shadow={'lg'}>
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-          <Box >
-            <Link href="/">
-              <Image src={Logo} mt={2} maxH={'20vh'} alt="Logo" />
-            </Link>
-          </Box>
+          <Flex align="center">
+            <Box>
+              <Link href="/">
+                <Image src={Logo} mt={2} maxH={'10'} alt="Logo" />
+              </Link>
+            </Box>
+            <Box ml={4}>
+              <Text className='main-heading'><b>MindCraft</b></Text>
+            </Box>
+          </Flex>
 
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
@@ -56,6 +62,13 @@ export default function Nav() {
                   <Box
                     as="a"
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/home'}
+                  >
+                    <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faHome} />
+                    Home
+                  </Box>
+                  <Box
+                    as="a"
+                    px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/explore'}
                   >
                     <HStack spacing={2}>
                       <MdExplore size={24} />
@@ -80,30 +93,24 @@ export default function Nav() {
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/login'}
                   >
                     <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faSignIn} />
-                    <b>Login</b>
+                    Login
                   </Box>
                   <Box
                     as="a"
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/signup'}
                   >
                     <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faUserPlus} />
-                    <b>Sign Up</b>
+                    Sign Up
                   </Box>
                 </>
               )}
-              <Box
-                as="a"
-                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/login'}
-              >
-                <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faIdCard} />
-                <b>About Us</b>
-              </Box>
+
               <Box
                 as="a"
                 px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/contact'}
               >
                 <PhoneIcon mr={2} mb={1} ></PhoneIcon>
-                <b>Contact Us</b>
+                Contact Us
               </Box>
               {authenticated && (
                 <Box
@@ -111,7 +118,7 @@ export default function Nav() {
                   px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} onClick={handleLogout}
                 >
                   <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faSignOut} />
-                  <b>Logout</b>
+                  Logout
                 </Box>
               )}
               <Box>

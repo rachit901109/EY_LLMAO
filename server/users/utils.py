@@ -3,6 +3,7 @@ import os
 import openai
 import ast
 from openai import OpenAI
+import time
 
 load_dotenv()
 
@@ -11,13 +12,12 @@ load_dotenv()
 openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 
-
 def generate_module_summary(topic,level):
     prompt_module_generation = """You are an educational chatbot named ISAAC. \
 You will be provided with a topic and your task is to generate 4-6 module names \
 that are related to the topic and a brief summary on each module. \
 Make sure that each Module name should not be a subset of any other modules. \
-The difficulty and level of the modules that are generated should be of  'Beginner Level'. \
+The difficulty and level of the modules that are generated should be of  '{level}'. \
 The output should be in json format where each key corresponds to the complete module name and the \
 values are the brief summary of that module.
 ```
@@ -27,7 +27,7 @@ Topic: {topic}
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
-                    {'role':'user', 'content': prompt_module_generation.format(topic = topic)},
+                    {'role':'user', 'content': prompt_module_generation.format(topic = topic,level=level)},
                 ],
                 response_format = {'type':'json_object'},
                 seed = 42
@@ -88,6 +88,8 @@ title_for_the_content, content, subsections (which is a list of dictionaries wit
                     response_format = {'type':'json_object'},
                     seed = 42
         )
-
+        print("Module done: ",key,"!!!!!!!!")   
+        print(ast.literal_eval(completion.choices[0].message.content))
         all_content.append(ast.literal_eval(completion.choices[0].message.content))
+        time.sleep(25)
     return all_content
