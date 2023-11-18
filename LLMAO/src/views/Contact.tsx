@@ -25,7 +25,7 @@ import {
     MdOutlineEmail,
 } from 'react-icons/md'
 import { BsGithub, BsDiscord, BsPerson } from 'react-icons/bs'
-import NavBar from '../components/navbar'
+import NavBar from '../components/navbar_landing'
 
 export default function Contact() {
     return (

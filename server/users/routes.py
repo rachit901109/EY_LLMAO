@@ -4,30 +4,34 @@ from server.models import User, Query
 import os
 import json
 import zipfile
+from flask_cors import cross_origin
+from server.users.utils import generate_module_summary
 
 users = Blueprint(name='users', import_name=__name__)
 
 # register route  --> take username from client only store in database if username is not taking
-@users.route('/register', methods=['POST'])
+@users.route('/register',methods=['POST'])
+@cross_origin(supports_credentials=True)
 def register():
     # take user input
-    fname = request.json["fname"]
-    lname = request.json["lname"]
-    user_name = fname+" "+lname
-    email = request.json["email"]
-    password = request.json["password"]
-    country = request.json["country"]
-    state = request.json["state"]
-    city = request.json["city"]
-    gender = request.json["gender"]
-    age = request.json["age"]
-    interests = request.json["interests"]
+    data = request.json
+    fname = data.get("firstName")  # Access the 'fname' variable from the JSON data
+    lname = data.get("lastName")
+    user_name = fname + " " + lname
+    email = data.get("email")
+    password = data.get("password")
+    country = data.get("country")
+    state = data.get("state")
+    city = data.get("city")
+    gender = data.get("gender")
+    age = data.get("age")
+    interests = data.get("interest")
 
     # check if user has already registered by same email
     user_exists = User.query.filter_by(email=email).first() is not None
 
     if user_exists:
-        return jsonify({"message": "User already exists", "response":False}), 409
+        return jsonify({"message": "User already exists", "response":False}), 201
     
     # hash password, create new user save to databse
     hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -36,25 +40,28 @@ def register():
     db.session.commit()
 
     # return response
-    return jsonify({"message": "User created successfully", "id":new_user.user_id, "email":new_user.email, "response":True}), 201
-
+    response = jsonify({"message": "User created successfully", "id":new_user.user_id, "email":new_user.email, "response":True}), 201
+    return response
 
 
 # login route  --> add username to session and make it unique in user model
 @users.route('/login', methods=['POST'])
+@cross_origin(supports_credentials=True)
 def login():
     # take user input
-    email = request.json["email"]
-    password = request.json["password"]
+    data = request.json
+    print(data)
+    email = data.get("email")
+    password = data.get("password")
 
     # check user is registered or not
     user = User.query.filter_by(email=email).first()
     if user is None:
-        return jsonify({"message": "Unregistered email id", "response":False}), 404
+        return jsonify({"message": "Unregistered email id", "response":False}), 200
     
     # check password
     if not bcrypt.check_password_hash(user.password, password.encode('utf-8')):
-        return jsonify({"message": "Incorrect password", "response":False}), 401
+        return jsonify({"message": "Incorrect password", "response":False}), 200
     
     # start user session
     session["user_id"] = user.user_id
@@ -67,6 +74,7 @@ def login():
 # user account  --> profile pic remaining, only keeping /user as route for now
 # later add /user/<int:user_id> route for viewing other users profile
 @users.route('/user', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def getuser():
     # check if user is logged in
     user_id = session.get("user_id", None)
@@ -95,15 +103,16 @@ def getuser():
 
 # logout route
 @users.route('/logout', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def logout():
     session.pop("user_id", None)
-
     return jsonify({"message": "User logged out successfully", "response":True}), 200
 
 
 
 # delete user route
 @users.route('/delete', methods=['DELETE'])
+@cross_origin(supports_credentials=True)
 def delete():
     # check if user is logged in
     user_id = session.get("user_id", None)
@@ -131,6 +140,7 @@ def delete():
 
 # query route
 @users.route('/query/<string:topicname>', methods=['GET'])
+@cross_origin(supports_credentials=True)
 def query(topicname):
     # check if user is logged in
     user_id = session.get("user_id", None)

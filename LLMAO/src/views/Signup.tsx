@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   Box,
   Button,
@@ -24,7 +25,10 @@ import { useForm } from "react-hook-form";
 import Navbar_Landing from '../components/navbar_landing';
 import Footer from '../components/footer'
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useNavigate } from 'react-router-dom';
 import * as yup from "yup";
+
+
 
 const form1Schema = yup.object().shape({
   firstName: yup.string().required("First name is required"),
@@ -44,13 +48,11 @@ const form2Schema = yup.object().shape({
   country: yup.string().required("Country is required"),
   city: yup.string().required("City is required"),
   state: yup.string().required("State is required"),
-  gender: yup.string().required('Gender is required'),
   age: yup.number().integer().min(1, 'Age must be a positive number').required('Age is required'),
   interest: yup.string().required('Interest is required'),
 });
 
 const Form1 = ({ register, errors }: { register: any; errors: any }) => {
-  const [show, setShow] = useState(false);
   return (
     <>
       <Text w="80vh" fontSize={'50px'} className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} textAlign={"center"} fontWeight="normal" mb="2%">
@@ -61,7 +63,7 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
           <FormLabel htmlFor="first-name" fontWeight={"normal"}>
             First name
           </FormLabel>
-          <Input id="first-name" placeholder="First name" {...register("firstName")} />
+          <Input id="first-name" name="first-name" placeholder="First name" {...register("firstName")} />
           <FormErrorMessage>
             {errors.firstName && errors.firstName.message}
           </FormErrorMessage>
@@ -71,17 +73,17 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
           <FormLabel htmlFor="last-name" fontWeight={"normal"}>
             Last name
           </FormLabel>
-          <Input id="last-name" placeholder="Last name" {...register("lastName")} />
+          <Input id="last-name" name="last-name" placeholder="Last name" {...register("lastName")} />
           <FormErrorMessage>
             {errors.lastName && errors.lastName.message}
           </FormErrorMessage>
         </FormControl>
       </Flex>
       <FormControl isInvalid={!!errors.email} mt="2%">
-        <FormLabel htmlFor="email"  fontWeight={"normal"}>
+        <FormLabel htmlFor="email" fontWeight={"normal"}>
           Email address
         </FormLabel>
-        <Input id="email" placeholder="Email address" type="email" {...register("email")} />
+        <Input id="email" name="email" placeholder="Email address" type="email" {...register("email")} />
         <FormHelperText>We&apos;ll never share your email.</FormHelperText>
         <FormErrorMessage>
           {errors.email && errors.email.message}
@@ -94,7 +96,9 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
         </FormLabel>
         <InputGroup size="md">
           <Input
-            type={show ? "text" : "password"}
+            type="password"
+            id="password"
+            name="password"
             placeholder="Enter password"
             {...register("password")}
           />
@@ -141,10 +145,10 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
           {errors.country && errors.country.message}
         </FormErrorMessage>
       </FormControl>
-        
+
       <FormControl isInvalid={!!errors.city} mb={4}>
         <FormLabel htmlFor="city">City</FormLabel>
-        <Input id="city" {...register("city")} />
+        <Input id="city" name="city" {...register("city")} />
         <FormErrorMessage>
           {errors.city && errors.city.message}
         </FormErrorMessage>
@@ -152,15 +156,15 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
 
       <FormControl isInvalid={!!errors.state} mb={4}>
         <FormLabel htmlFor="state">State</FormLabel>
-        <Input id="state" {...register("state")} />
+        <Input id="state" name="state" {...register("state")} />
         <FormErrorMessage>
           {errors.state && errors.state.message}
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl isInvalid={!!errors.gender} mb={4}>
+      <FormControl mb={4} isInvalid={!!errors.gender}>
         <FormLabel htmlFor="gender">Gender</FormLabel>
-        <RadioGroup colorScheme='purple' {...register('gender')}>
+        <RadioGroup colorScheme='purple' id="gender" name="gender" defaultValue="" {...register('gender')}>
           <Stack direction="row">
             <Radio value="male">Male</Radio>
             <Radio value="female">Female</Radio>
@@ -174,7 +178,7 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
 
       <FormControl isInvalid={!!errors.age} mb={4}>
         <FormLabel htmlFor="age">Age</FormLabel>
-        <Input id="age" type="number" {...register('age')} />
+        <Input id="age" name="age" type="number" {...register('age')} />
         <FormErrorMessage>
           {errors.age && errors.age.message}
         </FormErrorMessage>
@@ -182,7 +186,7 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
 
       <FormControl isInvalid={!!errors.interest} mb={4}>
         <FormLabel htmlFor="interest">Interest</FormLabel>
-        <Input id="interest" {...register('interest')} />
+        <Input id="interest" name="interest" {...register('interest')} />
         <FormErrorMessage>
           {errors.interest && errors.interest.message}
         </FormErrorMessage>
@@ -193,8 +197,11 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
 
 const Signup = () => {
   const toast = useToast();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(50);
+
+  const resolver: any = step === 1 ? yupResolver(form1Schema) : yupResolver(form2Schema);
 
   const {
     register,
@@ -202,29 +209,54 @@ const Signup = () => {
     formState: { errors },
     trigger,
   } = useForm({
-    resolver:
-      step === 1
-        ? yupResolver(form1Schema)
-        : yupResolver(form2Schema)
+    resolver: resolver,
   });
 
-  const onSubmit = (data: { [key: string]: any }) => {
-    toast({
-      title: 'Account created.',
-      description: "We've created your account for you.",
-      status: 'success',
-      duration: 3000,
-      isClosable: true,
-    })
-    console.log(data);
+  const onSubmit = async (data: { [key: string]: any }) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/register', data, { withCredentials: true });
+  
+      if (response.data.response) {
+        localStorage.setItem('authenticated', 'true');
+        // Account created successfully
+        toast({
+          title: 'Account created.',
+          description: "We've created your account for you.",
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+        console.log(response.data);
+        navigate('/home');
+      } else {
+        // User already exists
+        toast({
+          title: 'Error',
+          description: 'User already exists. Please use a different email address.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      // Display toast on general error
+      toast({
+        title: 'Error',
+        description: 'An error occurred while creating the account.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      console.error(error);
+    }
   };
-
+  
   return (
     <div>
       <Navbar_Landing />
       <Flex
-      minHeight='100vh' bg={useColorModeValue('purple.300', 'purple.800')} width='full' align='center' justifyContent='center'>
-        <Box 
+        minHeight='100vh' bg={useColorModeValue('purple.300', 'purple.800')} width='full' align='center' justifyContent='center'>
+        <Box
           rounded="lg"
           my={10}
           bg={useColorModeValue('white', 'gray.900')}
@@ -241,8 +273,8 @@ const Signup = () => {
                 <Flex>
                   {step > 1 && (
                     <Button
-                    variant="outline"
-                    colorScheme="purple" _hover={{bg:useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
+                      variant="outline"
+                      colorScheme="purple" _hover={{ bg: useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
                       onClick={() => {
                         setStep(step - 1);
                         setProgress(progress - 50);
@@ -253,8 +285,8 @@ const Signup = () => {
                   )}
                   {step < 2 && (
                     <Button
-                    variant="outline"
-                    colorScheme="purple" _hover={{bg:useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
+                      variant="outline"
+                      colorScheme="purple" _hover={{ bg: useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
                       onClick={async () => {
                         const isValid = await trigger();
                         if (isValid) {
@@ -268,10 +300,10 @@ const Signup = () => {
                   )}
                 </Flex>
                 {step === 2 && (
-                  <Button 
-                  variant="outline"
-                    colorScheme="purple" _hover={{bg:useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
-                  type="submit">Submit</Button>
+                  <Button
+                    variant="outline"
+                    colorScheme="purple" _hover={{ bg: useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
+                    type="submit">Submit</Button>
                 )}
               </Flex>
             </ButtonGroup>
