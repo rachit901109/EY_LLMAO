@@ -1,4 +1,3 @@
-"""User Auth using server side sessions with sqlalcemy"""
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -10,23 +9,19 @@ db = SQLAlchemy()
 bcrypt = Bcrypt()
 sess = Session()
 
-def create_app(config_class = config):
+
+def create_app(config_class=config):
     app = Flask(__name__)
 
     app.config.from_object(config)
-    CORS(app, supports_credentials=True)
 
     db.init_app(app)
-    app.config['SESSION_SQLALCHEMY'] = db
+    app.config["SESSION_SQLALCHEMY"] = db
     bcrypt.init_app(app)
-    # sess = Session(app)
-    sess.app=app
-    # sess.init_app(app)
-
+    
     from server.users.routes import users
-    CORS(users, supports_credentials=True)
 
+    # Register the blueprint
     app.register_blueprint(users)
-
 
     return app

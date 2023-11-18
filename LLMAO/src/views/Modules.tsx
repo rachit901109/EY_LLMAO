@@ -1,6 +1,6 @@
 import { Box, Center, Input, Heading, Button, useColorModeValue, HStack, Grid, Flex} from '@chakra-ui/react';
 import { useState } from "react";
-import Navbar from '../components/navbar';
+import Navbar from '../components/navbar_landing';
 import MyCard from '../components/myCard';
 
 function Modules() {

@@ -1,12 +1,14 @@
 import React from 'react';
 import Navbar_Landing from '../components/navbar_landing';
 import Footer from '../components/footer'
+import axios from 'axios'; 
 import {
   Box,
   Flex,
   IconButton,
   Heading,
   HStack,
+  useToast,
   useColorMode,
   useColorModeValue,
   Text,
@@ -31,7 +33,7 @@ const schema = yup.object().shape({
 
 const Login = () => {
   const navigate = useNavigate();
-
+  const toast = useToast();
   const handleCreateAccountClick = () => {
     navigate('/signup');
   };
@@ -39,17 +41,46 @@ const Login = () => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
   });
-
-  interface FormData {
-    email: string;
-    password: string;
-   }
    
-   const onSubmit = (data: FormData) => {
-    console.log(data);
-    // Perform login logic here
-   };
-
+   const onSubmit = async (data: { [key: string]: any }) => {
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/login', data, { withCredentials: true });
+  
+      if (response.data.response) {
+        localStorage.setItem('authenticated', 'true');
+        toast({
+          title: 'Login successful.',
+          description: 'You have successfully logged in.',
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+  
+        // Redirect to home page
+        navigate('/home');
+      } else {
+        // Display toast if login is unsuccessful
+        toast({
+          title: 'Login failed.',
+          description: response.data.message || 'An error occurred while logging in.',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      // Display toast on login error
+      toast({
+        title: 'Login failed.',
+        description: 'An error occurred while logging in.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+      console.error(error);
+    }
+  };
+  
   return (
     <div>
       <Navbar_Landing />

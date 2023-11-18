@@ -12,7 +12,7 @@ openai.api_key = os.environ.get('OPENAI_API_KEY')
 
 
 
-def generate_module_summary(topic):
+def generate_module_summary(topic,level):
     prompt_module_generation = """You are an educational chatbot named ISAAC. \
 You will be provided with a topic and your task is to generate 4-6 module names \
 that are related to the topic and a brief summary on each module. \

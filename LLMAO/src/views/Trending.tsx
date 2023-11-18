@@ -1,5 +1,5 @@
 import { Grid, Box, useColorModeValue } from '@chakra-ui/react';
-import Navbar from '../components/navbar';
+import Navbar from '../components/navbar_landing';
 import MyCard from '../components/myCard';
 
 function Trending() {
