@@ -125,8 +125,8 @@ def delete():
         return jsonify({"message": "User not found", "response":False}), 404
     
     # select all queries and completed topics by user and delete them
-    user_saved_queries = user.queries
-    user_saved_topics = user.completed_topics
+    # user_saved_queries = user.queries
+    # user_saved_topics = user.completed_topics
 
     db.session.delete(user)
     # db.session.delete(user_saved_queries)
