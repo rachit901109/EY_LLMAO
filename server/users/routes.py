@@ -6,6 +6,8 @@ import json
 import zipfile
 from flask_cors import cross_origin
 from server.users.utils import generate_module_summary,generate_content,generate_submodules
+from deep_translator import GoogleTranslator
+from langdetect import detect
 
 users = Blueprint(name='users', import_name=__name__)
 
@@ -156,7 +158,10 @@ def query(topicname,level):
     # new_user_query = Query(query_name=topicname, user_id=user_id)
     # user.queries.append(new_user_query)
     # db.session.commit()
-    text = generate_module_summary(topic=topicname,level=level)
+    trans_topic = GoogleTranslator(source='auto', target='en').translate(topicname)
+    source_language = detect(topicname)
+    print(source_language)
+    text = generate_module_summary(topic=trans_topic,level=level)
     print(text)
     # implement content generation for topic name
 
@@ -177,7 +182,18 @@ def query(topicname,level):
     #     json.dump(topic_content, file, indent=4)
 
     # return response
-    return jsonify({"message": "Query successful", "content": text, "response":True}), 200
+    # print("TESTTTTTTT---------->>>>>>>>>>>>>")
+    trans_text = {}
+    
+    for key,value in text.items(): 
+        trans_key = GoogleTranslator(source='auto', target=source_language).translate(str(key))
+        trans_text[trans_key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
+        
+    # trans_text = GoogleTranslator(source='auto', target='hi').translate(str(text))
+    # trans_text = json.loads(trans_text)
+    print(trans_text)
+    # trans_text = text
+    return jsonify({"message": "Query successful", "content": trans_text, "response":True}), 200
 
 
 
@@ -203,11 +219,37 @@ def query_by_level(topicname):
     # Load content from the topicname.json file
     # with open(file_path, "r") as file:
     #     topic_content = json.load(file)
-    submodules = generate_submodules(topicname)
+    source_language = detect(topicname)
+    trans_topic = GoogleTranslator(source='auto', target='en').translate(topicname)
+    submodules = generate_submodules(trans_topic)
     print(submodules)
     content = generate_content(submodules)
+    trans_content = []
+    # for key,value in content.items(): 
+    #     trans_key = GoogleTranslator(source='auto', target=source_language).translate(str(key))
+    #     trans_content[trans_key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
+    for entry in content:
+        temp = {}
+        for key, value in entry.items():
+            if key == 'urls':
+                temp[key] = value
+                continue
+            if key == 'subsections':
+                temp[key] = []
+                temp_subsections = {}
+                for subsection in value:
+                    for sub_key, sub_value in subsection.items():
+                        temp_subsections[sub_key] = GoogleTranslator(source='auto', target=source_language).translate(str(sub_value))
+                    temp[key].append(temp_subsections)
+            else:
+                temp[key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
+        trans_content.append(temp)
+                
+        
+    print("HELLOOOOOOOOOO------------>>>>")
+    # content = GoogleTranslator(source='auto', target='hi').translate(content)
     # Return content for the requested level
-    return jsonify({"message": "Query successful", "content": content, "response": True}), 200
+    return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
 
 
 
@@ -372,3 +414,55 @@ def download_module(topicname, level, modulename):
         txt_file.write(txt_content)
 
     return send_file(txt_path, as_attachment=True)
+
+
+
+@users.route('/query2/<string:topicname>/<string:level>/<string>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def translate(topicname,level):
+    # check if user is logged in
+    # user_id = session.get("user_id", None)
+    # if user_id is None:
+    #     return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # # check if user exists
+    # user = User.query.get(user_id)
+    # if user is None:
+    #     return jsonify({"message": "User not found", "response":False}), 404
+    
+    # # add user query to database
+    # new_user_query = Query(query_name=topicname, user_id=user_id)
+    # user.queries.append(new_user_query)
+    # db.session.commit()
+    text = generate_module_summary(topic=topicname,level=level)
+    print(text)
+    # implement content generation for topic name
+
+    # beg_content = {"module 1": "content for module 1 begineer level", "module 2": "content for module 2 begineer level", "module 3": "content for module 3 begineer level"}
+    # inter_content = {"module 1": "content for module 1 intermediate level", "module 2": "content for module 2 intermediate level", "module 3": "content for module 3 intermediate level"}
+    # adv_content = {"module 1": "content for module 1 advanced level", "module 2": "content for module 2 advanced level", "module 3": "content for module 3 advanced level"}
+
+    # topic_content = {"beginner": beg_content, "intermediate": inter_content, "advance": adv_content}
+
+    # Save content to content directory
+    # content_dir = os.path.join(os.getcwd(), "content")
+    # if not os.path.exists(content_dir):
+    #     os.makedirs(content_dir)
+
+    # Save content to topicname.json file
+    # file_path = os.path.join(content_dir, topicname + ".json")
+    # with open(file_path, "w") as file:
+    #     json.dump(topic_content, file, indent=4)
+
+    # return response
+    print("TESTTTTTTT---------->>>>>>>>>>>>>")
+    trans_text = {}
+    
+    for key,value in text.items(): 
+        trans_key = GoogleTranslator(source='auto', target='hi').translate(str(key))
+        trans_text[trans_key] = GoogleTranslator(source='auto', target='hi').translate(str(value))
+        
+    # trans_text = GoogleTranslator(source='auto', target='hi').translate(str(text))
+    # trans_text = json.loads(trans_text)
+    print(trans_text)
+    return jsonify({"message": "Query successful", "content": trans_text, "response":True}), 200

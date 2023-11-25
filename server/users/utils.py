@@ -4,6 +4,7 @@ import openai
 import ast
 from openai import OpenAI
 import time
+from deep_translator import GoogleTranslator
 
 load_dotenv()
 
