@@ -4,7 +4,8 @@ import openai
 import ast
 from openai import OpenAI
 import time
-from deep_translator import GoogleTranslator
+from weasyprint import HTML
+from jinja2 import Template
 
 load_dotenv()
 
@@ -94,3 +95,79 @@ title_for_the_content, content, subsections (which is a list of dictionaries wit
         all_content.append(ast.literal_eval(completion.choices[0].message.content))
         time.sleep(25)
     return all_content
+
+def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
+    # Load the HTML template
+    template_str = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: 'Noto Sans Kannada',Arial Unicode MS', 'Arial', sans-serif;
+            }
+            .module-summary {
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+            .module-content {
+                margin-bottom: 20px;
+            }
+            .subject-name {
+                font-weight: bold;
+            }
+            .content-title {
+                font-weight: bold;
+                margin-top: 10px;
+            }
+            .subsections {
+                margin-left: 20px;
+            }
+            .urls {
+                color: blue;
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="module-summary">
+            <h1>{{ modulename }}</h1>
+            {% for title, summary in module_summary.items() %}
+                <p><strong>{{ title }}</strong>: {{ summary }}</p>
+            {% endfor %}
+        </div>
+        
+        {% for entry in module_content %}
+            <div class="module-content">
+                <div class="subject-name">{{ entry['subject_name'] }}</div>
+                <div class="content-title">{{ entry['title_for_the_content'] }}</div>
+                <div class="content">{{ entry['content'] }}</div>
+                
+                {% if 'subsections' in entry %}
+                    <div class="subsections">
+                        {% for subsection in entry['subsections'] %}
+                            <p><strong>{{ subsection['title'] }}</strong>: {{ subsection['content'] }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                {% if 'urls' in entry %}
+                    <div class="urls">
+                        <p>URLs:</p>
+                        {% for url in entry['urls'] %}
+                            <a href="{{ url }}" target="_blank">{{ url }}</a><br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </body>
+    </html>
+    """
+    template = Template(template_str)
+
+    # Render the template
+    html_content = template.render(modulename=modulename, module_summary=module_summary, module_content=module_content)
+
+    # Generate PDF using WeasyPrint
+    HTML(string=html_content).write_pdf(pdf_file_path)
