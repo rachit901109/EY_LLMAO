@@ -18,7 +18,7 @@ import { MdExplore } from "react-icons/md";
 import Logo from '../assets/images/Logo2.jpg'
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignIn, faUserPlus, faSignOut, faHome } from '@fortawesome/free-solid-svg-icons';
+import { faSignIn, faUserPlus, faSignOut, faHome,faRobot } from '@fortawesome/free-solid-svg-icons';
 export default function Nav() {
   const [authenticated, setAuthenticated] = useState(false);
   const navigate = useNavigate();
@@ -68,6 +68,15 @@ export default function Nav() {
                   >
                     <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faHome} />
                     Home
+                  </Box>
+                  <Box
+                    as="a"
+                    px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/issac'}
+                    bg={location.pathname === '/issac' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                    color={location.pathname === '/issac' ? 'white' : ''}
+                  >
+                    <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faRobot} />
+                    ISSAC
                   </Box>
                   <Box
                     as="a"
