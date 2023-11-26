@@ -4,7 +4,7 @@ import openai
 import ast
 from openai import OpenAI
 import time
-from weasyprint import HTML
+# from weasyprint import HTML
 from jinja2 import Template
 from tavily import TavilyClient
 
@@ -94,7 +94,7 @@ title_for_the_content, content, subsections (which is a list of dictionaries wit
 def generate_module_summary_from_web(topic, level):
     tavily_client = TavilyClient(api_key=os.environ.get("TAVILY_API_KEY"))
     search_result = tavily_client.get_search_context(topic, search_depth="advanced", max_tokens=4000)
-    print('SEARCH RESULTS:', search_result)
+    # print('SEARCH RESULTS:', search_result)
 
     module_generation_prompt = """As an educational assistant, your goal is to craft 4-6 {level} Level \
     educational module names and brief summaries based on a given topic and search results. \
@@ -123,7 +123,7 @@ def generate_module_summary_from_web(topic, level):
 def generate_submodules_from_web(module_name):
     tavily_client = TavilyClient(api_key=os.environ.get("TAVILY_API_KEY"))
     search_result = tavily_client.get_search_context(module_name, search_depth="advanced", max_tokens=4000)
-    print('SEARCH RESULTS:', search_result)
+    # print('SEARCH RESULTS:', search_result)
 
     sub_module_generation_prompt= """You are an educational assistant named ISAAC. \
     You will be provided with a module name and information on that module from the internet.
@@ -148,7 +148,6 @@ def generate_submodules_from_web(module_name):
             seed = 42,
     )
     output = ast.literal_eval(completion.choices[0].message.content)
-
     return output
 
 def generate_content_from_web(sub_module_name):
@@ -169,8 +168,8 @@ def generate_content_from_web(sub_module_name):
     """
 
     all_content = []
+    tavily_client = TavilyClient(api_key=os.environ.get("TAVILY_API_KEY"))
     for key, val in sub_module_name.items():    
-        tavily_client = TavilyClient(api_key=os.environ.get("TAVILY_API_KEY"))
         print('Searching content for module:', key)
         search_result = tavily_client.get_search_context(val, search_depth="advanced", max_tokens=4000)
         client = OpenAI()
@@ -216,7 +215,7 @@ Follow the provided JSON format diligently, incorporating information from the s
     
     return output
 
-def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
+# def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
     # Load the HTML template
     template_str = """
     <!DOCTYPE html>

@@ -5,8 +5,8 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import generate_module_summary,generate_content,generate_submodules
-from server.users.utils import generate_pdf
+from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web
+# from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
 from langdetect import detect
 from lingua import Language, LanguageDetectorBuilder
@@ -144,22 +144,27 @@ def delete():
     # return response
     return jsonify({"message": "User deleted successfully", "response":True}), 200
 
-
+@users.route('/query2/trending/<string:domain>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def trending_query(domain):
+    text=trending_module_summary_from_web(domain)
+    print(text)
+    return jsonify({"message": "Query successful", "domain": domain,  "content": text, "response":True}), 200
 
 # query route
-@users.route('/query2/<string:topicname>/<string:level>', methods=['GET'])
+@users.route('/query2/<string:topicname>/<string:level>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def query_topic(topicname,level):
+def query_topic(topicname,level,websearch):
     # check if user is logged in
-    user_id = session.get('user_id')
-    print(session.get('user_id'))
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+    # user_id = session.get('user_id')
+    # print(session.get('user_id'))
+    # if user_id is None:
+    #     return jsonify({"message": "User not logged in", "response":False}), 401
     
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+    # # check if user exists
+    # user = User.query.get(user_id)
+    # if user is None:
+    #     return jsonify({"message": "User not found", "response":False}), 404
 
     # language detection for input provided
     # source_language = detect(topicname)
@@ -185,13 +190,16 @@ def query_topic(topicname,level):
         print("File exists, I am speed")
         return jsonify({"message": "Query successful", "topic":trans_topic, "source_language":source_language,  "content": trans_text, "response":True}), 200
 
-    text = generate_module_summary(topic=trans_topic,level=level)
+    if(websearch=="true"):
+        text = generate_module_summary_from_web(topic=trans_topic,level=level)
+    else:    
+        text = generate_module_summary(topic=trans_topic,level=level)
     print(text)
 
     # add user query to database
-    new_user_query = Query(query_name=trans_topic, user_id=user_id)
-    user.queries.append(new_user_query)
-    db.session.commit()
+    # new_user_query = Query(query_name=trans_topic, user_id=user_id)
+    # user.queries.append(new_user_query)
+    # db.session.commit()
 
     trans_text = {}
     
@@ -207,18 +215,18 @@ def query_topic(topicname,level):
     return jsonify({"message": "Query successful", "topic":trans_topic, "source_language":source_language,  "content": trans_text, "response":True}), 200
 
 
-@users.route('/query2/<string:topicname>/<string:level>/<string:modulename>', methods=['GET'])
+@users.route('/query2/<string:topicname>/<string:level>/<string:modulename>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def query_module(topicname, level, modulename):
+def query_module(topicname, level, modulename,websearch):
     # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+    # user_id = session.get("user_id", None)
+    # if user_id is None:
+    #     return jsonify({"message": "User not logged in", "response":False}), 401
     
     # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+    # user = User.query.get(user_id)
+    # if user is None:
+    #     return jsonify({"message": "User not found", "response":False}), 404
 
     # generate content for submodules
     source_language = str(detector.detect_language_of(topicname)).split('.')[1]
@@ -234,9 +242,14 @@ def query_module(topicname, level, modulename):
         print("File exists, I am speed")
         return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
 
-    submodules = generate_submodules(trans_modulename)
-    print(submodules)
-    content = generate_content(submodules)
+    if websearch=="true":
+        submodules = generate_submodules_from_web(trans_modulename)
+        print(submodules)
+        content = generate_content_from_web(submodules)
+    else:
+        submodules = generate_submodules(trans_modulename)
+        print(submodules)
+        content = generate_content(submodules)
 
     # translate content for submodules
     trans_content = []
@@ -257,8 +270,8 @@ def query_module(topicname, level, modulename):
                 temp[key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
         trans_content.append(temp)
 
-    with open(content_path, "w") as file:
-        json.dump(trans_content, file, indent=4)
+    # with open(content_path, "w") as file:
+    #     json.dump(trans_content, file, indent=4)
     
     return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
 
@@ -292,7 +305,7 @@ def download_pdf(topicname, level, source_language, modulename):
     download_dir = os.path.join(os.getcwd(), "downloads")
     os.makedirs(download_dir, exist_ok=True)
     pdf_file_path = os.path.join(download_dir, f"{clean_modulename}_summary.pdf")
-    generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+    # generate_pdf(pdf_file_path, modulename, module_summary, module_content)
 
     # Send the PDF file as an attachment
     return send_file(pdf_file_path, as_attachment=True)

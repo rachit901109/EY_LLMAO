@@ -7,12 +7,13 @@ import {
   Text,
   HStack,
   useColorModeValue,
-  Link
+  Link,
 } from '@chakra-ui/react';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { PhoneIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
-
+import { BsFire } from "react-icons/bs";
 import { MdExplore } from "react-icons/md";
 import Logo from '../assets/images/Logo2.jpg'
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +22,7 @@ import { faSignIn, faUserPlus, faSignOut, faHome } from '@fortawesome/free-solid
 export default function Nav() {
   const [authenticated, setAuthenticated] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const isUserAuthenticated = localStorage.getItem('authenticated') === 'true';
@@ -61,13 +63,28 @@ export default function Nav() {
                   <Box
                     as="a"
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/home'}
+                    bg={location.pathname === '/home' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                    color={location.pathname === '/home' ? 'white' : ''}
                   >
                     <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faHome} />
                     Home
                   </Box>
                   <Box
                     as="a"
+                    px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/trending'}
+                    bg={location.pathname === '/trending' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                    color={location.pathname === '/trending' ? 'white' : ''}
+                  >
+                    <HStack spacing={2}>
+                      <BsFire size={24} />
+                      <span>Trending</span>
+                    </HStack>
+                  </Box>
+                  <Box
+                    as="a"
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/explore'}
+                    bg={location.pathname === '/explore' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                    color={location.pathname === '/explore' ? 'white' : ''}
                   >
                     <HStack spacing={2}>
                       <MdExplore size={24} />
@@ -81,6 +98,8 @@ export default function Nav() {
                   <Box
                     as="a"
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/login'}
+                    bg={location.pathname === '/login' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                    color={location.pathname === '/login' ? 'white' : ''}
                   >
                     <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faSignIn} />
                     Login
@@ -88,6 +107,8 @@ export default function Nav() {
                   <Box
                     as="a"
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/signup'}
+                    bg={location.pathname === '/signup' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                    color={location.pathname === '/signup' ? 'white' : ''}
                   >
                     <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faUserPlus} />
                     Sign Up
@@ -98,6 +119,8 @@ export default function Nav() {
               <Box
                 as="a"
                 px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/contact'}
+                bg={location.pathname === '/contact' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                color={location.pathname === '/contact' ? 'white' : ''}
               >
                 <PhoneIcon mr={2} mb={1} ></PhoneIcon>
                 Contact Us

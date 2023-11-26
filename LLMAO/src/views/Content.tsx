@@ -1,4 +1,4 @@
-import { Box, Heading, useColorModeValue, Flex, Text, VStack, Link, List, ListItem, Button } from '@chakra-ui/react';
+import { Box, Heading,Spinner, useColorModeValue, Flex, Text, VStack, Link, List, ListItem, Button } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import Navbar_Landing from '../components/navbar_landing';
 import Footer from '../components/footer'
@@ -20,13 +20,19 @@ interface Subject {
 
 type Data = Subject[];
 
-const Sidebar = ({ data, setSelectedSubject }: { data: Data; setSelectedSubject: (subject: Subject) => void; }) => {
+const Sidebar = ({ data, setSelectedSubject,isLoading}: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean;}) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     setSelectedSubject(data[activeIndex]);
   }, [activeIndex]);
-
+  if (isLoading) {
+    // Handle the case when subject is not defined
+    return (
+      <>
+      </>
+    );
+  }
   return (
     <VStack w={"20%"}  spacing={4} shadow={"dark-lg"} bg={useColorModeValue('white', 'white')} color={useColorModeValue('black', 'white')}>
       <Box w="full" bg={useColorModeValue('purple.500', 'white')} p={5}>
@@ -62,10 +68,15 @@ const Sidebar = ({ data, setSelectedSubject }: { data: Data; setSelectedSubject:
 };
 
 
-const ContentSec = ({ subject }: { subject: Subject; }) => {
-  if (!subject) {
+const ContentSec = ({ subject, isLoading }: { subject: Subject; isLoading: boolean; }) => {
+  if (isLoading) {
     // Handle the case when subject is not defined
-    return <div>No subject available</div>;
+    return (
+      <Box textAlign="center" w="205vh" height={"60vh"}>
+        <Spinner size="xl" mt={"140px"} color="purple.500" />
+        <Text mt={4}>Loading...</Text>
+      </Box>
+    );
   }
   return (
     <Box px={5} mt={4} w={"80%"}>
@@ -97,14 +108,19 @@ const ContentSec = ({ subject }: { subject: Subject; }) => {
 const Content = () => {
   const [data, setData] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Fetch data using Axios when the component mounts
     const fetchData = async () => {
       const learningTitle = localStorage.getItem('learningTitle');
+      const websearch = localStorage.getItem('websearch');
+      const topicname = localStorage.getItem('topicname');
+      const level = localStorage.getItem('level');
+
       console.log("Requestes content")
       try {
-        const response = await axios.get(`http://127.0.0.1:5000/query2/${learningTitle}`);
+        const response = await axios.get(`http://127.0.0.1:5000/query2/${topicname}/${level}/${learningTitle}/${websearch}`);
         // const response = await axios.get("http://127.0.0.1:5000/query2/Module 1: Introduction to Machine Learning");
         // console.log(response.data.content);
   
@@ -225,6 +241,9 @@ const Content = () => {
         setSelectedSubject(response.data.content.length > 0 ? response.data.content[0] : null);
       } catch (error) {
         console.error('Error fetching data:', error);
+      }finally {
+        // Set loading state to false when data fetching is complete
+        setIsLoading(false);
       }
     };
   
@@ -237,8 +256,8 @@ const Content = () => {
       <Navbar_Landing />
       <Flex>
         <Box display="flex">
-          <Sidebar data={data} setSelectedSubject={setSelectedSubject} />
-          <ContentSec subject={selectedSubject} />
+          <Sidebar data={data} setSelectedSubject={setSelectedSubject} isLoading={isLoading} />
+          <ContentSec subject={selectedSubject} isLoading={isLoading} />
         </Box>
       </Flex>
       <Footer />

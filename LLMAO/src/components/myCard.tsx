@@ -22,13 +22,18 @@ import { useNavigate } from 'react-router-dom';
 interface CardProps {
   title: string;
   content: string;
+  websearch : boolean;
+  level: string
 }
 
-const MyCard: React.FC<CardProps> = ({ title, content }) => {
+const MyCard: React.FC<CardProps> = ({ title, content, websearch,level }) => {
   const navigate = useNavigate();
   const handleStartLearning = () => {
     // Save title to localStorage
+    let websearch2 = websearch.toString();
     localStorage.setItem('learningTitle', title);
+    localStorage.setItem('websearch', websearch2);
+    localStorage.setItem('level', level);
     navigate('/content');
   };
 
