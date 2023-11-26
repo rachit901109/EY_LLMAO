@@ -305,34 +305,151 @@ def module_image_from_web(module):
 #     HTML(string=html_content).write_pdf(pdf_file_path)
 
 
-from reportlab.lib.styles import getSampleStyleSheet
+# from reportlab.lib.styles import getSampleStyleSheet
+# from reportlab.platypus import SimpleDocTemplate, Paragraph
+
+# def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
+#     # Create a PDF document
+#     pdf = SimpleDocTemplate(pdf_file_path)
+
+#     # Get the default styles
+#     styles = getSampleStyleSheet()
+
+#     # Build the PDF document
+#     content = [
+#         Paragraph(modulename, styles['Heading1']),
+#         Paragraph("Module Summary:", styles['Heading2']),
+#         Paragraph(module_summary[modulename], styles['Normal']),
+#     ]
+
+#     # Add module content (you can customize this part based on your structure)
+#     for entry in module_content:
+#         content.append(Paragraph(entry['subject_name'], styles['Heading2']))
+#         content.append(Paragraph(entry['title_for_the_content'], styles['Heading2']))
+#         content.append(Paragraph(entry['content'], styles['Normal']))
+
+#         # Check if there are subsections
+#         if 'subsections' in entry:
+#             for subsection in entry['subsections']:
+#                 content.append(Paragraph(subsection['title'], styles['Heading3']))
+#                 content.append(Paragraph(subsection['content'], styles['Normal']))
+        
+#         if 'urls' in entry:
+#             content.append(Paragraph("Reference:", styles['Heading3']))
+#             for url in entry['urls']:
+#                 content.append(Paragraph(url, styles['Normal']))
+
+#         # Add other content fields as needed
+
+#     pdf.build(content)
+
+
+# from reportlab.lib.pagesizes import letter
+# from reportlab.lib import colors
+# from reportlab.lib.styles import ParagraphStyle
+# from reportlab.platypus import SimpleDocTemplate, Paragraph
+# from reportlab.pdfbase import pdfmetrics
+# from reportlab.pdfbase.ttfonts import TTFont
+
+# def generate_pdf(pdf_file_path, modulename, module_summary, module_content, src_lang):
+#     # Register Unicode fonts (replace 'NotoSans-Regular.ttf' and 'Inconsolata-Regular.ttf' with the path to your font files)
+#     pdfmetrics.registerFont(TTFont('NotoSansDevanagari', 'Fonts/NotoSansDevanagari-Regular.ttf'))
+#     pdfmetrics.registerFont(TTFont('NotoSans-Regular', 'Fonts/NotoSans-Regular.ttf'))
+
+#     # Create a PDF document
+#     pdf = SimpleDocTemplate(pdf_file_path, pagesize=letter)
+
+#     # Define styles for different headings and content
+#     styles = {
+#         'Heading1': ParagraphStyle(name='Heading1', fontName='NotoSans-Regular', fontSize=16),
+#         'Heading2': ParagraphStyle(name='Heading2', fontName='NotoSans-Regular', fontSize=14),
+#         'Heading3': ParagraphStyle(name='Heading3', fontName='NotoSans-Regular', fontSize=12),
+#         'Devanagari_Heading1': ParagraphStyle(name='Devanagari_Heading1', fontName='NotoSansDevanagari', fontSize=16),
+#         'Devanagari_Heading2': ParagraphStyle(name='Devanagari_Heading2', fontName='NotoSansDevanagari', fontSize=14),
+#         'Devanagari_Heading3': ParagraphStyle(name='Devanagari_Heading3', fontName='NotoSansDevanagari', fontSize=12),
+#         'Normal': ParagraphStyle(name='Normal', fontName='NotoSans-Regular', fontSize=8),
+#     }
+
+#     # Build the PDF document
+#     content = [
+#         Paragraph(modulename, styles['Heading1' if src_lang == 'en' else 'Devanagari_Heading1']),
+#         Paragraph("Module Summary:", styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']),
+#         Paragraph(module_summary[modulename], styles['Heading1' if src_lang == 'en' else 'Devanagari_Heading1']),
+#     ]
+
+#     # Add module content
+#     for entry in module_content:
+#         content.append(Paragraph(entry['subject_name'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
+#         content.append(Paragraph(entry['title_for_the_content'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
+#         content.append(Paragraph(entry['content'], styles['Heading1' if src_lang == 'en' else 'Devanagari_Heading1']))
+
+#         # Check if there are subsections
+#         if 'subsections' in entry:
+#             for subsection in entry['subsections']:
+#                 content.append(Paragraph(subsection['title'], styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']))
+#                 content.append(Paragraph(subsection['content'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
+        
+#         # Check if there are URLs
+#         if 'urls' in entry:
+#             content.append(Paragraph("Reference:", styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']))
+#             for url in entry['urls']:
+#                 content.append(Paragraph(url, styles['Normal']))
+
+#     # Build the PDF document
+#     pdf.build(content)
+
+
+from reportlab.lib.pagesizes import letter
+from reportlab.lib import colors
+from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
-def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
+def generate_pdf(pdf_file_path, modulename, module_summary, module_content, src_lang):
+    # Register Unicode fonts (replace 'NotoSans-Regular.ttf' and 'NotoSansDevanagari-Regular.ttf' with the path to your font files)
+    pdfmetrics.registerFont(TTFont('NotoSansDevanagari', 'Fonts/NotoSansDevanagari-Regular.ttf'))
+    pdfmetrics.registerFont(TTFont('DejaVuSansCondensed', 'Fonts/DejaVuSansCondensed.ttf'))
+
     # Create a PDF document
-    pdf = SimpleDocTemplate(pdf_file_path)
+    pdf = SimpleDocTemplate(pdf_file_path, pagesize=letter)
 
-    # Get the default styles
-    styles = getSampleStyleSheet()
+    # Define styles for different headings and content
+    styles = {
+        'Heading1': ParagraphStyle(name='Heading1', fontName='DejaVuSansCondensed', fontSize=16, spaceAfter=16, spaceBefore=16, bold=True),
+        'Heading2': ParagraphStyle(name='Heading2', fontName='DejaVuSansCondensed', fontSize=14, spaceAfter=14, spaceBefore=14),
+        'Heading3': ParagraphStyle(name='Heading3', fontName='DejaVuSansCondensed', fontSize=12, spaceAfter=12, spaceBefore=12),
+        'Devanagari_Heading1': ParagraphStyle(name='Devanagari_Heading1', fontName='NotoSansDevanagari', fontSize=16, spaceAfter=16, spaceBefore=16, bold=True),
+        'Devanagari_Heading2': ParagraphStyle(name='Devanagari_Heading2', fontName='NotoSansDevanagari', fontSize=14, spaceAfter=14, spaceBefore=14, bold=True),
+        'Devanagari_Heading3': ParagraphStyle(name='Devanagari_Heading3', fontName='NotoSansDevanagari', fontSize=12, spaceAfter=12, spaceBefore=12, bold=True),
+        'Normal': ParagraphStyle(name='Normal', fontName='DejaVuSansCondensed', fontSize=8, spaceAfter=8, spaceBefore=8),
+        'URL': ParagraphStyle(name='URL', textColor=colors.blue, underline=True, spaceAfter=8),
+    }
 
     # Build the PDF document
     content = [
-        Paragraph(modulename, styles['Heading1']),
-        Paragraph("Module Summary:", styles['Heading2']),
-        Paragraph(module_summary[modulename], styles['Normal']),
+        Paragraph(modulename, styles['Heading1' if src_lang == 'en' else 'Devanagari_Heading1']),
+        Paragraph("Module Summary:", styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']),
+        Paragraph(module_summary[modulename], styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']),
     ]
 
-    # Add module content (you can customize this part based on your structure)
+    # Add module content
     for entry in module_content:
-        content.append(Paragraph(entry['subject_name'], styles['Heading2']))
-        content.append(Paragraph(entry['title_for_the_content'], styles['Heading2']))
-        content.append(Paragraph(entry['content'], styles['Normal']))
+        content.append(Paragraph(entry['subject_name'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
+        content.append(Paragraph(entry['title_for_the_content'], styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']))
+        content.append(Paragraph(entry['content'], styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']))
 
         # Check if there are subsections
         if 'subsections' in entry:
             for subsection in entry['subsections']:
-                content.append(Paragraph(subsection['title'], styles['Heading3']))
-                content.append(Paragraph(subsection['content'], styles['Normal']))
+                content.append(Paragraph(subsection['title'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
+                content.append(Paragraph(subsection['content'], styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']))
+        
+        # Check if there are URLs
+        if 'urls' in entry:
+            content.append(Paragraph("Reference:", styles['Heading3']))
+            for url in entry['urls']:
+                content.append(Paragraph(url, styles['URL']))
 
         # Add other content fields as needed
 
