@@ -14,7 +14,6 @@ import { useState, useEffect } from 'react';
 import { PhoneIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 
 import { MdExplore } from "react-icons/md";
-import { BsFire } from "react-icons/bs";
 import Logo from '../assets/images/Logo2.jpg'
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -73,15 +72,6 @@ export default function Nav() {
                     <HStack spacing={2}>
                       <MdExplore size={24} />
                       <span>Explore</span>
-                    </HStack>
-                  </Box>
-                  <Box
-                    as="a"
-                    px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/trending'}
-                  >
-                    <HStack spacing={2}>
-                      <BsFire size={24} />
-                      <span>Trending</span>
                     </HStack>
                   </Box>
                 </>

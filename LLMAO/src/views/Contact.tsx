@@ -5,6 +5,7 @@ import {
     Heading,
     Text,
     IconButton,
+    useColorModeValue,
     Button,
     VStack,
     HStack,
@@ -26,26 +27,29 @@ import {
 } from 'react-icons/md'
 import { BsGithub, BsDiscord, BsPerson } from 'react-icons/bs'
 import NavBar from '../components/navbar_landing'
+import Footer from '../components/footer'
+
 
 export default function Contact() {
     return (
         <>
             <NavBar></NavBar>
-            <Container maxW="full" mt={0} centerContent overflow="hidden" height={'80vh'}>
+            <Container maxW="full" bg={useColorModeValue('purple.300', 'purple.800')} mt={0} centerContent overflow="hidden">
                 <Flex>
                     <Box
-                        bg="#2d3748"
-                        color="white"
+                        bg="white"
+                        color="black"
+                        shadow={"dark-lg"}
                         borderRadius="lg"
-                        m={{ sm: 4, md: 16, lg: 10 }}
-                        p={{ sm: 5, md: 5, lg: 16 }}>
+                        m={{ sm: 5, md: 5, lg: 8 }}
+                        p={{ sm: 5, md: 5, lg: 8 }}>
                         <Box p={4}>
                             <Wrap spacing={{ base: 20, sm: 3, md: 5, lg: 20 }}>
                                 <WrapItem>
                                     <Box>
-                                        <Heading>Contact</Heading>
+                                        <Text className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} fontSize={'50px'}><b>Contact</b></Text>
                                         <Text mt={{ sm: 3, md: 3, lg: 5 }} color="gray.500">
-                                            Fill up the form below to contact
+                                            Fill up the form to contact!!
                                         </Text>
                                         <Box py={{ base: 5, sm: 5, md: 8, lg: 10 }}>
                                             <VStack pl={0} spacing={3} alignItems="flex-start">
@@ -54,9 +58,9 @@ export default function Contact() {
                                                     height="48px"
                                                     width="200px"
                                                     variant="ghost"
-                                                    color="#DCE2FF"
-                                                    _hover={{ border: '2px solid #1C6FEB' }}
-                                                    leftIcon={<MdPhone color="#1970F1" size="20px" />}>
+                                                    color="purple.500"
+                                                    _hover={{ border: '2px solid #7743DB' }}
+                                                    leftIcon={<MdPhone  size="20px" />}>
                                                     +91-988888888
                                                 </Button>
                                                 <Button
@@ -64,9 +68,9 @@ export default function Contact() {
                                                     height="48px"
                                                     width="200px"
                                                     variant="ghost"
-                                                    color="#DCE2FF"
-                                                    _hover={{ border: '2px solid #1C6FEB' }}
-                                                    leftIcon={<MdEmail color="#1970F1" size="20px" />}>
+                                                    color="purple.500"
+                                                    _hover={{ border: '2px solid #7743DB' }}
+                                                    leftIcon={<MdEmail size="20px" />}>
                                                     llmao@abc.com
                                                 </Button>
                                                 <Button
@@ -74,9 +78,9 @@ export default function Contact() {
                                                     height="48px"
                                                     width="200px"
                                                     variant="ghost"
-                                                    color="#DCE2FF"
-                                                    _hover={{ border: '2px solid #1C6FEB' }}
-                                                    leftIcon={<MdLocationOn color="#1970F1" size="20px" />}>
+                                                    color="purple.500"
+                                                    _hover={{ border: '2px solid #7743DB' }}
+                                                    leftIcon={<MdLocationOn size="20px" />}>
                                                     Mumbai, India
                                                 </Button>
                                             </VStack>
@@ -91,7 +95,7 @@ export default function Contact() {
                                                 variant="ghost"
                                                 size="lg"
                                                 isRound={true}
-                                                _hover={{ bg: '#0D74FF' }}
+                                                _hover={{ bg: 'purple.400' }}
                                                 icon={<MdFacebook size="28px" />}
                                             />
                                             <IconButton
@@ -99,7 +103,7 @@ export default function Contact() {
                                                 variant="ghost"
                                                 size="lg"
                                                 isRound={true}
-                                                _hover={{ bg: '#0D74FF' }}
+                                                _hover={{ bg: 'purple.400' }}
                                                 icon={<BsGithub size="28px" />}
                                             />
                                             <IconButton
@@ -107,7 +111,7 @@ export default function Contact() {
                                                 variant="ghost"
                                                 size="lg"
                                                 isRound={true}
-                                                _hover={{ bg: '#0D74FF' }}
+                                                _hover={{ bg: 'purple.400' }}
                                                 icon={<BsDiscord size="28px" />}
                                             />
                                         </HStack>
@@ -115,15 +119,15 @@ export default function Contact() {
                                 </WrapItem>
                                 <WrapItem>
                                     <Box bg="white" borderRadius="lg">
-                                        <Box m={8} color="#0B0E3F">
+                                        <Box m={8} color="black">
                                             <VStack spacing={5}>
-                                                <FormControl id="name">
+                                                <FormControl  id="name">
                                                     <FormLabel>Your Email</FormLabel>
-                                                    <InputGroup borderColor="#E0E1E7">
-                                                        <InputLeftElement pointerEvents="none">
+                                                    <InputGroup>
+                                                        <InputLeftElement  pointerEvents="none">
                                                             <MdOutlineEmail color="gray.800" />
                                                         </InputLeftElement>
-                                                        <Input type="text" size="md" />
+                                                        <Input type="text" colorScheme='purple' placeholder='Enter your Email' size="md" />
                                                     </InputGroup>
                                                 </FormControl>
                                                 <FormControl id="name">
@@ -132,13 +136,14 @@ export default function Contact() {
                                                         <InputLeftElement pointerEvents="none">
                                                             <BsPerson color="gray.800" />
                                                         </InputLeftElement>
-                                                        <Input type="text" size="md" />
+                                                        <Input type="text" colorScheme='purple' placeholder='Enter your Name' size="md" />
                                                     </InputGroup>
                                                 </FormControl>
                                                 <FormControl id="name">
                                                     <FormLabel>Message</FormLabel>
                                                     <Textarea
                                                         borderColor="gray.300"
+                                                        rows={8}
                                                         _hover={{
                                                             borderRadius: 'gray.300',
                                                         }}
@@ -159,6 +164,7 @@ export default function Contact() {
                     </Box>
                 </Flex>
             </Container>
+            <Footer></Footer>
         </>
     )
 }
