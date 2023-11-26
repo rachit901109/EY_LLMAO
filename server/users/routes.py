@@ -264,8 +264,8 @@ def query_module(topicname, level, modulename,websearch):
                 temp[key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
         trans_content.append(temp)
 
-    # with open(content_path, "w") as file:
-    #     json.dump(trans_content, file, indent=4)
+    with open(content_path, "w") as file:
+        json.dump(trans_content, file, indent=4)
     
     return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
 

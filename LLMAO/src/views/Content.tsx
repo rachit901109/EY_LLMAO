@@ -117,8 +117,8 @@ const Content = () => {
       const websearch = localStorage.getItem('websearch');
       const topicname = localStorage.getItem('topicname');
       const level = localStorage.getItem('level');
-
-      console.log("Requestes content")
+      
+      console.log(topicname)
       try {
         const response = await axios.get(`http://127.0.0.1:5000/query2/${topicname}/${level}/${learningTitle}/${websearch}`);
         // const response = await axios.get("http://127.0.0.1:5000/query2/Module 1: Introduction to Machine Learning");
