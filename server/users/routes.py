@@ -5,7 +5,7 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web
+from server.users.utils import module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web
 # from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
 # from langdetect import detect
@@ -106,7 +106,6 @@ def getuser():
     response = {"message":"User found", "user_name":user.user_name, "email":user.email, "interests":user.interests, "queries":user_queries, "completed_topics":user_completed_topics, "started_topics":user_started_topics, "response":True}
 
     return jsonify(response), 200
-
 
 
 # logout route
@@ -250,7 +249,9 @@ def query_module(topicname, level, modulename, websearch):
         submodules = generate_submodules(trans_modulename)
         print(submodules)
         content = generate_content(submodules)
-
+    
+    images= module_image_from_web(trans_modulename)
+    print("Images list", images)
     # translate content for submodules
     trans_content = []
     for entry in content:
@@ -273,7 +274,7 @@ def query_module(topicname, level, modulename, websearch):
     with open(content_path, "w") as file:
         json.dump(trans_content, file, indent=4)
     
-    return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
+    return jsonify({"message": "Query successful","images": images, "content": trans_content, "response": True}), 200
 
 
 @users.route('/query2/<string:topicname>/<string:level>/<string:source_language>/<string:modulename>/download', methods=['GET'])
