@@ -5,7 +5,8 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_pdf
+from server.users.utils import generate_module_summary,generate_content,generate_submodules
+from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
 from langdetect import detect
 
@@ -35,7 +36,7 @@ def register():
     if user_exists:
         return jsonify({"message": "User already exists", "response":False}), 201
     
-    # hash password, create new user save to databse
+    # hash password, create new user save to database
     hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(fname=fname, lname=lname, user_name=user_name, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
     db.session.add(new_user)
@@ -52,7 +53,6 @@ def register():
 def login():
     # take user input
     data = request.json
-    print(data)
     email = data.get("email")
     password = data.get("password")
 
@@ -67,6 +67,7 @@ def login():
     
     # start user session
     session["user_id"] = user.user_id
+    print("user id is this:-",session.get('user_id'))
 
     # return response
     return jsonify({"message": "User logged in successfully", "user_name":user.user_name, "email":user.email, "response":True}), 200
@@ -145,7 +146,8 @@ def delete():
 @cross_origin(supports_credentials=True)
 def query_topic(topicname,level):
     # check if user is logged in
-    user_id = session.get("user_id", None)
+    user_id = session.get('user_id')
+    print(session.get('user_id'))
     if user_id is None:
         return jsonify({"message": "User not logged in", "response":False}), 401
     

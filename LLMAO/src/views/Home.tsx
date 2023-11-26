@@ -38,28 +38,28 @@ const completed_courses : {[key : string]: string} = {
   return (
     <div>
       <Navbar />
-      <Tabs my={4} isFitted variant='enclosed' index={tabIndex} onChange={handleTabsChange}>
+      <Tabs my={4} mx={5} isFitted variant='enclosed' index={tabIndex} onChange={handleTabsChange}>
         <TabList borderBottom='0'>
           <Tab _selected={{ bgColor: 'purple.500' , color: 'white'}} >Recommended Courses</Tab>
           <Tab _selected={{ bgColor: 'purple.500' , color: 'white'}}>In Progress</Tab>
           <Tab _selected={{ bgColor: 'purple.500' , color: 'white'}}>Completed</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
+          <TabPanel shadow={"dark-lg"}>
             {Object.keys(recommended_courses).map((courseTitle) => (
               <SlideFade in={inProp} transition={{enter: {duration: 0.7}}} offsetY='50px' >
                 <CourseCard courseTitle={courseTitle} content={recommended_courses[courseTitle]} buttonText= {'Start Learning'} />
               </SlideFade>
             ))}
           </TabPanel>
-          <TabPanel>
+          <TabPanel shadow={"dark-lg"}>
             {Object.keys(ongoing_courses).map((courseTitle) => (
               <SlideFade in={inProp} transition={{enter: {duration: 0.7}}} offsetY='50px' >
                 <CourseCard courseTitle={courseTitle} content={ongoing_courses[courseTitle]} buttonText= {'Continue Learning'} />
               </SlideFade>
             ))}
           </TabPanel>
-          <TabPanel>
+          <TabPanel shadow={"dark-lg"}>
             {Object.keys(completed_courses).map((courseTitle) => (
               <SlideFade in={inProp} transition={{enter: {duration: 0.7}}} offsetY='50px' >
                 <CourseCard courseTitle={courseTitle} content={completed_courses[courseTitle]} buttonText= {'Review Course'} />

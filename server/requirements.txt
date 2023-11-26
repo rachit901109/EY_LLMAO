@@ -10,5 +10,7 @@ flask-sqlalchemy
 flask-bcrypt
 flask-session
 flask-cors
-deep-translate
+deep-translator
 langdetect
+weasyprint
+tavily-python
