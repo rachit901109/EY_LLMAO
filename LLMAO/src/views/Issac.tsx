@@ -17,7 +17,6 @@ import { ConvaiClient } from "convai-web-sdk";
 
 function Issac() {
     const convaiClient = useRef();
-    //Declare this part(React hooks) of the code outside the use effect
     const [userText, setUserText] = useState("");
     const [npcText, setNpcText] = useState("");
     const [keyPressed, setKeyPressed] = useState(false);
@@ -25,6 +24,9 @@ function Issac() {
     const [enter, setEnter] = useState(0);
     const finalizedUserText = useRef();
     const npcTextRef = useRef();
+
+    // New state variable for chat history
+    const [chatHistory, setChatHistory] = useState([]);
 
     useEffect(() => {
         console.log('Component rendered');
@@ -52,7 +54,8 @@ function Issac() {
             if (response.hasAudioResponse()) {
                 var audioResponse = response?.getAudioResponse();
                 npcTextRef.current += " " + audioResponse.getTextData();
-                setNpcText(npcTextRef.current);
+                setNpcText(npcTextRef.current);  
+                setChatHistory([...chatHistory, { user: 'Chatbot', text: npcTextRef.current }]);           
             }
         });
     }, []);
@@ -66,7 +69,6 @@ function Issac() {
             setIsTalking(true);
         });
     }
-
 
     function handleKeyRelease(event) {
         if (event.Code === "KeyT" && keyPressed) {
@@ -86,7 +88,6 @@ function Issac() {
         }
     }
 
-
     function sendText(text) {
         console.log("text sended")
         finalizedUserText.current = "";
@@ -94,25 +95,60 @@ function Issac() {
         setNpcText("");
         convaiClient.current.sendTextChunk(text);
         setEnter(0);
+        setChatHistory(prevHistory => [
+            ...prevHistory,
+            { user: 'User', text: text },
+        ]);
+        setUserText('');
     }
-
 
     return (
         <div>
             <Navbar />
-            <Box>
-                <Heading>Chat with Issac</Heading>
-                <Box height={"50vh"}>
-                    {userText && <Text>{userText}</Text>}
-                    {npcText && <Text>{npcText}</Text>}
-                </Box>
-                <Input
-                    placeholder="Type your message here..."
-                    value={userText}
-                    onChange={(e) => setUserText(e.target.value)}
-                />
-                <Button onClick={() => sendText(userText)}>Send</Button>
-
+            <Box h={"90vh"}>
+                <Flex align="center" justify="center" mt={10}>
+                    <Text className="main-heading" fontSize={"20px"}><b>Chat with ISSAC to solve your Doubts!!</b></Text>
+                </Flex>
+                <Flex
+                    direction="column"
+                    align="center"
+                    p={10}
+                    justify="center"
+                    height={"65vh"}
+                >
+                    {chatHistory.map((message, index) => (
+                        <Text key={index} mb={2} textAlign="justify">
+                            <strong>{message.user}: </strong>
+                            {message.text}
+                        </Text>
+                    ))}
+                </Flex>
+                <Flex align="center" justify="center" mb={5} p={10}>
+                    <Input
+                        placeholder="Type your message here..."
+                        value={userText}
+                        onChange={(e) => setUserText(e.target.value)}
+                        width="55%"
+                        borderColor={"purple.800"}
+                        borderWidth={2}
+                        colorScheme="purple"
+                        p={4}
+                        size="xl"
+                        style={{ height: '30px' }}
+                    />
+                    <Button
+                        ml={3}
+                        colorScheme="purple"
+                        _hover={{
+                            bg: useColorModeValue('purple.600', 'purple.800'),
+                            color: useColorModeValue('white', 'white'),
+                        }}
+                        variant="outline"
+                        onClick={() => sendText(userText)}
+                    >
+                        Send
+                    </Button>
+                </Flex>
             </Box>
             <Footer />
         </div>

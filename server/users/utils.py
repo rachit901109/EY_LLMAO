@@ -4,7 +4,7 @@ import openai
 import ast
 from openai import OpenAI
 import time
-from weasyprint import HTML
+# from weasyprint import HTML
 from jinja2 import Template
 from tavily import TavilyClient
 from reportlab.lib.pagesizes import letter
@@ -220,6 +220,13 @@ Follow the provided JSON format diligently, incorporating information from the s
     output = ast.literal_eval(completion.choices[0].message.content)
     
     return output
+
+def module_image_from_web(module):
+    tavily_client = TavilyClient(api_key=os.environ.get("TAVILY_API_KEY"))
+    search_result = tavily_client.search(module,max_results=7 ,search_depth="advanced",include_images=True)
+    images = search_result['images']
+    return images
+
 
 # def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
 #     # Load the HTML template
@@ -444,5 +451,6 @@ def generate_pdf(pdf_file_path, modulename, module_summary, module_content, src_
             for url in entry['urls']:
                 content.append(Paragraph(url, styles['URL']))
 
-    # Build the PDF document
+        # Add other content fields as needed
+
     pdf.build(content)
