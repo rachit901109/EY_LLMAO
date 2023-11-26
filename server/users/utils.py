@@ -7,6 +7,12 @@ import time
 # from weasyprint import HTML
 from jinja2 import Template
 from tavily import TavilyClient
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib import styles
 
 load_dotenv()
 
@@ -221,8 +227,9 @@ def module_image_from_web(module):
     images = search_result['images']
     return images
 
+
 # def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
-#     Load the HTML template
+#     # Load the HTML template
 #     template_str = """
 #     <!DOCTYPE html>
 #     <html>
@@ -296,3 +303,37 @@ def module_image_from_web(module):
 
 #     # Generate PDF using WeasyPrint
 #     HTML(string=html_content).write_pdf(pdf_file_path)
+
+
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+
+def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
+    # Create a PDF document
+    pdf = SimpleDocTemplate(pdf_file_path)
+
+    # Get the default styles
+    styles = getSampleStyleSheet()
+
+    # Build the PDF document
+    content = [
+        Paragraph(modulename, styles['Heading1']),
+        Paragraph("Module Summary:", styles['Heading2']),
+        Paragraph(module_summary[modulename], styles['Normal']),
+    ]
+
+    # Add module content (you can customize this part based on your structure)
+    for entry in module_content:
+        content.append(Paragraph(entry['subject_name'], styles['Heading2']))
+        content.append(Paragraph(entry['title_for_the_content'], styles['Heading2']))
+        content.append(Paragraph(entry['content'], styles['Normal']))
+
+        # Check if there are subsections
+        if 'subsections' in entry:
+            for subsection in entry['subsections']:
+                content.append(Paragraph(subsection['title'], styles['Heading3']))
+                content.append(Paragraph(subsection['content'], styles['Normal']))
+
+        # Add other content fields as needed
+
+    pdf.build(content)

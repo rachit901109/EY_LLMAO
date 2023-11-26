@@ -306,7 +306,12 @@ def download_pdf(topicname, level, source_language, modulename):
     download_dir = os.path.join(os.getcwd(), "downloads")
     os.makedirs(download_dir, exist_ok=True)
     pdf_file_path = os.path.join(download_dir, f"{clean_modulename}_summary.pdf")
-    # generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+    # Assuming you have a styles dictionary defined somewhere in your code
+
+
+    # Call the generate_pdf function with the custom_styles argument
+    generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+
 
     # Send the PDF file as an attachment
     return send_file(pdf_file_path, as_attachment=True)
