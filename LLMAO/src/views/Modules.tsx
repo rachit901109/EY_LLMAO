@@ -37,6 +37,8 @@ function Modules() {
         : [];
       setDataFunction(DataArray);
       setShowTabs(true);
+      let trans = response.data.topic;
+      localStorage.setItem('topicname',trans);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -47,9 +49,8 @@ function Modules() {
   const onLearnClick = async () => {
     // Handle the click event for the "Start Learning" button
     // Fetch data for both beginner and advanced tabs
-    localStorage.setItem('topicname',searchTerm);
-    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Beginner Level/${webSearchOn}`, setBeginnerData);
-    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Advanced Level/${webSearchOn}`, setAdvancedData);
+    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Beginner/${webSearchOn}`, setBeginnerData);
+    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Advanced/${webSearchOn}`, setAdvancedData);
   };
 
   const handleTabClick = (tab: any) => {
@@ -138,7 +139,7 @@ function Modules() {
           display={activeTab === "beginner" ? "grid" : "none"}
         >
           {beginnerData.map(({ title, content }) => (
-            <MyCard key={title} title={title} content={content as string} level="beginner" websearch={webSearchOn} />
+            <MyCard key={title} title={title} content={content as string} level="Beginner" websearch={webSearchOn} />
           ))}
 
 
@@ -155,7 +156,7 @@ function Modules() {
           display={activeTab === "advanced" ? "grid" : "none"}
         >
           {advancedData.map(({ title, content }) => (
-            <MyCard key={title} title={title} content={content as string} level="advanced" websearch={webSearchOn} />
+            <MyCard key={title} title={title} content={content as string} level="Advanced" websearch={webSearchOn} />
           ))}
         </Grid>
       </Flex>

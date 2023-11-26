@@ -1,7 +1,5 @@
-content/
 *.zip
 *.txt
-downloads/
 client/
 .ipynb_checkpoints/
 .env

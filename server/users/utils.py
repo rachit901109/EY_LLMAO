@@ -4,7 +4,7 @@ import openai
 import ast
 from openai import OpenAI
 import time
-# from weasyprint import HTML
+from weasyprint import HTML
 from jinja2 import Template
 from tavily import TavilyClient
 
@@ -72,7 +72,7 @@ If there are specific examples or real-world applications related to the subject
 please include them to enhance practical understanding. Additionally, conclude your \
 response by suggesting relevant URLs for further reading to empower users with \
 additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls (should be a list ).
+title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls (should be a list).
 """
     all_content = []
     for key,val in output.items():
@@ -215,7 +215,7 @@ Follow the provided JSON format diligently, incorporating information from the s
     
     return output
 
-# def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
+def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
     # Load the HTML template
     template_str = """
     <!DOCTYPE html>

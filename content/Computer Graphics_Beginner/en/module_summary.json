@@ -1,0 +1,8 @@
+{
+    "Module 1 - Introduction to Computer Graphics": "This module provides an overview of computer graphics, including its history, applications, and basic concepts. It also introduces the fundamental principles of computer graphics and the various components involved in creating graphical images.",
+    "Module 2 - 2D Graphics and Drawing Algorithms": "In this module, students will learn about the basic algorithms and techniques used for 2D graphics and drawing. Topics include line drawing algorithms, circle drawing algorithms, and basic transformations for 2D shapes.",
+    "Module 3 - 3D Graphics and Rendering": "This module covers the concepts and techniques for creating and rendering 3D graphics. Students will learn about 3D modeling, perspective projection, and shading techniques used to create realistic 3D images.",
+    "Module 4 - Color Theory and Image Processing": "This module focuses on the principles of color theory and how it applies to computer graphics. Additionally, students will learn about basic image processing techniques such as color manipulation, filtering, and enhancement.",
+    "Module 5 - Graphic Design and Multimedia Applications": "In this module, students will explore the use of computer graphics in graphic design and multimedia applications. Topics include layout design, typography, digital imaging, and interactive multimedia design.",
+    "Module 6 - Computer Graphics Programming with OpenGL": "This module introduces students to programming in computer graphics using the OpenGL library. Students will learn the basics of OpenGL programming, including simple 2D and 3D graphic rendering and manipulation."
+}

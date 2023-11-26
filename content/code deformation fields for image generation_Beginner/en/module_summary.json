@@ -1,0 +1,7 @@
+{
+    "Shape Displacement and Appearance Map Generation": "Learn the basics of generating shape displacement and appearance maps using deformation fields for image generation, including the use of SSIM-loss and regularization techniques.",
+    "Medical Image Registration and Deformation Field Prediction": "Understand the process of predicting deformation fields for medical image registration, including the use of similarity metrics and Jacobian determinant for smoothness quantification.",
+    "Deformable GANs for Human Image Generation": "Explore the concept of Deformable GANs for pose-based human image generation, including the use of adversarial loss and convolutional layers for appearance difference map generation.",
+    "Image Warping and Transformation Techniques": "Discover the fundamentals of image warping and transformation techniques, including the implementation of transformation matrices for geometric transformations and image enhancement.",
+    "Face Morphing Using OpenCV": "Get started with face morphing using OpenCV, including the process of warping images, alpha blending, and morphing one face into another for creative visual content generation."
+}
