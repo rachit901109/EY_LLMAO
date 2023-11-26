@@ -16,10 +16,10 @@ class config():
     # session configurations
     SESSION_TYPE = 'sqlalchemy'
     SESSION_PERMANENT=True
-    PERMANENT_SESSION_LIFETIME=timedelta(minutes=5)
+    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30)
 
     # session cookie configuration
     SESSION_COOKIE_NAME = 'user_session'
-    SESSION_COOKIE_MAX_AGE = timedelta(minutes=5)
+    SESSION_COOKIE_MAX_AGE = timedelta(minutes=30)
 
 

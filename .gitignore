@@ -4,3 +4,4 @@ content/
 downloads/
 client/
 .ipynb_checkpoints/
+.env

@@ -5,7 +5,9 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import generate_module_summary,generate_content,generate_submodules
+from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_pdf
+from deep_translator import GoogleTranslator
+from langdetect import detect
 
 users = Blueprint(name='users', import_name=__name__)
 
@@ -125,8 +127,8 @@ def delete():
         return jsonify({"message": "User not found", "response":False}), 404
     
     # select all queries and completed topics by user and delete them
-    user_saved_queries = user.queries
-    user_saved_topics = user.completed_topics
+    # user_saved_queries = user.queries
+    # user_saved_topics = user.completed_topics
 
     db.session.delete(user)
     # db.session.delete(user_saved_queries)
@@ -141,234 +143,148 @@ def delete():
 # query route
 @users.route('/query2/<string:topicname>/<string:level>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def query(topicname,level):
+def query_topic(topicname,level):
     # check if user is logged in
-    # user_id = session.get("user_id", None)
-    # if user_id is None:
-    #     return jsonify({"message": "User not logged in", "response":False}), 401
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
     
-    # # check if user exists
-    # user = User.query.get(user_id)
-    # if user is None:
-    #     return jsonify({"message": "User not found", "response":False}), 404
-    
-    # # add user query to database
-    # new_user_query = Query(query_name=topicname, user_id=user_id)
-    # user.queries.append(new_user_query)
-    # db.session.commit()
-    text = generate_module_summary(topic=topicname,level=level)
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+
+    # language detection for input provided
+    source_language = detect(topicname)
+    print(source_language)
+
+    # translate other languages input to english
+    trans_topic = GoogleTranslator(source='auto', target='en').translate(topicname)
+    print(trans_topic)
+
+    content_dir = os.path.join(os.getcwd(), "content")
+    topic_level_dir = os.path.join(content_dir, trans_topic+"_"+level)
+    lang_dir = os.path.join(topic_level_dir, source_language)
+
+    # create directories if they don't exist
+    for dir in [content_dir, topic_level_dir, lang_dir]:
+        os.makedirs(dir, exist_ok=True)
+
+    file_path = os.path.join(lang_dir,  "module_summary.json")
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            trans_text = json.load(file)
+        print("File exists, I am speed")
+        return jsonify({"message": "Query successful", "topic":trans_topic, "source_language":source_language,  "content": trans_text, "response":True}), 200
+
+    text = generate_module_summary(topic=trans_topic,level=level)
     print(text)
-    # implement content generation for topic name
 
-    # beg_content = {"module 1": "content for module 1 begineer level", "module 2": "content for module 2 begineer level", "module 3": "content for module 3 begineer level"}
-    # inter_content = {"module 1": "content for module 1 intermediate level", "module 2": "content for module 2 intermediate level", "module 3": "content for module 3 intermediate level"}
-    # adv_content = {"module 1": "content for module 1 advanced level", "module 2": "content for module 2 advanced level", "module 3": "content for module 3 advanced level"}
+    # add user query to database
+    new_user_query = Query(query_name=trans_topic, user_id=user_id)
+    user.queries.append(new_user_query)
+    db.session.commit()
 
-    # topic_content = {"beginner": beg_content, "intermediate": inter_content, "advance": adv_content}
-
-    # Save content to content directory
-    # content_dir = os.path.join(os.getcwd(), "content")
-    # if not os.path.exists(content_dir):
-    #     os.makedirs(content_dir)
-
-    # Save content to topicname.json file
-    # file_path = os.path.join(content_dir, topicname + ".json")
-    # with open(file_path, "w") as file:
-    #     json.dump(topic_content, file, indent=4)
-
-    # return response
-    return jsonify({"message": "Query successful", "content": text, "response":True}), 200
-
-
-
-# New route for querying by topic and level
-@users.route('/query2/<string:topicname>', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def query_by_level(topicname):
-    # # check if user is logged in
-    # user_id = session.get("user_id", None)
-    # if user_id is None:
-    #     return jsonify({"message": "User not logged in", "response":False}), 401
+    trans_text = {}
     
-    # # check if user exists
-    # user = User.query.get(user_id)
-    # if user is None:
-    #     return jsonify({"message": "User not found", "response":False}), 404
+    for key,value in text.items(): 
+        trans_key = GoogleTranslator(source='auto', target=source_language).translate(str(key))
+        trans_text[trans_key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
+    
+    print(trans_text)
 
-    # Check if the topicname.json file exists
-    # file_path = os.path.join(os.getcwd(), "content", f"{topicname}.json")
-    # if not os.path.exists(file_path):
-    #     return jsonify({"message": "Topic not found", "response": False}), 404
+    with open(file_path, "w") as file:
+        json.dump(trans_text, file, indent=4)
 
-    # Load content from the topicname.json file
-    # with open(file_path, "r") as file:
-    #     topic_content = json.load(file)
-    submodules = generate_submodules(topicname)
+    return jsonify({"message": "Query successful", "topic":trans_topic, "source_language":source_language,  "content": trans_text, "response":True}), 200
+
+
+@users.route('/query2/<string:topicname>/<string:level>/<string:modulename>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def query_module(topicname, level, modulename):
+    # check if user is logged in
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+
+    # generate content for submodules
+    source_language = detect(modulename)
+    print(source_language)
+    trans_modulename = GoogleTranslator(source='auto', target='en').translate(modulename)
+    clean_modulename = modulename.replace(':',"_")  
+
+    content_path = os.path.join(os.getcwd(), "content", topicname+"_"+level, source_language, clean_modulename+"_content.json")
+    print(content_path, os.path.exists(content_path))
+    if os.path.exists(content_path):
+        with open(content_path, "r") as file:
+            trans_content = json.load(file)
+        print("File exists, I am speed")
+        return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
+
+    submodules = generate_submodules(trans_modulename)
     print(submodules)
     content = generate_content(submodules)
-    # Return content for the requested level
-    return jsonify({"message": "Query successful", "content": content, "response": True}), 200
 
+    # translate content for submodules
+    trans_content = []
+    for entry in content:
+        temp = {}
+        for key, value in entry.items():
+            if key == 'urls':
+                temp[key] = value
+                continue
+            if key == 'subsections':
+                temp[key] = []
+                temp_subsections = {}
+                for subsection in value:
+                    for sub_key, sub_value in subsection.items():
+                        temp_subsections[sub_key] = GoogleTranslator(source='auto', target=source_language).translate(str(sub_value))
+                    temp[key].append(temp_subsections)
+            else:
+                temp[key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
+        trans_content.append(temp)
 
-
-# New route for querying by topic, level, and module
-@users.route('/query/<string:topicname>/<string:level>/<string:modulename>', methods=['GET'])
-def query_by_module(topicname, level, modulename):
-    # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+    with open(content_path, "w") as file:
+        json.dump(trans_content, file, indent=4)
     
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+    return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
+
+
+@users.route('/query2/<string:topicname>/<string:level>/<string:source_language>/<string:modulename>/download', methods=['GET'])
+def download_pdf(topicname, level, source_language, modulename):
+    clean_modulename = modulename.replace(':',"_") 
+    # Construct paths to module summary and content JSON files
+    summary_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, "module_summary.json")
+    content_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, f"{clean_modulename}_content.json")
+
+    # Check if both files exist
+    # if not (os.path.exists(summary_file_path) and os.path.exists(content_file_path)):
+    #     return jsonify({"message": "Module files not found", "response": False}), 404
+    if not os.path.exists(content_file_path):
+        return jsonify({"message": "Module content file not found", "response": False}), 404
+    if not os.path.exists(summary_file_path):
+        return jsonify({"message": "Module summary file not found", "response": False}), 404
     
-    # Check if the topicname.json file exists
-    file_path = os.path.join(os.getcwd(), "content", f"{topicname}.json")
-    if not os.path.exists(file_path):
-        return jsonify({"message": "Topic not found", "response": False}), 404
-
-    # Load content from the topicname.json file
-    with open(file_path, "r") as file:
-        topic_content = json.load(file)
-
-    # Check if the requested level exists in the content
-    if level not in topic_content:
-        return jsonify({"message": "Level not found", "response": False}), 404
-
-    # Check if the requested module exists in the level content
-    if modulename not in topic_content[level]:
-        return jsonify({"message": "Module not found", "response": False}), 404
-
-    # Return content for the requested module
-    return jsonify({"message": "Query successful", "content": topic_content[level][modulename], "response": True}), 200
-
-
-
-# New route for downloading content by topic
-@users.route('/query/<string:topicname>/download', methods=['GET'])
-def download_topic(topicname):
-    # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
     
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
 
-    # Check if the topicname.json file exists
-    file_path = os.path.join(os.getcwd(), "content", f"{topicname}.json")
-    if not os.path.exists(file_path):
-        return jsonify({"message": "Topic not found", "response": False}), 404
+    # Read module summary from JSON
+    with open(summary_file_path, "r") as summary_file:
+        module_summary = json.load(summary_file)
 
-    # Load content from the topicname.json file
-    with open(file_path, "r") as file:
-        topic_content = json.load(file)
+    # Read module content from JSON
+    with open(content_file_path, "r") as content_file:
+        module_content = json.load(content_file)
 
-    # Save downloaded content to downloads directory
+    # Create a PDF file
     download_dir = os.path.join(os.getcwd(), "downloads")
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
+    os.makedirs(download_dir, exist_ok=True)
+    pdf_file_path = os.path.join(download_dir, f"{clean_modulename}_summary.pdf")
+    generate_pdf(pdf_file_path, modulename, module_summary, module_content)
 
-    # Create a zip file with three folders for each level
-    zip_path = os.path.join(download_dir, f"{topicname}_content.zip")
-    with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED) as zip_file:
-        for level, content in topic_content.items():
-            level_folder = f"{level}_content"
-
-            # Create a subfolder for each level
-            zip_file.writestr(f"{level_folder}/", '')
-
-            # Write a txt file for each module in the level
-            for module, module_content in content.items():
-                zip_file.writestr(f"{level_folder}/{module}_content.txt", module_content)
-
-    return send_file(zip_path, as_attachment=True)
-
-
-
-# New route for downloading content by topic and level
-@users.route('/query/<string:topicname>/<string:level>/download', methods=['GET'])
-def download_level(topicname, level):
-    # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
-    
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
-
-    # Check if the topicname.json file exists
-    file_path = os.path.join(os.getcwd(), "content", f"{topicname}.json")
-    if not os.path.exists(file_path):
-        return jsonify({"message": "Topic not found", "response": False}), 404
-
-    # Load content from the topicname.json file
-    with open(file_path, "r") as file:
-        topic_content = json.load(file)
-
-    # Check if the requested level exists in the content
-    if level not in topic_content:
-        return jsonify({"message": "Level not found", "response": False}), 404
-    
-    # Save downloaded content to downloads directory
-    download_dir = os.path.join(os.getcwd(), "downloads")
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-
-    # Create a zip file with txt files for all modules in the requested level
-    zip_path = os.path.join(download_dir, f"{topicname}_{level}_content.zip")
-    with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED) as zip_file:
-        for module, content in topic_content[level].items():
-            zip_file.writestr(f"{module}_content.txt", content)
-
-    return send_file(zip_path, as_attachment=True)
-
-
-# New route for downloading content by topic, level, and module
-@users.route('/query/<string:topicname>/<string:level>/<string:modulename>/download', methods=['GET'])
-def download_module(topicname, level, modulename):
-    # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
-    
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
-
-    # Check if the topicname.json file exists
-    file_path = os.path.join(os.getcwd(), "content", f"{topicname}.json")
-    if not os.path.exists(file_path):
-        return jsonify({"message": "Topic not found", "response": False}), 404
-
-    # Load content from the topicname.json file
-    with open(file_path, "r") as file:
-        topic_content = json.load(file)
-
-    # Check if the requested level exists in the content
-    if level not in topic_content:
-        return jsonify({"message": "Level not found", "response": False}), 404
-
-    # Check if the requested module exists in the level content
-    if modulename not in topic_content[level]:
-        return jsonify({"message": "Module not found", "response": False}), 404
-    
-    # Save downloaded content to downloads directory
-    download_dir = os.path.join(os.getcwd(), "downloads")
-    if not os.path.exists(download_dir):
-        os.makedirs(download_dir)
-
-    # Create a txt file for the requested module content
-    txt_content = topic_content[level][modulename]
-    txt_path = os.path.join(download_dir, f"{topicname}_{level}_{modulename}_content.txt")
-    with open(txt_path, 'w') as txt_file:
-        txt_file.write(txt_content)
-
-    return send_file(txt_path, as_attachment=True)
+    # Send the PDF file as an attachment
+    return send_file(pdf_file_path, as_attachment=True)
