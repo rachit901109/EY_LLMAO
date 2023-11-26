@@ -5,8 +5,7 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web
-# from server.users.utils import generate_pdf
+from server.users.utils import module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web,generate_pdf
 from deep_translator import GoogleTranslator
 # from langdetect import detect
 from lingua import Language, LanguageDetectorBuilder
@@ -233,13 +232,16 @@ def query_module(topicname, level, modulename, websearch):
     trans_modulename = GoogleTranslator(source='auto', target='en').translate(modulename)
     clean_modulename = modulename.replace(':',"_")  
 
-    content_path = os.path.join(os.getcwd(), "content", topicname+"_"+level, source_language, clean_modulename+"_content.json")
+    content_path = os.path.join(os.getcwd(), "content", topicname+"_"+level, source_language, clean_modulename+"_content.json") 
+    images= module_image_from_web(trans_modulename)
+    # print("Images list", images) 
+
     print(content_path, os.path.exists(content_path))
     if os.path.exists(content_path):
         with open(content_path, "r") as file:
             trans_content = json.load(file)
         print("File exists, I am speed")
-        return jsonify({"message": "Query successful", "content": trans_content, "response": True}), 200
+        return jsonify({"message": "Query successful", "images":images, "content": trans_content, "response": True}), 200
 
     if websearch=="true":
         submodules = generate_submodules_from_web(trans_modulename)
@@ -250,8 +252,7 @@ def query_module(topicname, level, modulename, websearch):
         print(submodules)
         content = generate_content(submodules)
     
-    images= module_image_from_web(trans_modulename)
-    print("Images list", images)
+    
     # translate content for submodules
     trans_content = []
     for entry in content:
@@ -273,6 +274,7 @@ def query_module(topicname, level, modulename, websearch):
 
     with open(content_path, "w") as file:
         json.dump(trans_content, file, indent=4)
+    
     
     return jsonify({"message": "Query successful","images": images, "content": trans_content, "response": True}), 200
 
