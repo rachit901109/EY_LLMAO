@@ -72,7 +72,7 @@ If there are specific examples or real-world applications related to the subject
 please include them to enhance practical understanding. Additionally, conclude your \
 response by suggesting relevant URLs for further reading to empower users with \
 additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls (should be a list ).
+title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls (should be a list).
 """
     all_content = []
     for key,val in output.items():
