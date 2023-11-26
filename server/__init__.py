@@ -18,7 +18,8 @@ def create_app(config_class=config):
     db.init_app(app)
     app.config["SESSION_SQLALCHEMY"] = db
     bcrypt.init_app(app)
-    
+    sess.init_app(app)
+
     from server.users.routes import users
 
     # Register the blueprint

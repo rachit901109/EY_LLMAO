@@ -5,7 +5,8 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_pdf
+from server.users.utils import generate_module_summary,generate_content,generate_submodules
+# from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
 from langdetect import detect
 
@@ -52,7 +53,6 @@ def register():
 def login():
     # take user input
     data = request.json
-    print(data)
     email = data.get("email")
     password = data.get("password")
 
@@ -67,6 +67,7 @@ def login():
     
     # start user session
     session["user_id"] = user.user_id
+    print("user id is this:-",session.get('user_id'))
 
     # return response
     return jsonify({"message": "User logged in successfully", "user_name":user.user_name, "email":user.email, "response":True}), 200
@@ -145,7 +146,8 @@ def delete():
 @cross_origin(supports_credentials=True)
 def query_topic(topicname,level):
     # check if user is logged in
-    user_id = session.get("user_id", None)
+    user_id = session.get('user_id')
+    print(session.get('user_id'))
     if user_id is None:
         return jsonify({"message": "User not logged in", "response":False}), 401
     
@@ -284,7 +286,7 @@ def download_pdf(topicname, level, source_language, modulename):
     download_dir = os.path.join(os.getcwd(), "downloads")
     os.makedirs(download_dir, exist_ok=True)
     pdf_file_path = os.path.join(download_dir, f"{clean_modulename}_summary.pdf")
-    generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+    # generate_pdf(pdf_file_path, modulename, module_summary, module_content)
 
     # Send the PDF file as an attachment
     return send_file(pdf_file_path, as_attachment=True)
