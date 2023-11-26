@@ -11,6 +11,7 @@ import Content from './views/Content'
 import Issac from './views/Issac'
 
 
+
 function App() {
   return (
     <Router>
@@ -25,6 +26,7 @@ function App() {
         <Route path="/issac" element={<Issac />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/trending" element={<Trending />} />
         <Route path="/content" element={<Content />} />
       </Routes>
     </Router>

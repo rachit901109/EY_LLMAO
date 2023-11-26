@@ -12,7 +12,7 @@ import {
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { PhoneIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
-
+import { BsFire } from "react-icons/bs";
 import { MdExplore } from "react-icons/md";
 import Logo from '../assets/images/Logo2.jpg'
 import { useNavigate } from 'react-router-dom';
@@ -64,6 +64,15 @@ export default function Nav() {
                   >
                     <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faHome} />
                     Home
+                  </Box>
+                  <Box
+                    as="a"
+                    px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/trending'}
+                  >
+                    <HStack spacing={2}>
+                      <BsFire size={24} />
+                      <span>Trending</span>
+                    </HStack>
                   </Box>
                   <Box
                     as="a"

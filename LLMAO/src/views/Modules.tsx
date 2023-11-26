@@ -9,6 +9,7 @@ import {
   Grid,
   Flex,
   Heading,
+  Switch,
 } from "@chakra-ui/react";
 import Navbar from "../components/navbar_landing";
 import Footer from "../components/footer";
@@ -24,13 +25,8 @@ function Modules() {
   const [showTabs, setShowTabs] = useState(false);
   const [activeTab, setActiveTab] = useState("beginner");
   const [searchTerm, setSearchTerm] = useState("");
+  const [webSearchOn, setWebSearchOn] = useState(false);
 
-  const trendingData = [
-    { title: "Trend 1", content: "Trend content 1" },
-    { title: "Trend 2", content: "Trend content 2" },
-    { title: "Trend 3", content: "Trend content 3" },
-    { title: "Trend 4", content: "Trend content 4" },
-  ];
 
   const fetchData = async (route: string, setDataFunction: any) => {
     setIsLoading(true);
@@ -51,8 +47,9 @@ function Modules() {
   const onLearnClick = async () => {
     // Handle the click event for the "Start Learning" button
     // Fetch data for both beginner and advanced tabs
-    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Beginner Level`, setBeginnerData);
-    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Advanced Level`, setAdvancedData);
+    localStorage.setItem('topicname',searchTerm);
+    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Beginner Level/${webSearchOn}`, setBeginnerData);
+    await fetchData(`http://127.0.0.1:5000/query2/${searchTerm}/Advanced Level/${webSearchOn}`, setAdvancedData);
   };
 
   const handleTabClick = (tab: any) => {
@@ -60,10 +57,23 @@ function Modules() {
     setActiveTab(tab);
   };
 
+  const handleWebSearchToggle = () => {
+    setWebSearchOn(!webSearchOn);
+  };
+
   return (
     <div>
       <Navbar />
       <HStack justifyContent={"center"}>
+      <Flex justify="flex-end" mt={5} mr={8}>
+        <Text mr={2} className="content" mt={1}>Web Search</Text>
+        <Switch
+          colorScheme="purple"
+          size="lg"
+          isChecked={webSearchOn}
+          onChange={handleWebSearchToggle}
+        />
+      </Flex>
         <Box mt={4}>
           <Input
             type="text"
@@ -91,6 +101,7 @@ function Modules() {
         >
           Search
         </Button>
+        
       </HStack>
       <HStack justifyContent={"center"} mt={6}>
         {showTabs && (
@@ -115,7 +126,7 @@ function Modules() {
         )}
       </HStack>
 
-      <Flex direction={{ base: "column", md: "row" }} mb={10}>
+      <Flex direction={{ base: "column", md: "row" }} minHeight={"60vh"} mb={10}>
         <Grid
           templateColumns={{
             base: "repeat(auto-fill, minmax(200px, 1fr))",
@@ -127,7 +138,7 @@ function Modules() {
           display={activeTab === "beginner" ? "grid" : "none"}
         >
           {beginnerData.map(({ title, content }) => (
-            <MyCard key={title} title={title} content={content as string} />
+            <MyCard key={title} title={title} content={content as string} level="beginner" websearch={webSearchOn} />
           ))}
 
 
@@ -144,30 +155,10 @@ function Modules() {
           display={activeTab === "advanced" ? "grid" : "none"}
         >
           {advancedData.map(({ title, content }) => (
-            <MyCard key={title} title={title} content={content as string} />
+            <MyCard key={title} title={title} content={content as string} level="advanced" websearch={webSearchOn} />
           ))}
         </Grid>
       </Flex>
-
-      <Flex align="center" ml={10} mb={3}>
-        <BsFire size={30} />
-        <Heading ml={2}>Trending Courses</Heading>
-      </Flex>
-
-      <Grid
-        templateColumns={{
-          base: "repeat(auto-fill, minmax(200px, 1fr))",
-          md: "repeat(4, 1fr)",
-        }}
-        gap={8}
-        mt={2}
-        mx={8}
-        mb={10}
-      >
-        {trendingData.map(({ title, content }) => (
-          <MyCard key={title} title={title} content={content} />
-        ))}
-      </Grid>
       <Footer />
     </div>
   );
