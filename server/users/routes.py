@@ -35,7 +35,7 @@ def register():
     if user_exists:
         return jsonify({"message": "User already exists", "response":False}), 201
     
-    # hash password, create new user save to databse
+    # hash password, create new user save to database
     hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(fname=fname, lname=lname, user_name=user_name, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
     db.session.add(new_user)
