@@ -1,0 +1,7 @@
+{
+    "Shape and Appearance Variations in Image Generation": "Learn about diffeomorphic autoencoders and shape displacement and appearance maps, as well as the use of SSIM-loss and regularization for displacement fields in image generation.",
+    "Smoothness and Plausibility in Deformation Field Prediction": "Explore the prediction of deformation fields, the use of similarity metrics and Jacobian determinant, and the importance of keeping registration results plausible in medical image registration.",
+    "Deformable GANs for Pose-based Human Image Generation": "Delve into the use of adversarial loss and appearance difference maps in deformable GANs for human image generation, and the categorization of deep-network-based approaches as VAE or GAN methods.",
+    "Conditional Image Generation For Learning Visual Objects": "Gain insight into spatially constrained generative adversarial networks, semantic invariant cross-domain image generation, and the challenges of capturing images from different views for generating objects using deep learning and artificial intelligence techniques.",
+    "Generative Adversarial Registration for Deformable Image Registration": "Learn about the diffusion and deformation modules in generative adversarial registration for improved conditional deformable image registration, and the use of DDM to learn spatial deformation information between source and target volumes."
+}

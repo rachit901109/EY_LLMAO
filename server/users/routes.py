@@ -8,7 +8,7 @@ from flask_cors import cross_origin
 from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web
 # from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
-from langdetect import detect
+# from langdetect import detect
 from lingua import Language, LanguageDetectorBuilder
 from iso639 import Lang
 
@@ -168,7 +168,7 @@ def query_topic(topicname,level,websearch):
 
     # language detection for input provided
     # source_language = detect(topicname)
-    source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title())
+    source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title()).pt1
     print(source_language)
 
     # translate other languages input to english
@@ -217,7 +217,7 @@ def query_topic(topicname,level,websearch):
 
 @users.route('/query2/<string:topicname>/<string:level>/<string:modulename>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def query_module(topicname, level, modulename,websearch):
+def query_module(topicname, level, modulename, websearch):
     # check if user is logged in
     # user_id = session.get("user_id", None)
     # if user_id is None:
@@ -229,7 +229,7 @@ def query_module(topicname, level, modulename,websearch):
     #     return jsonify({"message": "User not found", "response":False}), 404
 
     # generate content for submodules
-    source_language = str(detector.detect_language_of(topicname)).split('.')[1]
+    source_language = Lang(str(detector.detect_language_of(modulename)).split('.')[1].title()).pt1
     print(source_language)
     trans_modulename = GoogleTranslator(source='auto', target='en').translate(modulename)
     clean_modulename = modulename.replace(':',"_")  

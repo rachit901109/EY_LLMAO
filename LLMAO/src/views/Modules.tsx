@@ -156,7 +156,7 @@ function Modules() {
           display={activeTab === "advanced" ? "grid" : "none"}
         >
           {advancedData.map(({ title, content }) => (
-            <MyCard key={title} title={title} content={content as string} level="Advance" websearch={webSearchOn} />
+            <MyCard key={title} title={title} content={content as string} level="Advanced" websearch={webSearchOn} />
           ))}
         </Grid>
       </Flex>

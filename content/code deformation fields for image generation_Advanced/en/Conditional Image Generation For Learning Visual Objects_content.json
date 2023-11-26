@@ -1,0 +1,153 @@
+[
+    {
+        "subject_name": "Class-Conditioned Models",
+        "title_for_the_content": "Understanding Class-Conditioned Models",
+        "content": "Class-conditioned models are a type of generative model that learns to generate data, such as images, conditioned on a class label. These models are widely used in various machine learning applications, including image generation, zero-shot learning, and more. They are often pre-trained on class-labeled datasets and can be controlled at inference time by providing conditioning information. Class-conditioned models offer a powerful way to generate data specific to different classes, enabling a range of practical applications across domains.",
+        "subsections": [
+            {
+                "title": "Use Cases and Applications",
+                "content": "Class-conditioned models have diverse applications, including class-conditioned image generation, zero-shot learning, and high-fidelity image synthesis. They can be used to generate images specific to certain classes, enabling tasks like creating high-resolution images, synthesizing natural images, and addressing the unseen class recognition problem. These models are valuable in various ML tasks with wide-ranging applications, offering a way to create class-specific data in a controlled manner."
+            },
+            {
+                "title": "Use Cases and Applications",
+                "content": "Class-conditioned models have diverse applications, including class-conditioned image generation, zero-shot learning, and high-fidelity image synthesis. They can be used to generate images specific to certain classes, enabling tasks like creating high-resolution images, synthesizing natural images, and addressing the unseen class recognition problem. These models are valuable in various ML tasks with wide-ranging applications, offering a way to create class-specific data in a controlled manner."
+            }
+        ],
+        "urls": [
+            "https://johnowhitaker.github.io/tglcourse/dm2.html",
+            "https://medium.com/@vedantjumle/class-conditioned-diffusion-models-using-keras-and-tensorflow-9997fa6d958c",
+            "https://huggingface.co/docs/diffusers/conceptual/evaluation",
+            "https://blog.research.google/2021/07/high-fidelity-image-generation-using.html",
+            "https://dl.acm.org/doi/10.5555/3504035.3504551"
+        ]
+    },
+    {
+        "subject_name": "Robust Visual Tracking with GANs",
+        "title_for_the_content": "Exploring Robust Visual Tracking Using Generative Adversarial Networks (GANs)",
+        "content": "Visual tracking is a fundamental task in computer vision that aims to follow the movement of objects in a video sequence. Robust visual tracking using Very Deep Generative Model approaches has gained significant attention in recent years. Advancements in deep learning algorithms, particularly the use of Generative Adversarial Networks (GANs), have provided a new avenue for enhancing the robustness of visual tracking. The continuous changes in the features of foreground and background objects over videos pose a challenge in achieving acceptable performance, making the integration of GANs crucial for addressing this issue.",
+        "subsections": [
+            {
+                "title": "Use Cases and Applications",
+                "content": "The use of GANs in robust visual tracking has various applications in computer vision and artificial intelligence, including online adaptive target appearance modeling, image analysis, semantic mapping, and more. GANs can be employed to augment training data, bridge the gap between deep neural networks and visual tracking tasks, and enhance the ability to recognize and adapt to diverse appearance changes in objects over videos."
+            },
+            {
+                "title": "Use Cases and Applications",
+                "content": "The use of GANs in robust visual tracking has various applications in computer vision and artificial intelligence, including online adaptive target appearance modeling, image analysis, semantic mapping, and more. GANs can be employed to augment training data, bridge the gap between deep neural networks and visual tracking tasks, and enhance the ability to recognize and adapt to diverse appearance changes in objects over videos."
+            }
+        ],
+        "urls": [
+            "https://journalofbigdata.springeropen.com/articles/10.1186/s40537-022-00682-4",
+            "https://dl.acm.org/doi/10.1016/j.patcog.2019.107027",
+            "https://www.hindawi.com/journals/complexity/2021/5541134/",
+            "https://medium.com/sciforce/whats-next-for-gans-latest-techniques-and-applications-3be06a7e5ab9",
+            "https://link.springer.com/article/10.1007/s11042-021-10848-6"
+        ]
+    },
+    {
+        "subject_name": "3D Shape Generation with Deep Learning",
+        "title_for_the_content": "Overview of Deep Learning-based 3D Shape Generation",
+        "content": "Deep learning-based 3D shape generation involves the use of deep learning techniques to generate 3D shapes. This survey of works classifies and discusses them in terms of the underlying shape representation and the architecture of the shape generator. It comprehensively reviews the advantages and disadvantages of each class, highlighting recent advances in deep generative models such as generative adversarial networks for effective generation of 3D shapes. Unlike 2D images with a regular grid structure, 3D shapes have various representations, such as voxels, point clouds, meshes, and implicit functions.",
+        "subsections": [
+            {
+                "title": "Real-world Applications",
+                "content": "Examples of real-world applications of deep learning-based 3D shape generation include conditional 3D shape generation based on shape-image-text aligned latent representation, 3D semantic subspace traverser empowering 3D generative model with shape editing capability, and segmenting images for shape generation."
+            },
+            {
+                "title": "Real-world Applications",
+                "content": "Examples of real-world applications of deep learning-based 3D shape generation include conditional 3D shape generation based on shape-image-text aligned latent representation, 3D semantic subspace traverser empowering 3D generative model with shape editing capability, and segmenting images for shape generation."
+            },
+            {
+                "title": "Real-world Applications",
+                "content": "Examples of real-world applications of deep learning-based 3D shape generation include conditional 3D shape generation based on shape-image-text aligned latent representation, 3D semantic subspace traverser empowering 3D generative model with shape editing capability, and segmenting images for shape generation."
+            }
+        ],
+        "urls": [
+            "https://www.sciopen.com/article/10.1007/s41095-022-0321-5",
+            "https://paperswithcode.com/task/3d-shape-generation/latest",
+            "https://link.springer.com/article/10.1007/s41095-022-0321-5",
+            "https://link.springer.com/content/pdf/10.1007/s41095-022-0321-5.pdf?pdf=button"
+        ]
+    },
+    {
+        "subject_name": "Controlled Image Generation Techniques",
+        "title_for_the_content": "Understanding Controlled Image Generation Techniques",
+        "content": "Controlled image generation techniques refer to the methods and models used to have more control over the image generation process. These techniques enable users to manipulate the output of image generation models according to specific requirements and criteria. They are essential for tasks where precision and customization are crucial.",
+        "subsections": [
+            {
+                "title": "Real-World Examples",
+                "content": "One real-world example of controlled image generation is the use of ControlNet models, which are fine-tuned neural networks that provide more structural and artistic control over image generation. Another example is the DALL-E model, which combines transformer and variational autoencoder capabilities to produce high-quality visuals from textual descriptions."
+            },
+            {
+                "title": "Real-World Examples",
+                "content": "One real-world example of controlled image generation is the use of ControlNet models, which are fine-tuned neural networks that provide more structural and artistic control over image generation. Another example is the DALL-E model, which combines transformer and variational autoencoder capabilities to produce high-quality visuals from textual descriptions."
+            },
+            {
+                "title": "Real-World Examples",
+                "content": "One real-world example of controlled image generation is the use of ControlNet models, which are fine-tuned neural networks that provide more structural and artistic control over image generation. Another example is the DALL-E model, which combines transformer and variational autoencoder capabilities to produce high-quality visuals from textual descriptions."
+            }
+        ],
+        "urls": [
+            "https://huggingface.co/docs/diffusers/main/en/using-diffusers/img2img",
+            "https://learnopencv.com/controlnet/",
+            "https://www.spaceo.ai/blog/dalle-model-vs-other-image-generation-models/",
+            "https://link.springer.com/article/10.1007/s11063-022-10777-x",
+            "https://www.assemblyai.com/blog/modern-generative-ai-images/"
+        ]
+    },
+    {
+        "subject_name": "Improving Image Quality with Deterministic Generation",
+        "title_for_the_content": "A Comprehensive Guide on Improving Image Quality with Deterministic Generation",
+        "content": "Improving image quality with deterministic generation involves using advanced techniques and models to enhance the visual perception and overall quality of digital images. This approach is becoming increasingly important for businesses looking to distinguish their online and offline image presence. The process involves leveraging AI-powered tools and deep learning techniques to generate high-quality images. Through deterministic generation, models can be trained to iteratively improve on image quality, remove poor or bad image artifacts, and control brightness and prompt weighting for superior image generation.",
+        "subsections": [
+            {
+                "title": "Practical Examples",
+                "content": "Examples of deterministic generation in action can be seen in AI-powered image enhancement tools, where models are trained to upscale and improve image quality. These tools are effective for businesses in 2022 looking to boost image quality and distinguish their image presence on online and offline channels. Furthermore, deterministic generation has been applied in AI-powered image and video editing, resulting in high-quality outputs and instruction faithfulness."
+            },
+            {
+                "title": "Practical Examples",
+                "content": "Examples of deterministic generation in action can be seen in AI-powered image enhancement tools, where models are trained to upscale and improve image quality. These tools are effective for businesses in 2022 looking to boost image quality and distinguish their image presence on online and offline channels. Furthermore, deterministic generation has been applied in AI-powered image and video editing, resulting in high-quality outputs and instruction faithfulness."
+            },
+            {
+                "title": "Practical Examples",
+                "content": "Examples of deterministic generation in action can be seen in AI-powered image enhancement tools, where models are trained to upscale and improve image quality. These tools are effective for businesses in 2022 looking to boost image quality and distinguish their image presence on online and offline channels. Furthermore, deterministic generation has been applied in AI-powered image and video editing, resulting in high-quality outputs and instruction faithfulness."
+            }
+        ],
+        "urls": [
+            "https://huggingface.co/docs/diffusers/using-diffusers/conditional_image_generation",
+            "https://www.upscale.media/blog/image-enhancement-a-practical-guide-to-boosting-image-quality",
+            "https://siliconangle.com/2023/11/16/meta-announces-new-breakthroughs-ai-image-editing-video-generation-emu/",
+            "https://link.springer.com/article/10.1007/s11063-022-10777-x",
+            "https://huggingface.co/docs/diffusers/training/unconditional_training"
+        ]
+    },
+    {
+        "subject_name": "Survey of Deep Learning-Based 3D Shape Generation",
+        "title_for_the_content": "Exploring the Advancements in Deep Learning-Based 3D Shape Generation",
+        "content": "Deep learning-based 3D shape generation refers to the application of deep generative models, particularly generative adversarial networks (GANs), to create 3D shapes with improved realism and diversity. Recent advances in this field have led to the development of more versatile and effective techniques for generating 3D shapes, offering numerous potential applications in various industries.",
+        "subsections": [
+            {
+                "title": "Applications",
+                "content": "Real-world applications of deep learning-based 3D shape generation include architectural design, where it can be used to create realistic building models; automotive design, for prototyping and testing new vehicle shapes; and medical imaging, to generate accurate anatomical models for surgical planning and training."
+            },
+            {
+                "title": "Applications",
+                "content": "Real-world applications of deep learning-based 3D shape generation include architectural design, where it can be used to create realistic building models; automotive design, for prototyping and testing new vehicle shapes; and medical imaging, to generate accurate anatomical models for surgical planning and training."
+            },
+            {
+                "title": "Applications",
+                "content": "Real-world applications of deep learning-based 3D shape generation include architectural design, where it can be used to create realistic building models; automotive design, for prototyping and testing new vehicle shapes; and medical imaging, to generate accurate anatomical models for surgical planning and training."
+            },
+            {
+                "title": "Applications",
+                "content": "Real-world applications of deep learning-based 3D shape generation include architectural design, where it can be used to create realistic building models; automotive design, for prototyping and testing new vehicle shapes; and medical imaging, to generate accurate anatomical models for surgical planning and training."
+            }
+        ],
+        "urls": [
+            "https://www.semanticscholar.org/paper/3D-Shape-Generation-with-Grid-based-Implicit-Ibing-Lim/12f0734af81da9f2f893aa5102489053f915a949",
+            "https://researchportal.bath.ac.uk/en/publications/a-survey-of-deep-learning-based-3d-shape-generation",
+            "https://link.springer.com/article/10.1007/s41095-022-0321-5",
+            "https://openaccess.thecvf.com/content/ICCV2023W/AI3DCC/papers/Wei_BuilDiff_3D_Building_Shape_Generation_Using_Single-Image_Conditional_Point_Cloud_ICCVW_2023_paper.pdf",
+            "https://theses.hal.science/tel-04062587/document"
+        ]
+    }
+]
