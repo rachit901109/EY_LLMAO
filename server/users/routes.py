@@ -309,7 +309,7 @@ def download_pdf(topicname, level, source_language, modulename):
 
 
     # Call the generate_pdf function with the custom_styles argument
-    generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+    generate_pdf(pdf_file_path, modulename, module_summary, module_content, source_language)
 
 
     # Send the PDF file as an attachment
