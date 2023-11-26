@@ -6,7 +6,7 @@ import json
 import zipfile
 from flask_cors import cross_origin
 from server.users.utils import generate_module_summary,generate_content,generate_submodules
-# from server.users.utils import generate_pdf
+from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
 from langdetect import detect
 
@@ -36,7 +36,7 @@ def register():
     if user_exists:
         return jsonify({"message": "User already exists", "response":False}), 201
     
-    # hash password, create new user save to databse
+    # hash password, create new user save to database
     hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(fname=fname, lname=lname, user_name=user_name, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
     db.session.add(new_user)
@@ -286,7 +286,7 @@ def download_pdf(topicname, level, source_language, modulename):
     download_dir = os.path.join(os.getcwd(), "downloads")
     os.makedirs(download_dir, exist_ok=True)
     pdf_file_path = os.path.join(download_dir, f"{clean_modulename}_summary.pdf")
-    # generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+    generate_pdf(pdf_file_path, modulename, module_summary, module_content)
 
     # Send the PDF file as an attachment
     return send_file(pdf_file_path, as_attachment=True)

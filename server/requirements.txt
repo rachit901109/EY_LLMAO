@@ -13,3 +13,4 @@ flask-cors
 deep-translator
 langdetect
 weasyprint
+tavily-python
