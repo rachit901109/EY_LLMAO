@@ -5,7 +5,7 @@ import os
 import json
 import zipfile
 from flask_cors import cross_origin
-from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web
+from server.users.utils import generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web,generate_pdf
 # from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
 # from langdetect import detect
@@ -305,7 +305,12 @@ def download_pdf(topicname, level, source_language, modulename):
     download_dir = os.path.join(os.getcwd(), "downloads")
     os.makedirs(download_dir, exist_ok=True)
     pdf_file_path = os.path.join(download_dir, f"{clean_modulename}_summary.pdf")
-    # generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+    # Assuming you have a styles dictionary defined somewhere in your code
+
+
+    # Call the generate_pdf function with the custom_styles argument
+    generate_pdf(pdf_file_path, modulename, module_summary, module_content)
+
 
     # Send the PDF file as an attachment
     return send_file(pdf_file_path, as_attachment=True)
