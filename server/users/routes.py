@@ -9,8 +9,13 @@ from server.users.utils import generate_module_summary,generate_content,generate
 from server.users.utils import generate_pdf
 from deep_translator import GoogleTranslator
 from langdetect import detect
+from lingua import Language, LanguageDetectorBuilder
+from iso639 import Lang
 
 users = Blueprint(name='users', import_name=__name__)
+
+# Detector for language detection
+detector = LanguageDetectorBuilder.from_all_languages().with_preloaded_language_models().build()
 
 # register route  --> take username from client only store in database if username is not taking
 @users.route('/register',methods=['POST'])
@@ -157,7 +162,8 @@ def query_topic(topicname,level):
         return jsonify({"message": "User not found", "response":False}), 404
 
     # language detection for input provided
-    source_language = detect(topicname)
+    # source_language = detect(topicname)
+    source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title())
     print(source_language)
 
     # translate other languages input to english
@@ -215,7 +221,7 @@ def query_module(topicname, level, modulename):
         return jsonify({"message": "User not found", "response":False}), 404
 
     # generate content for submodules
-    source_language = detect(modulename)
+    source_language = str(detector.detect_language_of(topicname)).split('.')[1]
     print(source_language)
     trans_modulename = GoogleTranslator(source='auto', target='en').translate(modulename)
     clean_modulename = modulename.replace(':',"_")  

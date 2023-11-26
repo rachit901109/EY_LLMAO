@@ -72,7 +72,7 @@ If there are specific examples or real-world applications related to the subject
 please include them to enhance practical understanding. Additionally, conclude your \
 response by suggesting relevant URLs for further reading to empower users with \
 additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls (should be a list ).
+title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls (should be a list).
 """
     all_content = []
     for key,val in output.items():
@@ -172,7 +172,7 @@ def generate_content_from_web(sub_module_name):
     for key, val in sub_module_name.items():    
         tavily_client = TavilyClient(api_key=os.environ.get("TAVILY_API_KEY"))
         print('Searching content for module:', key)
-        search_result = tavily_client.get_search_context(sub_module_name, search_depth="advanced", max_tokens=4000)
+        search_result = tavily_client.get_search_context(val, search_depth="advanced", max_tokens=4000)
         client = OpenAI()
         completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',

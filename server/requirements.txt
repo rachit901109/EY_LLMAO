@@ -14,3 +14,5 @@ deep-translator
 langdetect
 weasyprint
 tavily-python
+lingua-language-detector
+iso639-lang
