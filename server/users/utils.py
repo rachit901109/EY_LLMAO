@@ -96,6 +96,7 @@ title_for_the_content, content, subsections (which is a list of dictionaries wit
         time.sleep(25)
     return all_content
 
+
 def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
     # Load the HTML template
     template_str = """
