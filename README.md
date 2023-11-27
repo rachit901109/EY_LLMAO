@@ -78,3 +78,11 @@ Objective: Boost engagement with personalized 3D avatars.
 Objective: Comprehensive learning with assessments.
 - Courses Recommendation System:
 Objective: Personalized course suggestions.
+
+Images:
+![Picture1](https://github.com/rachit901109/EY_LLMAO/assets/110279690/7db1c5cd-a260-4038-9b89-04f2d8530baa)
+![Picture2](https://github.com/rachit901109/EY_LLMAO/assets/110279690/778aa23b-3bee-43e3-b8d5-5ddf01bb3c71)
+PDF files of generated content:
+![gencontent1](https://github.com/rachit901109/EY_LLMAO/assets/110279690/63fbb754-a6b7-4e08-86bf-08fdcb37dc6f)
+![gencontent2](https://github.com/rachit901109/EY_LLMAO/assets/110279690/ccd6a726-afd2-45d7-9511-1e536a3d39c9)
+
