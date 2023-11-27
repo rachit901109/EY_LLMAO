@@ -7,8 +7,7 @@ import zipfile
 from flask_cors import cross_origin
 from server.users.utils import module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web,generate_pdf
 from deep_translator import GoogleTranslator
-# from langdetect import detect
-from lingua import Language, LanguageDetectorBuilder
+from lingua import LanguageDetectorBuilder
 from iso639 import Lang
 
 users = Blueprint(name='users', import_name=__name__)
@@ -77,9 +76,8 @@ def login():
     return jsonify({"message": "User logged in successfully", "user_name":user.user_name, "email":user.email, "response":True}), 200
 
 
-
 # user account  --> profile pic remaining, only keeping /user as route for now
-# later add /user/<int:user_id> route for viewing other users profile
+# later add /user/<int:user_id> route for viewing other users profile and user engagement
 @users.route('/user', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def getuser():
@@ -116,7 +114,7 @@ def logout():
 
 
 
-# delete user route
+# delete user route --> user dependent queries and completed topics will also be deleted no need to delete them separately
 @users.route('/delete', methods=['DELETE'])
 @cross_origin(supports_credentials=True)
 def delete():
@@ -142,6 +140,9 @@ def delete():
     # return response
     return jsonify({"message": "User deleted successfully", "response":True}), 200
 
+
+# trending route --> Fetching trending topics from web and generating module summary
+# later make it user personalized
 @users.route('/query2/trending/<string:domain>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def trending_query(domain):
@@ -149,23 +150,24 @@ def trending_query(domain):
     print(text)
     return jsonify({"message": "Query successful", "domain": domain,  "content": text, "response":True}), 200
 
-# query route
+
+# query route --> if websearch is true then fetch from web and feed into model else directly feed into model
+# save frequently searched queries in database for faster retrieval
 @users.route('/query2/<string:topicname>/<string:level>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def query_topic(topicname,level,websearch):
     # check if user is logged in
-    # user_id = session.get('user_id')
-    # print(session.get('user_id'))
-    # if user_id is None:
-    #     return jsonify({"message": "User not logged in", "response":False}), 401
+    user_id = session.get('user_id')
+    print(session.get('user_id'))
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
     
     # # check if user exists
-    # user = User.query.get(user_id)
-    # if user is None:
-    #     return jsonify({"message": "User not found", "response":False}), 404
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
 
     # language detection for input provided
-    # source_language = detect(topicname)
     source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title()).pt1
     print(source_language)
 
@@ -195,9 +197,9 @@ def query_topic(topicname,level,websearch):
     print(text)
 
     # add user query to database
-    # new_user_query = Query(query_name=trans_topic, user_id=user_id)
-    # user.queries.append(new_user_query)
-    # db.session.commit()
+    new_user_query = Query(query_name=trans_topic, user_id=user_id)
+    user.queries.append(new_user_query)
+    db.session.commit()
 
     trans_text = {}
     
@@ -213,18 +215,19 @@ def query_topic(topicname,level,websearch):
     return jsonify({"message": "Query successful", "topic":trans_topic, "source_language":source_language,  "content": trans_text, "response":True}), 200
 
 
+# module query --> generate mutlimodal content (with images) for submodules in a module
 @users.route('/query2/<string:topicname>/<string:level>/<string:modulename>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def query_module(topicname, level, modulename, websearch):
     # check if user is logged in
-    # user_id = session.get("user_id", None)
-    # if user_id is None:
-    #     return jsonify({"message": "User not logged in", "response":False}), 401
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
     
     # check if user exists
-    # user = User.query.get(user_id)
-    # if user is None:
-    #     return jsonify({"message": "User not found", "response":False}), 404
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
 
     # generate content for submodules
     source_language = Lang(str(detector.detect_language_of(modulename)).split('.')[1].title()).pt1
@@ -279,6 +282,8 @@ def query_module(topicname, level, modulename, websearch):
     return jsonify({"message": "Query successful","images": images, "content": trans_content, "response": True}), 200
 
 
+# download route --> generate pdf for module summary and module content
+# currently generate pdf for latin and devanagari scripts 
 @users.route('/query2/<string:topicname>/<string:level>/<string:source_language>/<string:modulename>/download', methods=['GET'])
 def download_pdf(topicname, level, source_language, modulename):
     clean_modulename = modulename.replace(':',"_") 
@@ -287,15 +292,11 @@ def download_pdf(topicname, level, source_language, modulename):
     content_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, f"{clean_modulename}_content.json")
 
     # Check if both files exist
-    # if not (os.path.exists(summary_file_path) and os.path.exists(content_file_path)):
-    #     return jsonify({"message": "Module files not found", "response": False}), 404
     if not os.path.exists(content_file_path):
         return jsonify({"message": "Module content file not found", "response": False}), 404
     if not os.path.exists(summary_file_path):
         return jsonify({"message": "Module summary file not found", "response": False}), 404
     
-    
-
     # Read module summary from JSON
     with open(summary_file_path, "r") as summary_file:
         module_summary = json.load(summary_file)

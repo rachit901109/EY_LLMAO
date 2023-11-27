@@ -4,15 +4,14 @@ import openai
 import ast
 from openai import OpenAI
 import time
-# from weasyprint import HTML
-from jinja2 import Template
 from tavily import TavilyClient
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
-from reportlab.lib import styles
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 load_dotenv()
 
@@ -228,184 +227,6 @@ def module_image_from_web(module):
     return images
 
 
-# def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
-#     # Load the HTML template
-#     template_str = """
-#     <!DOCTYPE html>
-#     <html>
-#     <head>
-#         <style>
-#             body {
-#                 font-family: 'Noto Sans Kannada',Arial Unicode MS', 'Arial', sans-serif;
-#             }
-#             .module-summary {
-#                 font-weight: bold;
-#                 margin-bottom: 20px;
-#             }
-#             .module-content {
-#                 margin-bottom: 20px;
-#             }
-#             .subject-name {
-#                 font-weight: bold;
-#             }
-#             .content-title {
-#                 font-weight: bold;
-#                 margin-top: 10px;
-#             }
-#             .subsections {
-#                 margin-left: 20px;
-#             }
-#             .urls {
-#                 color: blue;
-#                 text-decoration: underline;
-#             }
-#         </style>
-#     </head>
-#     <body>
-#         <div class="module-summary">
-#             <h1>{{ modulename }}</h1>
-#             {% for title, summary in module_summary.items() %}
-#                 <p><strong>{{ title }}</strong>: {{ summary }}</p>
-#             {% endfor %}
-#         </div>
-        
-#         {% for entry in module_content %}
-#             <div class="module-content">
-#                 <div class="subject-name">{{ entry['subject_name'] }}</div>
-#                 <div class="content-title">{{ entry['title_for_the_content'] }}</div>
-#                 <div class="content">{{ entry['content'] }}</div>
-                
-#                 {% if 'subsections' in entry %}
-#                     <div class="subsections">
-#                         {% for subsection in entry['subsections'] %}
-#                             <p><strong>{{ subsection['title'] }}</strong>: {{ subsection['content'] }}</p>
-#                         {% endfor %}
-#                     </div>
-#                 {% endif %}
-                
-#                 {% if 'urls' in entry %}
-#                     <div class="urls">
-#                         <p>URLs:</p>
-#                         {% for url in entry['urls'] %}
-#                             <a href="{{ url }}" target="_blank">{{ url }}</a><br>
-#                         {% endfor %}
-#                     </div>
-#                 {% endif %}
-#             </div>
-#         {% endfor %}
-#     </body>
-#     </html>
-#     """
-#     template = Template(template_str)
-
-#     # Render the template
-#     html_content = template.render(modulename=modulename, module_summary=module_summary, module_content=module_content)
-
-#     # Generate PDF using WeasyPrint
-#     HTML(string=html_content).write_pdf(pdf_file_path)
-
-
-# from reportlab.lib.styles import getSampleStyleSheet
-# from reportlab.platypus import SimpleDocTemplate, Paragraph
-
-# def generate_pdf(pdf_file_path, modulename, module_summary, module_content):
-#     # Create a PDF document
-#     pdf = SimpleDocTemplate(pdf_file_path)
-
-#     # Get the default styles
-#     styles = getSampleStyleSheet()
-
-#     # Build the PDF document
-#     content = [
-#         Paragraph(modulename, styles['Heading1']),
-#         Paragraph("Module Summary:", styles['Heading2']),
-#         Paragraph(module_summary[modulename], styles['Normal']),
-#     ]
-
-#     # Add module content (you can customize this part based on your structure)
-#     for entry in module_content:
-#         content.append(Paragraph(entry['subject_name'], styles['Heading2']))
-#         content.append(Paragraph(entry['title_for_the_content'], styles['Heading2']))
-#         content.append(Paragraph(entry['content'], styles['Normal']))
-
-#         # Check if there are subsections
-#         if 'subsections' in entry:
-#             for subsection in entry['subsections']:
-#                 content.append(Paragraph(subsection['title'], styles['Heading3']))
-#                 content.append(Paragraph(subsection['content'], styles['Normal']))
-        
-#         if 'urls' in entry:
-#             content.append(Paragraph("Reference:", styles['Heading3']))
-#             for url in entry['urls']:
-#                 content.append(Paragraph(url, styles['Normal']))
-
-#         # Add other content fields as needed
-
-#     pdf.build(content)
-
-
-# from reportlab.lib.pagesizes import letter
-# from reportlab.lib import colors
-# from reportlab.lib.styles import ParagraphStyle
-# from reportlab.platypus import SimpleDocTemplate, Paragraph
-# from reportlab.pdfbase import pdfmetrics
-# from reportlab.pdfbase.ttfonts import TTFont
-
-# def generate_pdf(pdf_file_path, modulename, module_summary, module_content, src_lang):
-#     # Register Unicode fonts (replace 'NotoSans-Regular.ttf' and 'Inconsolata-Regular.ttf' with the path to your font files)
-#     pdfmetrics.registerFont(TTFont('NotoSansDevanagari', 'Fonts/NotoSansDevanagari-Regular.ttf'))
-#     pdfmetrics.registerFont(TTFont('NotoSans-Regular', 'Fonts/NotoSans-Regular.ttf'))
-
-#     # Create a PDF document
-#     pdf = SimpleDocTemplate(pdf_file_path, pagesize=letter)
-
-#     # Define styles for different headings and content
-#     styles = {
-#         'Heading1': ParagraphStyle(name='Heading1', fontName='NotoSans-Regular', fontSize=16),
-#         'Heading2': ParagraphStyle(name='Heading2', fontName='NotoSans-Regular', fontSize=14),
-#         'Heading3': ParagraphStyle(name='Heading3', fontName='NotoSans-Regular', fontSize=12),
-#         'Devanagari_Heading1': ParagraphStyle(name='Devanagari_Heading1', fontName='NotoSansDevanagari', fontSize=16),
-#         'Devanagari_Heading2': ParagraphStyle(name='Devanagari_Heading2', fontName='NotoSansDevanagari', fontSize=14),
-#         'Devanagari_Heading3': ParagraphStyle(name='Devanagari_Heading3', fontName='NotoSansDevanagari', fontSize=12),
-#         'Normal': ParagraphStyle(name='Normal', fontName='NotoSans-Regular', fontSize=8),
-#     }
-
-#     # Build the PDF document
-#     content = [
-#         Paragraph(modulename, styles['Heading1' if src_lang == 'en' else 'Devanagari_Heading1']),
-#         Paragraph("Module Summary:", styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']),
-#         Paragraph(module_summary[modulename], styles['Heading1' if src_lang == 'en' else 'Devanagari_Heading1']),
-#     ]
-
-#     # Add module content
-#     for entry in module_content:
-#         content.append(Paragraph(entry['subject_name'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
-#         content.append(Paragraph(entry['title_for_the_content'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
-#         content.append(Paragraph(entry['content'], styles['Heading1' if src_lang == 'en' else 'Devanagari_Heading1']))
-
-#         # Check if there are subsections
-#         if 'subsections' in entry:
-#             for subsection in entry['subsections']:
-#                 content.append(Paragraph(subsection['title'], styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']))
-#                 content.append(Paragraph(subsection['content'], styles['Heading2' if src_lang == 'en' else 'Devanagari_Heading2']))
-        
-#         # Check if there are URLs
-#         if 'urls' in entry:
-#             content.append(Paragraph("Reference:", styles['Heading3' if src_lang == 'en' else 'Devanagari_Heading3']))
-#             for url in entry['urls']:
-#                 content.append(Paragraph(url, styles['Normal']))
-
-#     # Build the PDF document
-#     pdf.build(content)
-
-
-from reportlab.lib.pagesizes import letter
-from reportlab.lib import colors
-from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-
 def generate_pdf(pdf_file_path, modulename, module_summary, module_content, src_lang):
     # Register Unicode fonts (replace 'NotoSans-Regular.ttf' and 'NotoSansDevanagari-Regular.ttf' with the path to your font files)
     pdfmetrics.registerFont(TTFont('NotoSansDevanagari', 'Fonts/NotoSansDevanagari-Regular.ttf'))
@@ -450,7 +271,5 @@ def generate_pdf(pdf_file_path, modulename, module_summary, module_content, src_
             content.append(Paragraph("Reference:", styles['Heading3']))
             for url in entry['urls']:
                 content.append(Paragraph(url, styles['URL']))
-
-        # Add other content fields as needed
 
     pdf.build(content)
