@@ -157,15 +157,15 @@ def trending_query(domain):
 @cross_origin(supports_credentials=True)
 def query_topic(topicname,level,websearch):
     # check if user is logged in
-    user_id = session.get('user_id')
-    print(session.get('user_id'))
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+    # user_id = session.get('user_id')
+    # print(session.get('user_id'))
+    # if user_id is None:
+    #     return jsonify({"message": "User not logged in", "response":False}), 401
     
-    # # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+    # # # check if user exists
+    # user = User.query.get(user_id)
+    # if user is None:
+    #     return jsonify({"message": "User not found", "response":False}), 404
 
     # language detection for input provided
     source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title()).pt1
@@ -197,9 +197,9 @@ def query_topic(topicname,level,websearch):
     print(text)
 
     # add user query to database
-    new_user_query = Query(query_name=trans_topic, user_id=user_id)
-    user.queries.append(new_user_query)
-    db.session.commit()
+    # new_user_query = Query(query_name=trans_topic, user_id=user_id)
+    # user.queries.append(new_user_query)
+    # db.session.commit()
 
     trans_text = {}
     
@@ -219,15 +219,15 @@ def query_topic(topicname,level,websearch):
 @users.route('/query2/<string:topicname>/<string:level>/<string:modulename>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def query_module(topicname, level, modulename, websearch):
-    # check if user is logged in
-    user_id = session.get("user_id", None)
-    if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+    # # check if user is logged in
+    # user_id = session.get("user_id", None)
+    # if user_id is None:
+    #     return jsonify({"message": "User not logged in", "response":False}), 401
     
-    # check if user exists
-    user = User.query.get(user_id)
-    if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+    # # check if user exists
+    # user = User.query.get(user_id)
+    # if user is None:
+    #     return jsonify({"message": "User not found", "response":False}), 404
 
     # generate content for submodules
     source_language = Lang(str(detector.detect_language_of(modulename)).split('.')[1].title()).pt1

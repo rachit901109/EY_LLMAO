@@ -1,0 +1,116 @@
+[
+    {
+        "subject_name": "Principis b\u00e0sics de la f\u00edsica dels semiconductors",
+        "title_for_the_content": "Entendre els fonaments de la f\u00edsica dels semiconductors",
+        "content": "La f\u00edsica de semiconductors \u00e9s una branca de la f\u00edsica de l'estat s\u00f2lid que se centra en el comportament i les propietats dels materials semiconductors. Els semiconductors s\u00f3n materials que tenen una conductivitat entre la d'un conductor i la d'un a\u00efllant. Aquesta propietat \u00fanica fa que els semiconductors integren la funcionalitat dels dispositius electr\u00f2nics moderns, com ara transistors, d\u00edodes i circuits integrats. Comprendre els principis b\u00e0sics de la f\u00edsica dels semiconductors \u00e9s essencial per al disseny i desenvolupament de dispositius i tecnologies electr\u00f2nics.",
+        "subsections": [
+            {
+                "title": "Aplicacions i casos d'\u00fas",
+                "content": "La f\u00edsica dels semiconductors t\u00e9 una \u00e0mplia gamma d'aplicacions pr\u00e0ctiques. Des de la microelectr\u00f2nica i les telecomunicacions fins a les energies renovables i els dispositius m\u00e8dics, els materials i dispositius semiconductors tenen un paper crucial. Per exemple, la f\u00edsica dels semiconductors \u00e9s essencial per al desenvolupament de c\u00e8l\u00b7lules solars, d\u00edodes emissors de llum (LED) i processadors d'ordinador. Comprendre el comportament dels semiconductors en diferents condicions \u00e9s vital per optimitzar el rendiment i l'efici\u00e8ncia d'aquestes tecnologies."
+            },
+            {
+                "title": "Aplicacions i casos d'\u00fas",
+                "content": "La f\u00edsica dels semiconductors t\u00e9 una \u00e0mplia gamma d'aplicacions pr\u00e0ctiques. Des de la microelectr\u00f2nica i les telecomunicacions fins a les energies renovables i els dispositius m\u00e8dics, els materials i dispositius semiconductors tenen un paper crucial. Per exemple, la f\u00edsica dels semiconductors \u00e9s essencial per al desenvolupament de c\u00e8l\u00b7lules solars, d\u00edodes emissors de llum (LED) i processadors d'ordinador. Comprendre el comportament dels semiconductors en diferents condicions \u00e9s vital per optimitzar el rendiment i l'efici\u00e8ncia d'aquestes tecnologies."
+            },
+            {
+                "title": "Aplicacions i casos d'\u00fas",
+                "content": "La f\u00edsica dels semiconductors t\u00e9 una \u00e0mplia gamma d'aplicacions pr\u00e0ctiques. Des de la microelectr\u00f2nica i les telecomunicacions fins a les energies renovables i els dispositius m\u00e8dics, els materials i dispositius semiconductors tenen un paper crucial. Per exemple, la f\u00edsica dels semiconductors \u00e9s essencial per al desenvolupament de c\u00e8l\u00b7lules solars, d\u00edodes emissors de llum (LED) i processadors d'ordinador. Comprendre el comportament dels semiconductors en diferents condicions \u00e9s vital per optimitzar el rendiment i l'efici\u00e8ncia d'aquestes tecnologies."
+            }
+        ],
+        "urls": [
+            "https://www.electronics-tutorials.ws/"
+        ]
+    },
+    {
+        "subject_name": "Tipus de Semiconductors",
+        "title_for_the_content": "Comprensi\u00f3 de les varietats de semiconductors",
+        "content": "Els semiconductors s\u00f3n materials que tenen propietats entre les dels conductors i els a\u00efllants. S\u00f3n essencials en el funcionament dels dispositius electr\u00f2nics i tenen diversos tipus, cadascun amb caracter\u00edstiques i aplicacions \u00faniques. Comprendre aquests tipus \u00e9s crucial per a qualsevol persona implicada en electr\u00f2nica, enginyeria o tecnologia.",
+        "subsections": [
+            {
+                "title": "Semiconductors org\u00e0nics",
+                "content": "Els semiconductors org\u00e0nics es componen de materials org\u00e0nics (basats en carboni) en lloc d'inorg\u00e0nics com el silici o el germani. S'utilitzen en aplicacions com ara d\u00edodes emissors de llum org\u00e0nics (OLED) i c\u00e8l\u00b7lules fotovoltaiques org\u00e0niques. Els semiconductors org\u00e0nics tenen el potencial d'electr\u00f2nica flexible i processos de fabricaci\u00f3 de baix cost, cosa que els converteix en una \u00e0rea prometedora d'investigaci\u00f3 i desenvolupament."
+            },
+            {
+                "title": "Semiconductors org\u00e0nics",
+                "content": "Els semiconductors org\u00e0nics es componen de materials org\u00e0nics (basats en carboni) en lloc d'inorg\u00e0nics com el silici o el germani. S'utilitzen en aplicacions com ara d\u00edodes emissors de llum org\u00e0nics (OLED) i c\u00e8l\u00b7lules fotovoltaiques org\u00e0niques. Els semiconductors org\u00e0nics tenen el potencial d'electr\u00f2nica flexible i processos de fabricaci\u00f3 de baix cost, cosa que els converteix en una \u00e0rea prometedora d'investigaci\u00f3 i desenvolupament."
+            },
+            {
+                "title": "Semiconductors org\u00e0nics",
+                "content": "Els semiconductors org\u00e0nics es componen de materials org\u00e0nics (basats en carboni) en lloc d'inorg\u00e0nics com el silici o el germani. S'utilitzen en aplicacions com ara d\u00edodes emissors de llum org\u00e0nics (OLED) i c\u00e8l\u00b7lules fotovoltaiques org\u00e0niques. Els semiconductors org\u00e0nics tenen el potencial d'electr\u00f2nica flexible i processos de fabricaci\u00f3 de baix cost, cosa que els converteix en una \u00e0rea prometedora d'investigaci\u00f3 i desenvolupament."
+            }
+        ],
+        "urls": [
+            "https://www.electronics-tutorials.ws",
+            "https://www.sciencedirect.com/topics/materials-science/semiconductor-materials"
+        ]
+    },
+    {
+        "subject_name": "Materials i propietats semiconductors",
+        "title_for_the_content": "Comprensi\u00f3 dels materials i propietats dels semiconductors",
+        "content": "Els materials semiconductors s\u00f3n un component crucial en el camp de l'enginyeria i la tecnologia el\u00e8ctrica. Aquests materials posseeixen propietats \u00faniques que els fan indispensables per a una \u00e0mplia gamma d'aplicacions, des d'electr\u00f2nica de consum i telecomunicacions fins a plaques solars i dispositius m\u00e8dics. Comprendre les propietats i el comportament dels materials semiconductors \u00e9s essencial perqu\u00e8 els enginyers i cient\u00edfics dissenyin i desenvolupin tecnologies innovadores.",
+        "subsections": [
+            {
+                "title": "Casos d'\u00fas i aplicacions",
+                "content": "Els materials semiconductors s'utilitzen en una \u00e0mplia gamma d'aplicacions, com ara circuits integrats, transistors, d\u00edodes, c\u00e8l\u00b7lules solars i d\u00edodes emissors de llum (LED). Formen la columna vertebral de l'electr\u00f2nica moderna i s\u00f3n essencials per alimentar dispositius com ara tel\u00e8fons intel\u00b7ligents, ordinadors i equips m\u00e8dics. Els materials semiconductors tamb\u00e9 tenen un paper crucial en el desenvolupament de la tecnologia d'energies renovables, permetent la conversi\u00f3 eficient de la llum solar en electricitat en panells solars."
+            },
+            {
+                "title": "Casos d'\u00fas i aplicacions",
+                "content": "Els materials semiconductors s'utilitzen en una \u00e0mplia gamma d'aplicacions, com ara circuits integrats, transistors, d\u00edodes, c\u00e8l\u00b7lules solars i d\u00edodes emissors de llum (LED). Formen la columna vertebral de l'electr\u00f2nica moderna i s\u00f3n essencials per alimentar dispositius com ara tel\u00e8fons intel\u00b7ligents, ordinadors i equips m\u00e8dics. Els materials semiconductors tamb\u00e9 tenen un paper crucial en el desenvolupament de la tecnologia d'energies renovables, permetent la conversi\u00f3 eficient de la llum solar en electricitat en panells solars."
+            },
+            {
+                "title": "Casos d'\u00fas i aplicacions",
+                "content": "Els materials semiconductors s'utilitzen en una \u00e0mplia gamma d'aplicacions, com ara circuits integrats, transistors, d\u00edodes, c\u00e8l\u00b7lules solars i d\u00edodes emissors de llum (LED). Formen la columna vertebral de l'electr\u00f2nica moderna i s\u00f3n essencials per alimentar dispositius com ara tel\u00e8fons intel\u00b7ligents, ordinadors i equips m\u00e8dics. Els materials semiconductors tamb\u00e9 tenen un paper crucial en el desenvolupament de la tecnologia d'energies renovables, permetent la conversi\u00f3 eficient de la llum solar en electricitat en panells solars."
+            }
+        ],
+        "urls": [
+            "https://www.tutorialspoint.com/semiconductor_materials/semiconductor_materials_quick_guide.htm",
+            "https://www.electronics-tutorials.ws/semiconductors/semiconductor-basics.html"
+        ]
+    },
+    {
+        "subject_name": "Dispositius i aplicacions semiconductors",
+        "title_for_the_content": "Una visi\u00f3 general dels dispositius i aplicacions semiconductors",
+        "content": "Els dispositius semiconductors s\u00f3n components electr\u00f2nics fets de materials semiconductors, principalment silici, que poden controlar el flux de corrent el\u00e8ctric. Aquests dispositius s\u00f3n fonamentals per a l'electr\u00f2nica moderna i s'utilitzen en una \u00e0mplia gamma d'aplicacions, des de microxips en ordinadors fins a plaques solars i llums LED. Comprendre els principis i les aplicacions dels dispositius semiconductors \u00e9s crucial per als enginyers, t\u00e8cnics i qualsevol persona implicada en la ind\u00fastria electr\u00f2nica.",
+        "subsections": [
+            {
+                "title": "Aplicacions dels Dispositius Semiconductors",
+                "content": "Els dispositius semiconductors tenen una \u00e0mplia gamma d'aplicacions, incl\u00f2s en el camp de l'electr\u00f2nica, telecomunicacions, optoelectr\u00f2nica i energies renovables. S\u00f3n components essencials en dispositius electr\u00f2nics com ara tel\u00e8fons intel\u00b7ligents, ordinadors i televisors. En telecomunicacions, els dispositius semiconductors s'utilitzen en el processament i la transmissi\u00f3 del senyal. A m\u00e9s, els dispositius semiconductors s\u00f3n integrals a les aplicacions optoelectr\u00f2niques, com ara llums LED, l\u00e0sers i c\u00e8l\u00b7lules fotovoltaiques per a panells solars."
+            },
+            {
+                "title": "Aplicacions dels Dispositius Semiconductors",
+                "content": "Els dispositius semiconductors tenen una \u00e0mplia gamma d'aplicacions, incl\u00f2s en el camp de l'electr\u00f2nica, telecomunicacions, optoelectr\u00f2nica i energies renovables. S\u00f3n components essencials en dispositius electr\u00f2nics com ara tel\u00e8fons intel\u00b7ligents, ordinadors i televisors. En telecomunicacions, els dispositius semiconductors s'utilitzen en el processament i la transmissi\u00f3 del senyal. A m\u00e9s, els dispositius semiconductors s\u00f3n integrals a les aplicacions optoelectr\u00f2niques, com ara llums LED, l\u00e0sers i c\u00e8l\u00b7lules fotovoltaiques per a panells solars."
+            },
+            {
+                "title": "Aplicacions dels Dispositius Semiconductors",
+                "content": "Els dispositius semiconductors tenen una \u00e0mplia gamma d'aplicacions, incl\u00f2s en el camp de l'electr\u00f2nica, telecomunicacions, optoelectr\u00f2nica i energies renovables. S\u00f3n components essencials en dispositius electr\u00f2nics com ara tel\u00e8fons intel\u00b7ligents, ordinadors i televisors. En telecomunicacions, els dispositius semiconductors s'utilitzen en el processament i la transmissi\u00f3 del senyal. A m\u00e9s, els dispositius semiconductors s\u00f3n integrals a les aplicacions optoelectr\u00f2niques, com ara llums LED, l\u00e0sers i c\u00e8l\u00b7lules fotovoltaiques per a panells solars."
+            }
+        ],
+        "urls": [
+            "https://www.electronics-tutorials.ws/",
+            "https://www.allaboutcircuits.com/textbook/semiconductors/chpt-1/introduction-to-semiconductor-devices/"
+        ]
+    },
+    {
+        "subject_name": "Processos de fabricaci\u00f3 de semiconductors",
+        "title_for_the_content": "Una visi\u00f3 general dels processos de fabricaci\u00f3 de semiconductors",
+        "content": "Els processos de fabricaci\u00f3 de semiconductors fan refer\u00e8ncia a la s\u00e8rie de passos implicats en la creaci\u00f3 de dispositius semiconductors com ara circuits integrats (CI) i transistors. Aquests processos s\u00f3n crucials per a la producci\u00f3 d'una \u00e0mplia gamma de components electr\u00f2nics utilitzats en diverses aplicacions, com ara ordinadors, tel\u00e8fons intel\u00b7ligents, electr\u00f2nica d'autom\u00f2bils i molt m\u00e9s.",
+        "subsections": [
+            {
+                "title": "Aplicacions",
+                "content": "Els processos de fabricaci\u00f3 de semiconductors s'utilitzen en una \u00e0mplia gamma d'aplicacions, com ara l'electr\u00f2nica de consum, l'automatitzaci\u00f3 industrial, les telecomunicacions i els equips sanitaris. Per exemple, el proc\u00e9s de fabricaci\u00f3 \u00e9s fonamental per crear els petits transistors que alimenten els processadors en tel\u00e8fons intel\u00b7ligents i ordinadors, aix\u00ed com les complexes matrius de sensors utilitzades en dispositius m\u00e8dics i sistemes de seguretat per a autom\u00f2bils."
+            },
+            {
+                "title": "Aplicacions",
+                "content": "Els processos de fabricaci\u00f3 de semiconductors s'utilitzen en una \u00e0mplia gamma d'aplicacions, com ara l'electr\u00f2nica de consum, l'automatitzaci\u00f3 industrial, les telecomunicacions i els equips sanitaris. Per exemple, el proc\u00e9s de fabricaci\u00f3 \u00e9s fonamental per crear els petits transistors que alimenten els processadors en tel\u00e8fons intel\u00b7ligents i ordinadors, aix\u00ed com les complexes matrius de sensors utilitzades en dispositius m\u00e8dics i sistemes de seguretat per a autom\u00f2bils."
+            },
+            {
+                "title": "Aplicacions",
+                "content": "Els processos de fabricaci\u00f3 de semiconductors s'utilitzen en una \u00e0mplia gamma d'aplicacions, com ara l'electr\u00f2nica de consum, l'automatitzaci\u00f3 industrial, les telecomunicacions i els equips sanitaris. Per exemple, el proc\u00e9s de fabricaci\u00f3 \u00e9s fonamental per crear els petits transistors que alimenten els processadors en tel\u00e8fons intel\u00b7ligents i ordinadors, aix\u00ed com les complexes matrius de sensors utilitzades en dispositius m\u00e8dics i sistemes de seguretat per a autom\u00f2bils."
+            }
+        ],
+        "urls": [
+            "https://www.computerhistory.org/atchm/the-pioneers-of-semiconductor-research/",
+            "https://www.intechopen.com/books/advances-in-quantum-dot-devices/semiconductor-fabrication-processes-for-quantum-dot-solar-cells"
+        ]
+    }
+]

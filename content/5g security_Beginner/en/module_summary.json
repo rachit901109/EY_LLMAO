@@ -1,0 +1,7 @@
+{
+    "Module 1: Introduction to 5G Security": "This module will provide an overview of 5G security, including the potential threats and vulnerabilities associated with 5G networks and the importance of securing them.",
+    "Module 2: Security protocols in 5G": "This module will cover the security protocols used in 5G networks, including authentication, encryption, and key management, as well as the role of security gateways and firewalls.",
+    "Module 3: Threats and vulnerabilities in 5G networks": "This module will explore the various threats and vulnerabilities that 5G networks are susceptible to, such as network slicing attacks, IoT device vulnerabilities, and rogue base stations.",
+    "Module 4: 5G network security best practices": "This module will discuss the best practices for securing 5G networks, including implementing network segmentation, deploying intrusion detection systems, and conducting regular security audits.",
+    "Module 5: Regulatory and compliance issues in 5G security": "This module will examine the regulatory and compliance requirements related to 5G security, including privacy regulations, data protection laws, and industry standards for secure 5G deployments."
+}
