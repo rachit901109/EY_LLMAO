@@ -17,7 +17,7 @@ class Query(db.Model):
 
 
     def __repr__(self):
-        return f'<query_name={self.query_name} user_id={self.user_id} date_search={self.date_search}>'
+        return f'<query_id={self.query_id} user_id={self.user_id} topic_id={self.topic_id} date_search={self.date_search.strftime("%d/%m/%Y %H:%M")}>'
 
 
 class CompletedModule(db.Model):
@@ -78,13 +78,13 @@ class User(db.Model):
     completed_topics = association_proxy('user_topic_association', 'topic')
 
     def __repr__(self):
-        return f'<User user_id={self.user_id} email={self.email}>'
+        return f'<User user_id={self.user_id} user_name={self.user_name} email={self.email}>'
 
 
 class Topic(db.Model):
     """Topics in the app."""
     topic_id = db.Column(db.Integer, primary_key=True)
-    topic_name = db.Column(db.String(100), nullable=False)
+    topic_name = db.Column(db.String(100), nullable=False, unique=True)
 
     topic_query_association = db.relationship('Query', back_populates='topic')
     query_by = association_proxy('topic_query_association', 'user')
@@ -112,4 +112,4 @@ class Module(db.Model):
     completed_by = association_proxy('module_comp_association', 'user')
 
     def __repr__(self):
-        return f'<module_name={self.module_name} topic_id={self.topic_id}> level={self.level} summary={self.summary} submodule_content={self.submodule_content}>'
+        return f'<module_name={self.module_name} topic_id={self.topic_id}> level={self.level} summary={self.summary}>'
