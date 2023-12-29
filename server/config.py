@@ -13,13 +13,8 @@ class config():
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///database.db'
 
-    # session configurations
-    SESSION_TYPE = 'sqlalchemy'
-    SESSION_PERMANENT=True
-    PERMANENT_SESSION_LIFETIME=timedelta(minutes=30)
-    SESSION_COOKIE_SAMESITE = 'None'
-    # session cookie configuration
+    # client session configuration
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=60)
+    SESSION_PERMANENT = True
     SESSION_COOKIE_NAME = 'user_session'
-    SESSION_COOKIE_MAX_AGE = timedelta(minutes=30)
-
 

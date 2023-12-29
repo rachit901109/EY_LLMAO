@@ -1,14 +1,15 @@
 from flask import request, session, jsonify,  Blueprint, send_file
 from server import db, bcrypt
-from server.models import User, Query
+from server.models import User, Topic, Module, Query
 import os
 import json
-import zipfile
 from flask_cors import cross_origin
 from server.users.utils import module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web,generate_pdf
 from deep_translator import GoogleTranslator
 from lingua import LanguageDetectorBuilder
 from iso639 import Lang
+from server.recommender_system.recommendations import recommend_module, popular_topics
+from sqlalchemy import desc
 
 users = Blueprint(name='users', import_name=__name__)
 
@@ -91,16 +92,31 @@ def getuser():
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
     
-    user_queries = [query.query_name for query in user.queries]
-    user_completed_topics = {}
-    user_started_topics = {}
+    user_queries = user.user_query_association
+    if user_queries is None:
+        query_message = "You have not searched for any topic yet. Please search for a topic to get recommendations."
+        recommended_topics = popular_topics()
+        recommended_topic_names = [Topic.query.get(topic_id).topic_name for topic_id in recommended_topics]
+    else:
+        latest_query = Query.query.filter_by(user_id=1).order_by(desc(Query.date_search)).first() 
+        base_module = Module.query.filter_by(topic_id=latest_query.topic_id).first()
+        recommended_modules = recommend_module(base_module.module_id)
+        recommended_topic_content = {}
+        for module_id in recommended_modules:
+            module = Module.query.get(module_id)
+            recommended_topic_content[module.module_name] = module.summary
+        
     
-    for topic in user.completed_topics:
-        if topic.date_completed is None:
-            user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
-        user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
+    # user_queries = [query.query_name for query in user.queries]
+    # user_completed_topics = {}
+    # user_started_topics = {}
+    
+    # for topic in user.completed_topics:
+    #     if topic.date_completed is None:
+    #         user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
+    #     user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
 
-    response = {"message":"User found", "user_name":user.user_name, "email":user.email, "interests":user.interests, "queries":user_queries, "completed_topics":user_completed_topics, "started_topics":user_started_topics, "response":True}
+    response = {"message":"User found", "user_name":user.user_name, "email":user.email, "interests":user.interests, "response":True}
 
     return jsonify(response), 200
 
@@ -151,112 +167,21 @@ def trending_query(domain):
     return jsonify({"message": "Query successful", "domain": domain,  "content": text, "response":True}), 200
 
 
-# query route --> if websearch is true then fetch from web and feed into model else directly feed into model
-# save frequently searched queries in database for faster retrieval
-@users.route('/query2/<string:topicname>/<string:level>/<string:websearch>', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def query_topic(topicname,level,websearch):
-    # check if user is logged in
-    # user_id = session.get('user_id')
-    # print(session.get('user_id'))
-    # if user_id is None:
-    #     return jsonify({"message": "User not logged in", "response":False}), 401
+def translate_module_summary(content, target_language):
+    if target_language=='en':
+        return content
     
-    # # # check if user exists
-    # user = User.query.get(user_id)
-    # if user is None:
-    #     return jsonify({"message": "User not found", "response":False}), 404
+    trans_content = {}
+    for key, value in content.items():
+        trans_key = GoogleTranslator(source='en', target=target_language).translate(str(key))
+        trans_content[trans_key] = GoogleTranslator(source='en', target=target_language).translate(str(value))
+    return trans_content
 
-    # language detection for input provided
-    source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title()).pt1
-    print(source_language)
 
-    # translate other languages input to english
-    trans_topic = GoogleTranslator(source='auto', target='en').translate(topicname)
-    print(trans_topic)
-
-    content_dir = os.path.join(os.getcwd(), "content")
-    topic_level_dir = os.path.join(content_dir, trans_topic+"_"+level)
-    lang_dir = os.path.join(topic_level_dir, source_language)
-
-    # create directories if they don't exist
-    for dir in [content_dir, topic_level_dir, lang_dir]:
-        os.makedirs(dir, exist_ok=True)
-
-    file_path = os.path.join(lang_dir,  "module_summary.json")
-    if os.path.exists(file_path):
-        with open(file_path, "r") as file:
-            trans_text = json.load(file)
-        print("File exists, I am speed")
-        return jsonify({"message": "Query successful", "topic":trans_topic, "source_language":source_language,  "content": trans_text, "response":True}), 200
-
-    if(websearch=="true"):
-        text = generate_module_summary_from_web(topic=trans_topic,level=level)
-    else:    
-        text = generate_module_summary(topic=trans_topic,level=level)
-    print(text)
-
-    # add user query to database
-    # new_user_query = Query(query_name=trans_topic, user_id=user_id)
-    # user.queries.append(new_user_query)
-    # db.session.commit()
-
-    trans_text = {}
+def translate_submodule_content(content, target_language):
+    if target_language=='en':
+        return content
     
-    for key,value in text.items(): 
-        trans_key = GoogleTranslator(source='auto', target=source_language).translate(str(key))
-        trans_text[trans_key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
-    
-    print(trans_text)
-
-    with open(file_path, "w") as file:
-        json.dump(trans_text, file, indent=4)
-
-    return jsonify({"message": "Query successful", "topic":trans_topic, "source_language":source_language,  "content": trans_text, "response":True}), 200
-
-
-# module query --> generate mutlimodal content (with images) for submodules in a module
-@users.route('/query2/<string:topicname>/<string:level>/<string:modulename>/<string:websearch>', methods=['GET'])
-@cross_origin(supports_credentials=True)
-def query_module(topicname, level, modulename, websearch):
-    # # check if user is logged in
-    # user_id = session.get("user_id", None)
-    # if user_id is None:
-    #     return jsonify({"message": "User not logged in", "response":False}), 401
-    
-    # # check if user exists
-    # user = User.query.get(user_id)
-    # if user is None:
-    #     return jsonify({"message": "User not found", "response":False}), 404
-
-    # generate content for submodules
-    source_language = Lang(str(detector.detect_language_of(modulename)).split('.')[1].title()).pt1
-    print(source_language)
-    trans_modulename = GoogleTranslator(source='auto', target='en').translate(modulename)
-    clean_modulename = modulename.replace(':',"_")  
-
-    content_path = os.path.join(os.getcwd(), "content", topicname+"_"+level, source_language, clean_modulename+"_content.json") 
-    images= module_image_from_web(trans_modulename)
-    # print("Images list", images) 
-
-    print(content_path, os.path.exists(content_path))
-    if os.path.exists(content_path):
-        with open(content_path, "r") as file:
-            trans_content = json.load(file)
-        print("File exists, I am speed")
-        return jsonify({"message": "Query successful", "images":images, "content": trans_content, "response": True}), 200
-
-    if websearch=="true":
-        submodules = generate_submodules_from_web(trans_modulename)
-        print(submodules)
-        content = generate_content_from_web(submodules)
-    else:
-        submodules = generate_submodules(trans_modulename)
-        print(submodules)
-        content = generate_content(submodules)
-    
-    
-    # translate content for submodules
     trans_content = []
     for entry in content:
         temp = {}
@@ -269,17 +194,122 @@ def query_module(topicname, level, modulename, websearch):
                 temp_subsections = {}
                 for subsection in value:
                     for sub_key, sub_value in subsection.items():
-                        temp_subsections[sub_key] = GoogleTranslator(source='auto', target=source_language).translate(str(sub_value))
+                        temp_subsections[sub_key] = GoogleTranslator(source='auto', target=target_language).translate(str(sub_value))
                     temp[key].append(temp_subsections)
             else:
-                temp[key] = GoogleTranslator(source='auto', target=source_language).translate(str(value))
+                temp[key] = GoogleTranslator(source='auto', target=target_language).translate(str(value))
         trans_content.append(temp)
+    return trans_content
 
-    with open(content_path, "w") as file:
-        json.dump(trans_content, file, indent=4)
+
+# query route --> if websearch is true then fetch from web and feed into model else directly feed into model
+# save frequently searched queries in database for faster retrieval
+@users.route('/query2/<string:topicname>/<string:level>/<string:websearch>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def query_topic(topicname,level,websearch):
+    # check if user is logged in
+    user_id = session.get('user_id')
+    print(session.get('user_id'))
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
     
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+
+    # language detection for input provided
+    source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title()).pt1
+    print(f"Source Language: {source_language}")
+
+    # translate other languages input to english
+    trans_topic_name = GoogleTranslator(source='auto', target='en').translate(topicname)
+    print(f"Translated topic name: {trans_topic_name}")
+
+    # check if topic exists in database along with its modulenames and summaries
+    topic = Topic.query.filter_by(topic_name=trans_topic_name).first()
+    if topic:
+        modules = Module.query.filter_by(topic_id=topic.topic_id, level=level).all()
+        module_ids = {module.module_name:module.module_id for module in modules}
+        module_summary_content = {module.module_name:module.summary for module in modules}
+        trans_module_summary_content = translate_module_summary(module_summary_content, source_language)
+        print(f"Translated module summary content: {trans_module_summary_content}")
+        
+        return jsonify({"message": "Query successful", "topic_id":topic.topic_id, "topic":trans_topic_name, "source_language":source_language, "module_ids":module_ids, "content": trans_module_summary_content, "response":True}), 200
+
+    # if topic does not exist in database then save topic generate module summary and save it in database
+    if(websearch=="true"):
+        module_summary_content = generate_module_summary_from_web(topic=trans_topic_name,level=level)
+    else:    
+        module_summary_content = generate_module_summary(topic=trans_topic_name,level=level)
+
+    topic = Topic(topic_name=trans_topic_name)
+    db.session.add(topic)
+    db.session.commit()
+    print(f"topic added to database: {topic}")
+    module_ids = {}
+    for modulename, modulesummary in module_summary_content.items():
+        new_module = Module(
+            module_name=modulename,
+            topic_id=topic.topic_id,
+            level=level,
+            summary=modulesummary
+        )
+        db.session.add(new_module)
+        db.session.commit()
+        module_ids[modulename] = new_module.module_id
+
+    # add user query to database
+    new_user_query = Query(user_id=user.user_id, topic_id=topic.topic_id, lang=source_language)
+    db.session.add(new_user_query)
+    db.session.commit()
+
+    # translate module summary content to source language
+    trans_module_summary_content = translate_module_summary(module_summary_content, source_language)
+    print(f"Translated module summary content: {trans_module_summary_content}")
+
+    return jsonify({"message": "Query successful", "topic_id":topic.topic_id, "topic":trans_topic_name, "source_language":source_language, "module_ids":module_ids, "content": trans_module_summary_content, "response":True}), 200
+
+
+# module query --> generate mutlimodal content (with images) for submodules in a module
+@users.route('/query2/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def query_module(module_id, source_language, websearch):
+    # check if user is logged in
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
     
-    return jsonify({"message": "Query successful","images": images, "content": trans_content, "response": True}), 200
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+
+    # check if submodules are saved in database for give module_id
+    module = Module.query.get(module_id)
+    images= module_image_from_web(module.module_name)
+    if module.submodule_content is not None:
+        trans_submodule_content = translate_submodule_content(module.submodule_content, source_language)
+        print(f"Translated submodule content: {trans_submodule_content}")
+        return jsonify({"message": "Query successful", "images":images, "content": trans_submodule_content, "response": True}), 200
+    
+    # if submodules are not generated generate and save them in database
+    if websearch=="true":
+        submodules = generate_submodules_from_web(module.module_name)
+        print(submodules)
+        content = generate_content_from_web(submodules)
+    else:
+        submodules = generate_submodules(module.module_name)
+        print(submodules)
+        content = generate_content(submodules)
+    module.submodule_content = content
+    db.session.commit()
+
+    # translate submodule content to source language
+    trans_submodule_content = translate_submodule_content(content, source_language)
+    print(f"Translated submodule content: {trans_submodule_content}")
+    
+    return jsonify({"message": "Query successful","images": images, "content": trans_submodule_content, "response": True}), 200
 
 
 # download route --> generate pdf for module summary and module content
