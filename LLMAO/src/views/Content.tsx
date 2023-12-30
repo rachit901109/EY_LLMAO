@@ -162,148 +162,30 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
       </Box>
     );
   }
-  const getImageUrl = (index: number): string => {
-    // Use the modulo operator to cycle through the images array
-    return images[index % images.length];
-  };
-
-  const fetchAudio = async (content) => {
-    try {
-      setIsSpinnerLoading(true)
-      // Make a POST request to your Flask server
-      const source_lang = localStorage.getItem('source_lang');
-
-      const payload = {
-        content: content,
-        subject_title: subject.title_for_the_content,
-        subject_content: subject.content,
-        language: source_lang, // Assuming language is passed as an argument or retrieved from somewhere
-      };
-
-      const response = await axios.post('/api/generate-audio', payload, {
-        responseType: 'blob', // Set the responseType to blob
-      });
-      const blob = new Blob([response.data], { type: 'audio/mpeg' });
-      const url = window.URL.createObjectURL(blob);
-      setIsSpinnerLoading(false);
-      setAudioSrc(url);
-
-    } catch (error) {
-      console.error('Error fetching audio:', error);
-    }
-  };
-
-  const handledownload = async () => {
-    try {
-      const moduleid = localStorage.getItem('moduleid');
-      const source_lang = localStorage.getItem('source_lang');
-      // Make a GET request to your Flask server
-      const response = await axios.get(`/api/query2/${moduleid}/${source_lang}/download`, {
-        responseType: 'blob', // Set the responseType to blob
-      });
-      const blob = new Blob([response.data], { type: 'application/octet-stream' });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', 'course.pdf');
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      toast({
-        title: 'File downloaded.',
-        description: 'Check your storage your Course is downloaded',
-        status: 'success',
-        duration: 3000,
-        isClosable: true,
-      });
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
   return (
-    <>
-      {index < data_len && (
-        <Box px={5} mt={4} w={"80%"}>
-          <Text className='main-heading' mb={5} fontSize={"5xl"}><b>{subject.title_for_the_content}</b></Text>
-          <Text className='feature-heading' mb={5} fontSize={"3xl"}>Find it boring to read? Download and study through voice!</Text>
-          <Button
-            variant="outline"
-            mb={10}
-            colorScheme="purple" _hover={{ bg: useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
-            onClick={() => fetchAudio(subject.subsections)}>
-            <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faFileInvoice} />
-            Generate Audio</Button>
-          {isSpinnerLoading ? (
-            <Box textAlign="center">
-              <Spinner size="sm" color="purple.500" />
-              <Text mt={2}>Loading...</Text>
-            </Box>
-          ) : audioSrc ? (
-            <audio controls>
-              <source src={audioSrc} type="audio/mpeg" />
-              Your browser does not support the audio element.
-            </audio>
-          ) : null}
-          <Text textAlign="justify" className='content' mb={10} fontSize={"xl"} overflowWrap="break-word">{subject.content}</Text>
-          <Center>
-            <Image boxSize={{ base: '50px', md: '100px', lg: '500px' }} src={images[index]} alt="Subject Image" mb={5} mt={5} />
-          </Center>
-          <VStack spacing={8} mb={8}>
-            {subject.subsections.map((section, index) => (
-              <Box key={index}>
-                <Text fontSize="3xl" className='feature-heading' mb={2}><b>{section.title}</b></Text>
-                <Text className='content' fontSize={"lg"} textAlign="justify" overflowWrap="break-word">{section.content}</Text>
-              </Box>
-            ))}
-          </VStack>
-          <Text fontSize="3xl" className='feature-heading'><b>Links of Resources:</b></Text>
-          <List mb={5}>
-            {subject.urls.map((url, index) => (
-              <ListItem key={index}>
-                <Link fontSize={20} href={url} isExternal color={useColorModeValue('purple.600', 'gray.500')}>
-                  {url}
-                </Link>
-              </ListItem>
-            ))}
-          </List>
-          <Text fontSize="3xl" className='feature-heading'>Want to Learn Offline? Download the whole Course here:</Text>
-          <Button
-            variant="outline"
-            mb={10}
-            onClick={handledownload}
-            colorScheme="purple" _hover={{ bg: useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
-          >
-            <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faDownload} />
-
-            Download Course</Button>
-        </Box>
-      )}
-      {index === data_len && (
-        quiz ? (
-          <Quiz data={quiz}></Quiz>
-        ) : (
-          <Box textAlign="center" w="100%" mt={40}>
-            <Spinner size="xl" color="purple.500" />
-            <Text mt={4}>Generating Quiz...</Text>
+    <Box px={5} mt={4} w={"80%"}>
+      <Text className='main-heading' fontSize={"5xl"} mb={5}><b>{subject.title_for_the_content}</b></Text>
+      <Image src={images[index]} alt="Subject Image" w={"300"} mb={5} mt={5} />
+      <Text textAlign="justify" className='content' mb={10} fontSize={"xl"} overflowWrap="break-word">{subject.content}</Text>
+      <VStack spacing={8} mb={8}>
+        {subject.subsections.map((section, index) => (
+          <Box key={index}>
+            <Text fontSize="3xl" className='feature-heading' mb={2}><b>{section.title}</b></Text>
+            <Text className='content' fontSize={"lg"} textAlign="justify" overflowWrap="break-word">{section.content}</Text>
           </Box>
-          
-        )
-      )}
-      {index === data_len+1 && (
-        quiz2 ? (
-          <Quiz data={quiz2}></Quiz>
-        ) : (
-          <Box textAlign="center" w="100%" mt={40}>
-            <Spinner size="xl" color="purple.500" />
-            <Text mt={4}>Generating Quiz...</Text>
-          </Box>
-          
-        )
-      )}
-
-    </>
+        ))}
+      </VStack>
+      <Text fontSize="3xl" className='feature-heading'><b>Links of Resources:</b></Text>
+      <List mb={10}>
+        {subject.urls.map((url, index) => (
+          <ListItem key={index}>
+            <Link fontSize={20} href={url} isExternal color={useColorModeValue('purple.600', 'gray.500')}>
+              {url}
+            </Link>
+          </ListItem>
+        ))}
+      </List>
+    </Box>
   );
 };
 
