@@ -1,0 +1,8 @@
+{
+    "Module 1: Advanced Threats in 5G Networks": "This module covers advanced security threats specific to 5G networks, including attacks on network slicing, edge computing, and IoT devices.",
+    "Module 2: 5G Network Security Architecture and Protocols": "This module explores advanced security architectures and protocols deployed in 5G networks to protect against sophisticated cyber attacks and ensure data confidentiality and integrity.",
+    "Module 3: Machine Learning for 5G Security": "This module focuses on the advanced applications of machine learning in detecting and mitigating security threats in 5G networks, including anomaly detection, predictive analysis, and automated response systems.",
+    "Module 4: Quantum Cryptography for 5G Networks": "This module delves into the advanced encryption techniques using quantum cryptography to secure communication and data transmission in 5G networks, including quantum key distribution and quantum-resistant algorithms.",
+    "Module 5: 5G Network Slicing Security Challenges": "This module addresses the advanced security challenges related to network slicing in 5G networks, including isolation of virtual networks, multi-tenancy, and orchestration security.",
+    "Module 6: Secure Software-Defined Networking (SDN) for 5G": "This module discusses advanced security measures for software-defined networking in 5G, including zero-trust architecture, micro-segmentation, and threat intelligence integration."
+}

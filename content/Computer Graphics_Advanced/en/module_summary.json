@@ -1,0 +1,7 @@
+{
+    "Module 1: Advanced 3D Rendering Techniques": "This module explores advanced techniques in 3D rendering, including global illumination, ray tracing, and advanced shading models. Students will learn about the latest algorithms and approaches in producing realistic and visually impressive 3D graphics.",
+    "Module 2: Real-time Rendering Optimization": "In this module, students will delve into the optimization techniques used in real-time rendering, focusing on acceleration structures, level of detail, and shader optimization. The module also covers modern rendering pipelines and the latest GPU rendering technologies.",
+    "Module 3: Advanced Animation in Computer Graphics": "This module dives into advanced animation techniques in computer graphics, including keyframing, rigging, inverse kinematics, and procedural animation. Students will also learn about advanced motion capture and character animation systems.",
+    "Module 4: Advanced Topics in GPU Programming": "This module covers advanced topics in GPU programming for computer graphics, including parallel computing, advanced shader programming, and compute shaders. Students will explore the latest GPU architectures and programming models.",
+    "Module 5: Advanced Topics in Virtual Reality and Augmented Reality": "This module explores advanced topics in virtual reality and augmented reality, including advanced rendering techniques, interaction design, and immersive user experiences. Students will also learn about the latest VR/AR hardware and software technologies."
+}
