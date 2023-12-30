@@ -79,14 +79,10 @@ const ContentSec = ({ subject, isLoading, images, index }: { subject: Subject; i
       </Box>
     );
   }
-  const getImageUrl = (index: number): string => {
-    // Use the modulo operator to cycle through the images array
-    return images[index % images.length];
-  };
   return (
     <Box px={5} mt={4} w={"80%"}>
       <Text className='main-heading' fontSize={"5xl"} mb={5}><b>{subject.title_for_the_content}</b></Text>
-      <Image src={images[index]} alt="Subject Image" mb={5} mt={5} />
+      <Image src={images[index]} alt="Subject Image" w={"300"} mb={5} mt={5} />
       <Text textAlign="justify" className='content' mb={10} fontSize={"xl"} overflowWrap="break-word">{subject.content}</Text>
       <VStack spacing={8} mb={8}>
         {subject.subsections.map((section, index) => (
