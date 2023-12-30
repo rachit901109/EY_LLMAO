@@ -314,37 +314,46 @@ def query_module(module_id, source_language, websearch):
 
 # download route --> generate pdf for module summary and module content
 # currently generate pdf for latin and devanagari scripts 
-@users.route('/query2/<string:topicname>/<string:level>/<string:source_language>/<string:modulename>/download', methods=['GET'])
-def download_pdf(topicname, level, source_language, modulename):
-    clean_modulename = modulename.replace(':',"_") 
-    # Construct paths to module summary and content JSON files
-    summary_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, "module_summary.json")
-    content_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, f"{clean_modulename}_content.json")
+@users.route('/query2/<int:module_id>/<string:source_language>/download', methods=['GET'])
+def download_pdf(module_id, source_language):
+    # clean_modulename = modulename.replace(':',"_") 
+    # # Construct paths to module summary and content JSON files
+    # summary_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, "module_summary.json")
+    # content_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, f"{clean_modulename}_content.json")
 
-    # Check if both files exist
-    if not os.path.exists(content_file_path):
-        return jsonify({"message": "Module content file not found", "response": False}), 404
-    if not os.path.exists(summary_file_path):
-        return jsonify({"message": "Module summary file not found", "response": False}), 404
+    # # Check if both files exist
+    # if not os.path.exists(content_file_path):
+    #     return jsonify({"message": "Module content file not found", "response": False}), 404
+    # if not os.path.exists(summary_file_path):
+    #     return jsonify({"message": "Module summary file not found", "response": False}), 404
     
-    # Read module summary from JSON
-    with open(summary_file_path, "r") as summary_file:
-        module_summary = json.load(summary_file)
+    # # Read module summary from JSON
+    # with open(summary_file_path, "r") as summary_file:
+    #     module_summary = json.load(summary_file)
 
-    # Read module content from JSON
-    with open(content_file_path, "r") as content_file:
-        module_content = json.load(content_file)
+    # # Read module content from JSON
+    # with open(content_file_path, "r") as content_file:
+    #     module_content = json.load(content_file)
+
+    # get module from database
+    module = Module.query.get(module_id)
+    modulename = module.module_name
+    clean_modulename = modulename.replace(':',"_") 
+    module_summary = module.summary
+    submodule_content = module.submodule_content
+
+    # translate module summary and submodule content to source language
+    trans_modulename = GoogleTranslator(source='en', target=source_language).translate(modulename)
+    trans_module_summary = GoogleTranslator(source='en', target=source_language).translate(module_summary)
+    trans_submodule_content = translate_submodule_content(submodule_content, source_language)
 
     # Create a PDF file
     download_dir = os.path.join(os.getcwd(), "downloads")
     os.makedirs(download_dir, exist_ok=True)
     pdf_file_path = os.path.join(download_dir, f"{clean_modulename}_summary.pdf")
-    # Assuming you have a styles dictionary defined somewhere in your code
-
 
     # Call the generate_pdf function with the custom_styles argument
-    generate_pdf(pdf_file_path, modulename, module_summary, module_content, source_language)
-
+    generate_pdf(pdf_file_path, trans_modulename, trans_module_summary, trans_submodule_content, source_language)
 
     # Send the PDF file as an attachment
     return send_file(pdf_file_path, as_attachment=True)
