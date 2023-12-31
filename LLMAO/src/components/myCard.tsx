@@ -23,17 +23,20 @@ interface CardProps {
   title: string;
   content: string;
   websearch : boolean;
-  level: string
+  level: string;
+  module_ids: { [key: string]: number };
+  source_language: string;
 }
 
-const MyCard: React.FC<CardProps> = ({ title, content, websearch,level }) => {
+const MyCard: React.FC<CardProps> = ({ title, content, websearch, module_ids,source_language }) => {
   const navigate = useNavigate();
   const handleStartLearning = () => {
     // Save title to localStorage
     let websearch2 = websearch.toString();
-    localStorage.setItem('learningTitle', title);
+    let moduleid = module_ids[title]
+    localStorage.setItem('moduleid', moduleid);
+    localStorage.setItem('source_lang', source_language);
     localStorage.setItem('websearch', websearch2);
-    localStorage.setItem('level', level);
     navigate('/content');
   };
 

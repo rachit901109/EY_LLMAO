@@ -17,3 +17,5 @@ tavily-python
 lingua-language-detector
 iso639-lang
 reportlab
+sentence-transformers
+gtts

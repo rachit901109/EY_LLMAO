@@ -26,15 +26,15 @@ function Trending() {
 
   useEffect(() => {
     const fetchDataForTrending1 = async () => {
-      await fetchData("http://127.0.0.1:5000/query2/trending/Computer Vision", setTrendingData1);
+      await fetchData("/api/query2/trending/Computer Vision", setTrendingData1);
     };
 
     const fetchDataForTrending2 = async () => {
-      await fetchData("http://127.0.0.1:5000/query2/trending/Machine Learning", setTrendingData2);
+      await fetchData("/api/query2/trending/Machine Learning", setTrendingData2);
     };
 
     const fetchDataForTrending3 = async () => {
-      await fetchData("http://127.0.0.1:5000/query2/trending/Generative AI", setTrendingData3);
+      await fetchData("/api/query2/trending/Generative AI", setTrendingData3);
     };
     const fetchDataForTrending = async () => {
       try {

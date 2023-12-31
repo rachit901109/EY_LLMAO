@@ -10,6 +10,8 @@ from lingua import LanguageDetectorBuilder
 from iso639 import Lang
 from server.recommender_system.recommendations import recommend_module, popular_topics
 from sqlalchemy import desc
+from gtts import gTTS
+from io import BytesIO
 
 users = Blueprint(name='users', import_name=__name__)
 
@@ -47,7 +49,7 @@ def register():
     db.session.commit()
 
     # return response
-    response = jsonify({"message": "User created successfully", "id":new_user.user_id, "email":new_user.email, "response":True}), 201
+    response = jsonify({"message": "User created successfully", "id":new_user.user_id, "email":new_user.email, "response":True}), 200
     return response
 
 
@@ -204,9 +206,9 @@ def translate_submodule_content(content, target_language):
 
 # query route --> if websearch is true then fetch from web and feed into model else directly feed into model
 # save frequently searched queries in database for faster retrieval
-@users.route('/query2/<string:topicname>/<string:level>/<string:websearch>', methods=['GET'])
+@users.route('/query2/<string:topicname>/<string:level>/<string:websearch>/<string:source_lang>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def query_topic(topicname,level,websearch):
+def query_topic(topicname,level,websearch,source_lang):
     # check if user is logged in
     user_id = session.get('user_id')
     print(session.get('user_id'))
@@ -219,34 +221,46 @@ def query_topic(topicname,level,websearch):
         return jsonify({"message": "User not found", "response":False}), 404
 
     # language detection for input provided
-    source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title()).pt1
-    print(f"Source Language: {source_language}")
+    if source_lang == 'auto':
+        source_language = Lang(str(detector.detect_language_of(topicname)).split('.')[1].title()).pt1
+        print(f"Source Language: {source_language}")
+    else:
+        source_language=source_lang
+        print(f"Source Language: {source_language}")
 
     # translate other languages input to english
     trans_topic_name = GoogleTranslator(source='auto', target='en').translate(topicname)
     print(f"Translated topic name: {trans_topic_name}")
 
     # check if topic exists in database along with its modulenames and summaries
-    topic = Topic.query.filter_by(topic_name=trans_topic_name).first()
-    if topic:
+    topic = Topic.query.filter_by(topic_name=trans_topic_name.lower()).first()
+    if topic is None:
+            topic = Topic(topic_name=trans_topic_name.lower())
+            db.session.add(topic)
+            db.session.commit()
+            print(f"topic added to database: {topic}")
+    else:
         modules = Module.query.filter_by(topic_id=topic.topic_id, level=level).all()
-        module_ids = {module.module_name:module.module_id for module in modules}
-        module_summary_content = {module.module_name:module.summary for module in modules}
-        trans_module_summary_content = translate_module_summary(module_summary_content, source_language)
-        print(f"Translated module summary content: {trans_module_summary_content}")
-        
-        return jsonify({"message": "Query successful", "topic_id":topic.topic_id, "topic":trans_topic_name, "source_language":source_language, "module_ids":module_ids, "content": trans_module_summary_content, "response":True}), 200
+        if modules:
+            module_ids = {module.module_name:module.module_id for module in modules}
+            module_summary_content = {module.module_name:module.summary for module in modules}
+            trans_module_summary_content = translate_module_summary(module_summary_content, source_language)
+            print(f"Translated module summary content: {trans_module_summary_content}")
+            trans_moduleids = {}
+            if source_language !='en':
+                for key, value in module_ids.items():
+                    trans_key = GoogleTranslator(source='en', target=source_language).translate(str(key))
+                    trans_moduleids[trans_key]=value
+                module_ids=trans_moduleids
+            return jsonify({"message": "Query successful", "topic_id":topic.topic_id, "topic":trans_topic_name, "source_language":source_language, "module_ids":module_ids, "content": trans_module_summary_content, "response":True}), 200
 
     # if topic does not exist in database then save topic generate module summary and save it in database
     if(websearch=="true"):
         module_summary_content = generate_module_summary_from_web(topic=trans_topic_name,level=level)
     else:    
         module_summary_content = generate_module_summary(topic=trans_topic_name,level=level)
-
-    topic = Topic(topic_name=trans_topic_name)
-    db.session.add(topic)
-    db.session.commit()
-    print(f"topic added to database: {topic}")
+    
+    
     module_ids = {}
     for modulename, modulesummary in module_summary_content.items():
         new_module = Module(
@@ -263,7 +277,12 @@ def query_topic(topicname,level,websearch):
     new_user_query = Query(user_id=user.user_id, topic_id=topic.topic_id, lang=source_language)
     db.session.add(new_user_query)
     db.session.commit()
-
+    trans_moduleids = {}
+    if source_language !='en':
+        for key, value in module_ids.items():
+            trans_key = GoogleTranslator(source='en', target=source_language).translate(str(key))
+            trans_moduleids[trans_key]=value
+        module_ids=trans_moduleids
     # translate module summary content to source language
     trans_module_summary_content = translate_module_summary(module_summary_content, source_language)
     print(f"Translated module summary content: {trans_module_summary_content}")
@@ -357,3 +376,50 @@ def download_pdf(module_id, source_language):
 
     # Send the PDF file as an attachment
     return send_file(pdf_file_path, as_attachment=True)
+
+#function of text to speech
+def text_to_speech(text, language='en', directory='audio_files'):
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    # Create a gTTS object
+    speech = gTTS(text=text, lang=language, slow=False)
+    # Specify the file path including the directory to save the MP3 file
+    file_path = os.path.join(directory, 'text.mp3')
+    # Save the speech to the specified file path
+    speech.save(file_path)
+    return file_path
+
+
+@users.route('/generate-audio', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def generate_audio():
+    data = request.json
+    content = data.get('content')
+    language = data.get('language') 
+    subject_title = data.get('subject_title') 
+    subject_content = data.get('subject_content') 
+
+    # check if user is logged in
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    full_text = ""
+    full_text += f"{subject_title}. {subject_content}. "
+    # Combine titles and contents to form full text
+    for item in content:
+        full_text += f"{item['title']}. {item['content']}. "
+    # Create a gTTS object with the combined text
+    tts = gTTS(text=full_text, lang=language, slow=False)
+    # Create an in-memory file-like object to store the audio data
+    audio_file = BytesIO()
+    # Save the audio into the in-memory file-like object
+    tts.write_to_fp(audio_file)
+    audio_file.seek(0)
+    # file_path=text_to_speech(trans_output, language=source_lang, directory='audio_files')
+    return send_file(audio_file, mimetype='audio/mp3', as_attachment=True, download_name='generated_audio.mp3')

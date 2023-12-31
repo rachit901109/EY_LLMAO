@@ -31,7 +31,7 @@ export default function Nav() {
 
   const handleLogout = async () => {
     try {
-      await axios.get('http://127.0.0.1:5000/logout', { withCredentials: true });
+      await axios.get('/api/logout', { withCredentials: true });
       setAuthenticated(false);
       localStorage.removeItem('authenticated');
       navigate("/");

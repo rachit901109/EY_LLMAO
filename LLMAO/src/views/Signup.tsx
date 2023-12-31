@@ -124,23 +124,7 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
         >
           Country / Region
         </FormLabel>
-        <Select
-          colorScheme='purple'
-          id="country"
-          name="country"
-          autoComplete="country"
-          placeholder="Select option"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-          {...register("country")}
-        >
-          <option>United States</option>
-          <option>Canada</option>
-          {/* Add more country options as needed */}
-        </Select>
+        <Input id="country" name="country" {...register("country")} />
         <FormErrorMessage>
           {errors.country && errors.country.message}
         </FormErrorMessage>
@@ -186,7 +170,20 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
 
       <FormControl isInvalid={!!errors.interest} mb={4}>
         <FormLabel htmlFor="interest">Interest</FormLabel>
-        <Input id="interest" name="interest" {...register('interest')} />
+        <Select
+          id="interest"
+          name="interest"
+          variant="outline"
+          colorScheme='purple'
+          {...register('interest')} // Assuming you have updated the useForm hook to handle multiple selections
+          isMulti="true"
+          placeholder="Select multiple interests"
+        >
+          <option value="Automobiles">Automobiles</option>
+          <option value="Artificial Intelligence">Artificial Intelligence</option>
+          <option value="Computer Vision">Computer Vision</option>
+          <option value="Data Science">Data Science</option>
+        </Select>
         <FormErrorMessage>
           {errors.interest && errors.interest.message}
         </FormErrorMessage>
@@ -214,8 +211,8 @@ const Signup = () => {
 
   const onSubmit = async (data: { [key: string]: any }) => {
     try {
-      const response = await axios.post('http://127.0.0.1:5000/register', data, { withCredentials: true });
-  
+      const response = await axios.post('/api/register', data, { withCredentials: true });
+
       if (response.data.response) {
         localStorage.setItem('authenticated', 'true');
         // Account created successfully
@@ -250,7 +247,7 @@ const Signup = () => {
       console.error(error);
     }
   };
-  
+
   return (
     <div>
       <Navbar_Landing />
