@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, Text, Button, Radio, RadioGroup, Spacer, Flex, Icon, Center, Stack } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
+import Navbar from './navbar_landing'
 type QuizQuestion = {
   question: string;
   options: string[];
@@ -72,12 +73,12 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
   };
 
   return (
-    <>
+    <div>
       <Box p={5}>
         <Box height="70vh">
           <Box
             position="absolute"
-            top={5}
+            top={100}
             right={5}
             borderRadius="full"
             width="70px"
@@ -92,12 +93,12 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
             </Text>
           </Box>
           <Center>
-            <Box width="80vw" my={8}>
+            <Box width="70vw" my={8}>
               <Text className='content' fontSize={20}><b>Question {currentQuestion + 1}:</b> {data[currentQuestion].question}</Text>
             </Box>
           </Center>
           <Center>
-            <Box width="80vw" my={8}>
+            <Box width="70vw" my={8}>
               <RadioGroup isDisabled={isDisabled} key={currentQuestion} onChange={(value) => {
                 setValue(value);
                 setShowAnswer(false);
@@ -139,7 +140,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
         </Flex>
       </Box>
 
-    </>
+    </div>
   );
 };
 

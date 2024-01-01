@@ -1,11 +1,12 @@
 import { Box, Heading, useToast,Spinner, useColorModeValue, Flex, Text, VStack, Link, List, ListItem, Button, Image } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar_Landing from '../components/navbar_landing';
-import Footer from '../components/footer'
+import Footer from '../components/footer';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload,faFileInvoice } from '@fortawesome/free-solid-svg-icons';
-
+import Quiz from '../components/Quiz';
 
 interface Subsection {
   title: string;
@@ -22,35 +23,77 @@ interface Subject {
 
 type Data = Subject[];
 
-const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void; }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
 
-  useEffect(() => {
-    setSelectedSubject(data[activeIndex]);
-    setCurrentIndex(activeIndex)
-  }, [activeIndex]);
-  if (isLoading) {
-    // Handle the case when subject is not defined
+const question1 = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Numquam inventore dolorem nam aspernatur amet beatae in aut? Sequi adipisci nemo dolore! Cum deleniti vel accusantium molestiae explicabo voluptatibus placeat, voluptas voluptate dolorem quod cumque enim praesentium soluta est, amet quia veniam. Hic, facilis laborum incidunt consequuntur neque aliquam ipsam esse iusto temporibus quisquam magni rerum totam quidem blanditiis corporis perferendis in laboriosam quia earum a sed voluptatem ullam numquam! Quisquam molestiae soluta quasi ipsum explicabo inventore maiores error officiis dolor voluptatibus consequatur possimus asperiores, nisi assumenda debitis suscipit perspiciatis minima nobis dolore earum! Laborum recusandae nesciunt quaerat praesentium blanditiis quasi!'
+
+const quizData = [
+
+    {
+      question: question1,
+      options: ['Option 1', 'Option 2', 'Option 3', 'Option 4'],
+      correctAnswer: 'Option 2',
+      explanation: 'Explanation for Question 1',
+    },
+    {
+        question: 'Question 2',
+        options: ['Hello', 'How ', 'Does', 'This'],
+        correctAnswer: 'Hello',
+        explanation: 'Explanation for Question 2',
+      },
+      {
+        question: 'Question 3',
+        options: ['Page', 'Looks', 'To', 'You'],
+        correctAnswer: 'Looks',
+        explanation: 'Explanation for Question 3',
+      },
+   ];
+
+   const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, showQuiz, setShowQuiz }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void; showQuiz: boolean; setShowQuiz: (showQuiz: boolean) => void; }) => {
+    const [activeIndex, setActiveIndex] = useState(0);
+  
+    useEffect(() => {
+      setSelectedSubject(data[activeIndex]);
+      setCurrentIndex(activeIndex);
+    }, [activeIndex]);
+  
+    if (isLoading) {
+      return <></>;
+    }
+  
     return (
-      <>
-      </>
-    );
-  }
-  return (
-    <VStack w={"20%"} spacing={4} shadow={"dark-lg"} bg={useColorModeValue('white', 'white')} color={useColorModeValue('black', 'white')}>
-      <Box w="full" bg={useColorModeValue('purple.500', 'white')} p={5}>
-        <Text className='main-heading' textAlign={'center'} color={useColorModeValue('white', 'white')} fontSize={30}>
-          <b>Lessons</b>
-        </Text>
-      </Box>
-      <Box px={3}>
-        {data.map((item: Subject, index: number) => (
+      <VStack w={"20%"} spacing={4} shadow={"dark-lg"} bg={useColorModeValue('white', 'white')} color={useColorModeValue('black', 'white')}>
+        <Box w="full" bg={useColorModeValue('purple.500', 'white')} p={5}>
+          <Text className='main-heading' textAlign={'center'} color={useColorModeValue('white', 'white')} fontSize={30}>
+            <b>Lessons</b>
+          </Text>
+        </Box>
+        <Box px={3}>
+          {data.map((item: Subject, index: number) => (
+            <Button
+              key={index}
+              onClick={() => setActiveIndex(index)}
+              mb={5}
+              bg={activeIndex === index ? "purple.600" : ""}
+              color={activeIndex === index ? "white" : "black"}
+              _hover={{ bg: useColorModeValue('purple.300', 'white'), color: "black", transform: "scale(1.05)" }}
+              transition="all 0.2s"
+              p={4}
+              borderRadius="md"
+              textAlign={'center'}
+              w="100%"
+              whiteSpace="normal"
+              height="auto"
+            >
+              <Flex align="center" justify={'flex-start'}>
+                <Box>{index + 1}. {item.subject_name}</Box>
+              </Flex>
+            </Button>
+          ))}
           <Button
-            key={index}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => setShowQuiz(true)}
             mb={5}
-            bg={activeIndex === index ? "purple.600" : ""}
-            color={activeIndex === index ? "white" : "black"}
+            bg={showQuiz ? "purple.600" : ""} // Conditionally apply the active color
+            color={showQuiz? "white": "black"}
             _hover={{ bg: useColorModeValue('purple.300', 'white'), color: "black", transform: "scale(1.05)" }}
             transition="all 0.2s"
             p={4}
@@ -61,14 +104,14 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { dat
             height="auto"
           >
             <Flex align="center" justify={'flex-start'}>
-              <Box>{index + 1}. {item.subject_name}</Box>
+              <Box>Take a Quiz!</Box>
             </Flex>
           </Button>
-        ))}
-      </Box>
-    </VStack>
-  );
-};
+        </Box>
+      </VStack>
+    );
+  };
+  
 
 
 const ContentSec = ({ subject, isLoading, images, index }: { subject: Subject; isLoading: boolean; images: string[]; index: number; }) => {
@@ -189,7 +232,7 @@ const ContentSec = ({ subject, isLoading, images, index }: { subject: Subject; i
           </ListItem>
         ))}
       </List>
-      <Text fontSize="3xl" className='feature-heading'>Want to Learn Offline Download the whole Course:</Text>
+      <Text fontSize="3xl" className='feature-heading'>Want to Learn Offline? Download the whole Course Here:</Text>
       <Button
         variant="outline"
         mb={10}
@@ -203,6 +246,7 @@ const ContentSec = ({ subject, isLoading, images, index }: { subject: Subject; i
   );
 };
 
+// ... (your imports remain unchanged)
 
 const Content = () => {
   const [data, setData] = useState([]);
@@ -210,22 +254,21 @@ const Content = () => {
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showQuiz, setShowQuiz] = useState(false);
 
   useEffect(() => {
-    // Fetch data using Axios when the component mounts
     const fetchData = async () => {
       const moduleid = localStorage.getItem('moduleid');
       const websearch = localStorage.getItem('websearch');
       const source_lang = localStorage.getItem('source_lang');
       try {
         const response = await axios.get(`/api/query2/${moduleid}/${source_lang}/${websearch}`);
-        setImages(response.data.images)
+        setImages(response.data.images);
         setData(response.data.content);
         setSelectedSubject(response.data.content.length > 0 ? response.data.content[0] : null);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
-        // Set loading state to false when data fetching is complete
         setIsLoading(false);
       }
     };
@@ -233,20 +276,37 @@ const Content = () => {
     fetchData();
   }, []);
 
+  const handleQuizButtonClick = () => {
+    // Set showQuiz to true when the quiz button is clicked
+    setShowQuiz(true);
+  };
 
   return (
     <>
       <Navbar_Landing />
       <Flex>
         <Box display="flex">
-          <Sidebar data={data} setSelectedSubject={setSelectedSubject} setCurrentIndex={setCurrentIndex} isLoading={isLoading} />
-          <ContentSec subject={selectedSubject} isLoading={isLoading} images={images} index={currentIndex} />
+          <Sidebar
+            data={data}
+            setSelectedSubject={setSelectedSubject}
+            setCurrentIndex={setCurrentIndex}
+            isLoading={isLoading}
+            setShowQuiz={setShowQuiz} // Pass setShowQuiz to Sidebar
+          />
+          {showQuiz ? (
+            <Quiz data={quizData}/>
+          ) : (
+            <ContentSec
+              subject={selectedSubject}
+              isLoading={isLoading}
+              images={images}
+              index={currentIndex}
+            />
+          )}
         </Box>
       </Flex>
       <Footer />
     </>
-
-
   );
 };
 
