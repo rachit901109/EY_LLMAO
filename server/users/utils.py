@@ -282,3 +282,79 @@ def add_page_number(canvas):
     page_num = canvas.getPageNumber()
     text = "Page %d" % page_num
     canvas.drawRightString(200*mm, 20*mm, text)
+
+
+def generate_quiz(sub_modules):
+    quiz_prompt = """As an educational chatbot named ISAAC, your task is to create a set of 10 quiz questions \
+with multiple-choice options that should cover all the sub-modules. The questions should be tricky and difficult to efficiently test the knowledge of the student. \
+Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
+```
+  "question": "Question 1",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correct_option": "The correct option string here."
+  "explanation": "Explanation for Question 1"
+
+  ...[and so on]
+```
+
+Create a set of 10 quiz questions following the above-mentioned format.
+```
+Sub Modules : {sub_modules}
+```
+"""
+    client = OpenAI()
+    completion = client.chat.completions.create(
+                model = 'gpt-3.5-turbo-1106',
+                messages = [
+                    {'role':'user', 'content': quiz_prompt.format(sub_modules = sub_modules)},
+                ],
+                response_format = {'type':'json_object'},
+                seed = 42
+    )
+    
+    print(completion.choices[0].message.content)
+    output = ast.literal_eval(completion.choices[0].message.content)
+    
+    return output
+
+def generate_quiz_from_web(sub_modules):
+    tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+    search_result = tavily_client.get_search_context(','.join(sub_modules), search_depth="advanced", max_tokens=4000)
+
+    quiz_prompt_for_web = """As an educational chatbot named ISAAC, your task is to create a set of 10 quiz questions \
+with multiple-choice options that should cover all the sub-modules. You will be given information from the internet related to the sub-modules. \
+Use this information to create the quiz questions. The questions should be tricky and difficult to efficiently test the knowledge of the student. \
+
+Sub Modules : {sub_modules}
+
+Search Result = {search_result}
+
+
+Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
+```
+  "question": "Question 1",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correct_option": "The correct option string here."
+  "explanation": "Explanation for Question 1"
+
+  ...[and so on]
+```
+
+Create a set of 10 quiz questions following the above-mentioned format.
+
+"""
+
+    client = OpenAI()
+    completion = client.chat.completions.create(
+                model = 'gpt-3.5-turbo-1106',
+                messages = [
+                    {'role':'user', 'content': quiz_prompt_for_web.format(sub_modules = sub_modules, search_result = search_result)},
+                ],
+                response_format = {'type':'json_object'},
+                seed = 42
+    )
+    
+    print(completion.choices[0].message.content)
+    output = ast.literal_eval(completion.choices[0].message.content)
+
+    return output
