@@ -9,6 +9,7 @@ import QuizPage from './views/QuizPage'
 import Contact from './views/Contact'
 import Content from './views/Content'
 import Issac from './views/Issac'
+import Issac2 from './views/Issac3D'
 
 
 
@@ -23,7 +24,8 @@ function App() {
         <Route path="/landingpage" element={<LandingPage />} />
         <Route path="/trending" element={<Trending />} />
         <Route path="/explore" element={<Modules />} />
-        <Route path="/issac" element={<Issac />} />
+        {/* <Route path="/issac" element={<Issac />} /> */}
+        <Route path="/issac" element={<Issac2 />} />
         <Route path="/quiz" element={<QuizPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/trending" element={<Trending />} />
