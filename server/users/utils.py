@@ -196,12 +196,13 @@ def generate_content_from_web(sub_module_name):
     return all_content
 
 def trending_module_summary_from_web(domain):
-    query = 'Trending topics in ' + domain
+    query = 'Latest Techniques introduced in the field of ' + domain
     tavily_client = TavilyClient(api_key=tavily_api_key)
     search_result = tavily_client.get_search_context(query, search_depth="advanced", max_tokens=4000)
     module_generation_prompt = """As an educational assistant, your goal is to craft 4-6 \
   educational module names and brief summaries based on the search results. \
   Ensure the module names are relevant and provide a concise summary for each. \
+  The summary should highlight the key aspects of the modules in a way that interests the students into learning them.
   Format the output in JSON, with each key representing a complete module name and its corresponding value being the brief summary.
 
 Search Results: {search_result}
