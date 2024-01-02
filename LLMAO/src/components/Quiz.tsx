@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { Box, Text, Button, Radio, RadioGroup, Spacer, Flex, Icon, Center, Stack } from '@chakra-ui/react';
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
-import Navbar from './navbar_landing'
+import Swal from 'sweetalert2';
 type QuizQuestion = {
   question: string;
   options: string[];
-  correctAnswer: string;
+  correct_option: string;
   explanation: string;
 };
 
@@ -21,6 +21,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
   const [textToDisplay, setTextToDisplay] = useState('Default')
   const [isDisabled, setIsDisabled] = useState(false);
   const [timeLeft, setTimeLeft] = useState(1800);
+  const [score, setScore] = useState(0);
 
 
 
@@ -40,6 +41,19 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
+  const handleButtonClick = () => {
+    if (showAnswer) {
+      if (currentQuestion === data.length - 1) {
+        handleFinish();
+      } else {
+        handleNext();
+      }
+    } else {
+      handleSubmit();
+    }
+  };
+  
+
   const handleNext = () => {
     setCurrentQuestion(currentQuestion + 1);
     setShowAnswer(false);
@@ -50,27 +64,45 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
   const handleSubmit = () => {
     setShowAnswer(true);
     setIsDisabled(true);
-    if (value === data[currentQuestion].correctAnswer) {
+    if (value === data[currentQuestion].correct_option) {
       setTextToDisplay('Spot on! You picked the Correct Answer:');
+      setScore(score + 1);
     }
     else {
-      setTextToDisplay('Sorry, Your Answer is wrong! Correct Answer:');
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-      setShowAnswer(false);
-      setValue('');
-      setIsDisabled(false);
+      const f_string = `Sorry, Your Answer is wrong! Correct Answer: ${data[currentQuestion]['correct_option']}, Explanation: ${data[currentQuestion]['explanation']}`;
+      setTextToDisplay(f_string);
     }
   };
 
   const handleFinish = () => {
-    navigate('/home');
-    console.log('Quiz finished!');
+    let titleText = 'Quiz Finished!';
+    let bodyText = `Your score is ${score} out of ${data.length}.`;
+  
+    if (score < 7) {
+      titleText = 'Oops! Try Again.';
+      bodyText = `Your score is ${score} out of ${data.length}. You need to try again :(.`;
+    } else {
+      titleText = 'Congratulations!';
+      bodyText = `You've passed the quiz with a score of ${score} out of ${data.length}. Well done! You can Explore new Courses!`;
+    }
+  
+    // Display the appropriate SweetAlert based on the score
+    Swal.fire({
+      title: titleText,
+      text: bodyText,
+      icon: score < 7 ? 'error' : 'success',
+      confirmButtonText: 'Okay'
+    }).then((result) => {
+      if (result.isConfirmed) {
+      if (score < 7) {
+        window.location.reload();
+      } else {
+        navigate('/explore');
+      }
+    }
+    });
   };
+  
 
   return (
     <div>
@@ -115,27 +147,23 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
         </Box>
 
         {showAnswer && (
-          <Center>
-            <Box display="flex" alignItems="center">
-              {value === data[currentQuestion].correctAnswer ? (
+          <Center ml={10}>
+            <Box display="flex"  w='40%'  alignItems="center">
+              {value === data[currentQuestion].correct_option ? (
                 <Icon as={CheckIcon} color="green.500" />
               ) : (
                 value === null ? '' :
                   <Icon as={CloseIcon} color="red.500" />
               )}
               {value !== null && (
-                <Text color={value === data[currentQuestion].correctAnswer ? "green.500" : "red.500"} mx={2}>{textToDisplay}</Text>
+                <Text color={value === data[currentQuestion].correct_option ? "green.500" : "red.500"} mx={2}>{textToDisplay}</Text>
               )}
             </Box>
           </Center>
         )}
         <Flex mt={20}>
-          <Button onClick={handlePrevious} colorScheme='purple' isDisabled={currentQuestion === 0}>Previous</Button>
-          <Spacer />
-          <Button onClick={handleSubmit} colorScheme='blue' variant={'outline'} isDisabled={value === null}>Submit</Button>
-          <Spacer />
-          <Button colorScheme='purple' onClick={currentQuestion === data.length - 1 ? handleFinish : handleNext}>
-            {currentQuestion === data.length - 1 ? 'Finish' : 'Next'}
+          <Button onClick={handleButtonClick} colorScheme='purple'>
+            {showAnswer ? (currentQuestion === data.length - 1 ? 'Finish' : 'Next') : 'Submit'}
           </Button>
         </Flex>
       </Box>

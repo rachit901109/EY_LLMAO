@@ -4,7 +4,7 @@ from server.models import User, Topic, Module, Query
 import os
 import json
 from flask_cors import cross_origin
-from server.users.utils import module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web,generate_pdf
+from server.users.utils import generate_quiz,module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web,generate_pdf
 from deep_translator import GoogleTranslator
 from lingua import LanguageDetectorBuilder
 from iso639 import Lang
@@ -310,7 +310,11 @@ def query_module(module_id, source_language, websearch):
     if module.submodule_content is not None:
         trans_submodule_content = translate_submodule_content(module.submodule_content, source_language)
         print(f"Translated submodule content: {trans_submodule_content}")
-        return jsonify({"message": "Query successful", "images":images, "content": trans_submodule_content, "response": True}), 200
+        subsections_list = module.submodule_content[0]['subsections']
+        subsections = [d['title'] for d in subsections_list]
+        print("Submodules:-----------------------",subsections)
+        quiz = generate_quiz(subsections)
+        return jsonify({"message": "Query successful", "images":images,"quiz": quiz["quizData"], "content": trans_submodule_content, "response": True}), 200
     
     # if submodules are not generated generate and save them in database
     if websearch=="true":
