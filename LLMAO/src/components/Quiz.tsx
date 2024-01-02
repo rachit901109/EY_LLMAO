@@ -65,7 +65,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
     setShowAnswer(true);
     setIsDisabled(true);
     if (value === data[currentQuestion].correct_option) {
-      setTextToDisplay('Spot on! You picked the Correct Answer:');
+      setTextToDisplay('Spot on! You picked the Correct Answer!');
       setScore(score + 1);
     }
     else {
@@ -80,7 +80,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
   
     if (score < 7) {
       titleText = 'Oops! Try Again.';
-      bodyText = `Your score is ${score} out of ${data.length}. You need to try again :(.`;
+      bodyText = `Your score is ${score} out of ${data.length}. Check out the resources and try again!`;
     } else {
       titleText = 'Congratulations!';
       bodyText = `You've passed the quiz with a score of ${score} out of ${data.length}. Well done! You can Explore new Courses!`;
@@ -147,7 +147,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
         </Box>
 
         {showAnswer && (
-          <Center ml={10}>
+          <Center >
             <Box display="flex"  w='40%'  alignItems="center">
               {value === data[currentQuestion].correct_option ? (
                 <Icon as={CheckIcon} color="green.500" />

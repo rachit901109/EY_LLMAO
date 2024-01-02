@@ -18,7 +18,7 @@ const convaiClient = new ConvaiClient({
 });
 
 export default function Issac3D(): JSX.Element {
-  const [userText, setUserText] = useState<string>("Press & Hold Space to Talk!");
+  const [userText, setUserText] = useState<string>("Press & Hold Space to Talk To ISSAC!");
   const finalizedUserText = useRef<string>("");
   const [npcText, setNpcText] = useState<string>("");
   const npcTextRef = useRef<string>("");
@@ -89,7 +89,7 @@ export default function Issac3D(): JSX.Element {
     <Navbar></Navbar>
     <Canvas shadows style={{ position: 'fixed', top: 65, left: 0, right: 0, bottom: 0, zIndex: -1 }}>
       <ambientLight intensity={0.5} />
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+      <spotLight position={[10, 10, 10]} angle={0} penumbra={1} />
       <perspectiveCamera position={[0, 0, 35]} fov={50} />
       <Environment files="/school_quad_4k.hdr" ground={{ height: 5, radius: 30, scale: 20 }} />
       <Model position={[0, 0, 3]} scale={1.8} animationName={isTalking ? "talk" : "idle"} />
