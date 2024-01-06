@@ -1,13 +1,14 @@
 import { Tab, Tabs, TabList, TabPanel, TabPanels, SlideFade } from '@chakra-ui/react';
-import Navbar from '../components/navbar_landing';
+import Navbar from '../components/navbar';
 import CourseCard from '../components/CourseCard';
 import Footer from '../components/footer';
+import { useSessionCheck } from "./useSessionCheck";
 
 import { useState, useEffect } from 'react';  
 
 
 function Home() {
-
+  useSessionCheck();
   const [tabIndex, setTabIndex] = useState(0);
   const [inProp, setInProp] = useState(false);
 

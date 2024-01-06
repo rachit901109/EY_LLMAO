@@ -4,7 +4,8 @@ import { Environment, OrbitControls, Html } from '@react-three/drei';
 import { Model } from "./Explorer";
 import { ConvaiClient } from 'convai-web-sdk';
 import { SETTINGS } from './constants';
-import Navbar from "../components/navbar_landing";
+import Navbar from "../components/navbar";
+import { useSessionCheck } from "./useSessionCheck";
 
 interface Transcript {
   getIsFinal: () => boolean;
@@ -18,6 +19,7 @@ const convaiClient = new ConvaiClient({
 });
 
 export default function Issac3D(): JSX.Element {
+  useSessionCheck();
   const [userText, setUserText] = useState<string>("Press & Hold Space to Talk To ISSAC!");
   const finalizedUserText = useRef<string>("");
   const [npcText, setNpcText] = useState<string>("");
@@ -26,32 +28,38 @@ export default function Issac3D(): JSX.Element {
   const [isTalking, setIsTalking] = useState<boolean>(false);
   const [keyPressed, setKeyPressed] = useState<boolean>(false);
 
-  const handleSpacebarPress = (event: KeyboardEvent): void => {
-    if (event.keyCode === 32 && !keyPressed) {
-      setKeyPressed(true);
-      finalizedUserText.current = "";
-      npcTextRef.current = "";
-      setUserText("");
-      setNpcText("");
-      convaiClient.startAudioChunk();
-    }
-  };
-
-  const handleSpacebarRelease = (event: KeyboardEvent): void => {
-    if (event.keyCode === 32 && keyPressed) {
-      setKeyPressed(false);
-      convaiClient.endAudioChunk();
-    }
-  };
-
   useEffect(() => {
+
+    const handleSpacebarPress = (event: KeyboardEvent): void => {
+      if (event.keyCode === 32 && !keyPressed) {
+        setKeyPressed(true);
+        finalizedUserText.current = "";
+        npcTextRef.current = "";
+        setUserText("");
+        setNpcText("");
+        convaiClient.startAudioChunk();
+      }
+    };
+
+    const handleSpacebarRelease = (event: KeyboardEvent): void => {
+      if (event.keyCode === 32 && keyPressed) {
+        setKeyPressed(false);
+        convaiClient.endAudioChunk();
+      }
+    };
+
     window.addEventListener('keydown', handleSpacebarPress);
     window.addEventListener('keyup', handleSpacebarRelease);
+
+    // Cleanup: Remove event listeners and release resources when the component unmounts
     return () => {
       window.removeEventListener('keydown', handleSpacebarPress);
       window.removeEventListener('keyup', handleSpacebarRelease);
+      // Stop any ongoing audio or other resources
     };
   }, [keyPressed]);
+
+
 
   convaiClient.setResponseCallback((response: any) => {
     if (response.hasUserQuery()) {

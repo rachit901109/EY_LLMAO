@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar_Landing from '../components/navbar_landing';
+import Navbar_Landing from '../components/navbar';
 import Footer from '../components/footer'
 import land1 from '../assets/images/landing-3.png'
 import feat1 from '../assets/images/language-img.jpg'

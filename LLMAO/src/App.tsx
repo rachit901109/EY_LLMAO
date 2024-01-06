@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './views/Login'; // adjust the path to your Login component as necessary
 import Signup from './views/Signup'
 import Home from './views/Home';
@@ -12,7 +12,6 @@ import Issac from './views/Issac'
 import Issac2 from './views/Issac3D'
 
 
-
 function App() {
   return (
     <Router>
@@ -21,7 +20,6 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
-        <Route path="/landingpage" element={<LandingPage />} />
         <Route path="/trending" element={<Trending />} />
         <Route path="/explore" element={<Modules />} />
         {/* <Route path="/issac" element={<Issac />} /> */}
@@ -30,6 +28,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/trending" element={<Trending />} />
         <Route path="/content" element={<Content />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );
