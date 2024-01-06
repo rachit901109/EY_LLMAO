@@ -12,14 +12,16 @@ import {
   Heading,
   Switch,
 } from "@chakra-ui/react";
-import Navbar from "../components/navbar_landing";
+import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import MyCard from "../components/myCard";
 import axios from "axios";
 import { BsFire } from "react-icons/bs";
+import { useSessionCheck } from "./useSessionCheck";
 
 
 function Modules() {
+  useSessionCheck();
   const [beginnerData, setBeginnerData] = useState([]);
   const [beginnerModuleIdData, setBeginnerModuleIdData] = useState({});
   const [advanceModuleIdData, setAdvanceModuleIdData] = useState({});

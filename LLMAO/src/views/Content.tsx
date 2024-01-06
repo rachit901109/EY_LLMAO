@@ -1,12 +1,13 @@
 import { Box, Heading, useToast, Spinner, useColorModeValue, Flex, Text, VStack, Link, List, ListItem, Button, Image } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar_Landing from '../components/navbar_landing';
+import Navbar_Landing from '../components/navbar';
 import Footer from '../components/footer';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
 import Quiz from '../components/Quiz';
+import { useSessionCheck } from "./useSessionCheck";
 
 interface Subsection {
   title: string;
@@ -234,6 +235,7 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
 
 
 const Content = () => {
+  useSessionCheck();
   const [data, setData] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState();
   const [images, setImages] = useState([]);

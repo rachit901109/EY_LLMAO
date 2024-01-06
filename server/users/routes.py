@@ -47,7 +47,7 @@ def register():
     new_user = User(fname=fname, lname=lname, user_name=user_name, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
     db.session.add(new_user)
     db.session.commit()
-
+    session["user_id"] = new_user.user_id
     # return response
     response = jsonify({"message": "User created successfully", "id":new_user.user_id, "email":new_user.email, "response":True}), 200
     return response

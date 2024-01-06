@@ -10,7 +10,7 @@ import {
     Flex,
     Heading,
 } from "@chakra-ui/react";
-import Navbar from "../components/navbar_landing";
+import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import axios from "axios";
 import { ConvaiClient } from "convai-web-sdk";
