@@ -65,11 +65,11 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
     setShowAnswer(true);
     setIsDisabled(true);
     if (value === data[currentQuestion].correct_option) {
-      setTextToDisplay('Spot on! You picked the Correct Answer!');
+      setTextToDisplay(`Spot on! You picked the Correct Answer! Explanation:  ${data[currentQuestion]['explanation']}`);
       setScore(score + 1);
     }
     else {
-      const f_string = `Sorry, Your Answer is wrong! Correct Answer: ${data[currentQuestion]['correct_option']}, Explanation: ${data[currentQuestion]['explanation']}`;
+      const f_string = `Sorry, Your Answer is wrong! Correct Answer: ${data[currentQuestion]['correct_option']}. Explanation: ${data[currentQuestion]['explanation']}`;
       setTextToDisplay(f_string);
     }
   };
