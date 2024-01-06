@@ -1,0 +1,26 @@
+user_id,fname,lname,user_name,email,country,state,city,gender,age,interests,date_joined
+1,Jacqueline,Cardenas,Jacqueline Cardenas,jonathanwalker@example.com,United States Virgin Islands,North Carolina,North Samanthaburgh,Male,35,"Classification, Computer Vision",14/12/2023 07:58
+2,Megan,Pennington,Megan Pennington,jessica73@example.org,Guam,Washington,North Juan,Other,30,AI Ethics,11/05/2022 14:07
+3,Patrick,Bowers,Patrick Bowers,smitchell@example.com,Pakistan,New Hampshire,New Hollyhaven,Female,47,"Data Preprocessing, Ensemble Learning",23/06/2020 05:11
+4,Jacqueline,Luna,Jacqueline Luna,colin34@example.org,Netherlands,Oregon,Lake Bryan,Other,21,"Reinforcement Learning, Data Preprocessing",20/09/2020 01:37
+5,Nicholas,Guzman,Nicholas Guzman,prestonalex@example.org,Benin,Mississippi,Danielshire,Male,46,"Data Science, PyTorch",09/12/2023 22:27
+6,Robert,Turner,Robert Turner,nwalker@example.net,Thailand,Wyoming,Choifurt,Other,57,Regression Analysis,01/03/2020 16:15
+7,Matthew,Fowler,Matthew Fowler,vkelly@example.com,Namibia,Maryland,Mendozaberg,Female,38,"Neural Networks, Supervised Learning, Machine Learning",08/08/2022 06:54
+8,Deborah,Johnson,Deborah Johnson,melaniestevens@example.net,Saint Helena,Washington,East Jeanne,Female,35,Data Preprocessing,21/01/2023 18:42
+9,Alec,Morales,Alec Morales,torreskatherine@example.com,Estonia,Massachusetts,East Randy,Male,58,"AI Ethics, Computer Vision, Autoencoders",26/11/2020 23:16
+10,Gabriel,Dominguez,Gabriel Dominguez,michealatkins@example.net,Iceland,South Dakota,West Suzanne,Female,48,"Supervised Learning, Time Series Analysis",04/11/2020 00:36
+11,Benjamin,Brown,Benjamin Brown,corysmith@example.org,Slovakia (Slovak Republic),South Carolina,Gonzalezburgh,Other,44,"TensorFlow, Ensemble Learning",21/02/2021 11:44
+12,Howard,Butler,Howard Butler,phillipssara@example.org,Singapore,Oklahoma,Jameschester,Male,48,Classification,15/06/2021 15:12
+13,Elizabeth,Pope,Elizabeth Pope,steven60@example.org,Gabon,Oregon,North Paulafort,Other,42,"Machine Learning, Classification",30/07/2023 18:38
+14,Thomas,Nelson,Thomas Nelson,robertmckinney@example.com,Congo,Arkansas,Snyderland,Female,44,"Deep Learning, Clustering, Machine Learning",13/10/2023 14:19
+15,Troy,Villa,Troy Villa,shannonpowell@example.org,Argentina,Missouri,North Kevin,Male,54,"Clustering, Supervised Learning",11/01/2020 06:21
+16,Lisa,Johnson,Lisa Johnson,angela30@example.com,Singapore,Colorado,West Lisafurt,Other,28,"Data Science, Recommender Systems",18/02/2023 16:44
+17,Robert,Ochoa,Robert Ochoa,rmiles@example.org,Montserrat,Ohio,Michaelborough,Female,25,"Recommender Systems, Deep Learning",04/11/2022 19:06
+18,Morgan,Dawson,Morgan Dawson,kellie51@example.com,China,North Dakota,North Stacyton,Female,25,"Autoencoders, Clustering, Data Preprocessing",05/10/2020 11:23
+19,Jeanette,Hernandez,Jeanette Hernandez,hwatson@example.org,Greenland,Georgia,West Lauren,Female,57,"Regression Analysis, Recommender Systems, Natural Language Processing",02/12/2022 08:39
+20,Tara,Parrish,Tara Parrish,tiffany67@example.org,Saint Martin,Montana,Lorimouth,Male,20,"Time Series Analysis, Machine Learning, Deep Learning",13/07/2022 18:54
+21,user,3,user 3,user3@gmail.com,india,kerela,pallakad,male,19,Machine Learning,29/12/2023 19:43
+22,Student,DJ,Student DJ,student@gmail.com,Canada,Maharashtra,Mumbai,male,21,Machine Learning,30/12/2023 14:29
+23,Student2,Das,Student2 Das,student2@gmail.com,India,Maharashtra,Mumbai,male,20,Artificial Intelligence,31/12/2023 06:42
+24,Haadi,Rakhangi,Haadi Rakhangi,haadirakhangi@gmail.com,India,Maharashtra,Mumbai,male,19,Artificial Intelligence,01/01/2024 18:14
+25,Rachit,Patni,Rachit Patni,rachitpatni028@gmail.com,India,Maharashtra,Mumbai,male,19,Artificial Intelligence,07/01/2024 19:30
