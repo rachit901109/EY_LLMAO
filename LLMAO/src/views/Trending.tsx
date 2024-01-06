@@ -5,6 +5,8 @@ import MyCard from '../components/myCard';
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
 import { useSessionCheck } from "./useSessionCheck";
+import ChatWidget from '../components/Chat_widget'
+
 
 function Trending() {
   useSessionCheck();
@@ -87,6 +89,7 @@ function Trending() {
           </>
         )}
       </Box>
+      <ChatWidget />
       <Footer></Footer>
     </>
   );

@@ -62,7 +62,7 @@ const ChatWidget: React.FC = () => {
       formData.append('voice', audioBlob, 'voice.wav');
   
       // Send the FormData to the Flask route using axios
-      const response = await axios.post("/api/user/voice-chat", formData, {
+      const response = await axios.post("/api/voice-chat", formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -85,7 +85,7 @@ const ChatWidget: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/user/chatbot-route', {
+      const response = await fetch('/api/chatbot-route', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -214,17 +214,16 @@ const Signup = () => {
       const response = await axios.post('/api/register', data, { withCredentials: true });
 
       if (response.data.response) {
-        sessionStorage.setItem('authenticated', 'true');
         // Account created successfully
         toast({
           title: 'Account created.',
-          description: "We've created your account for you.",
+          description: "We've created your account for you. You can Login Now!!",
           status: 'success',
           duration: 3000,
           isClosable: true,
         });
         console.log(response.data);
-        navigate('/home');
+        navigate('/login');
       } else {
         // User already exists
         toast({

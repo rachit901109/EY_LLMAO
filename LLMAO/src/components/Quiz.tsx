@@ -20,7 +20,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
   const [value, setValue] = useState('')
   const [textToDisplay, setTextToDisplay] = useState('Default')
   const [isDisabled, setIsDisabled] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(1800);
+  const [timeLeft, setTimeLeft] = useState(900);
   const [score, setScore] = useState(0);
 
 
@@ -107,7 +107,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
   return (
     <div>
       <Box p={5}>
-        <Box height="70vh">
+        <Box height="50vh">
           <Box
             position="absolute"
             top={100}
@@ -125,12 +125,12 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
             </Text>
           </Box>
           <Center>
-            <Box width="70vw" my={8}>
+            <Box width="70vw" mt={5}>
               <Text className='content' fontSize={20}><b>Question {currentQuestion + 1}:</b> {data[currentQuestion].question}</Text>
             </Box>
           </Center>
           <Center>
-            <Box width="70vw" my={8}>
+            <Box width="70vw" mt={8}>
               <RadioGroup isDisabled={isDisabled} key={currentQuestion} onChange={(value) => {
                 setValue(value);
                 setShowAnswer(false);
@@ -138,17 +138,15 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
                 value={value} >
                 <Stack alignItems="flex-start" direction={'column'} >
                   {data[currentQuestion].options.map((option, index) => (
-                    <Radio size="lg" colorScheme='purple' fontSize="xl" className='content' key={index} value={option}>{option}</Radio>
+                    <Radio size="lg" variant={"outline"} colorScheme='purple' fontSize="xl" className='content' key={index} value={option}>{option}</Radio>
                   ))}
                 </Stack>
               </RadioGroup>
             </Box>
           </Center>
-        </Box>
-
-        {showAnswer && (
+          {showAnswer && (
           <Center >
-            <Box display="flex"  w='40%'  alignItems="center">
+            <Box display="flex"  w='60%'  alignItems="center">
               {value === data[currentQuestion].correct_option ? (
                 <Icon as={CheckIcon} color="green.500" />
               ) : (
@@ -161,7 +159,10 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
             </Box>
           </Center>
         )}
-        <Flex mt={20}>
+        </Box>
+
+        
+        <Flex mt={5}>
           <Button onClick={handleButtonClick} colorScheme='purple'>
             {showAnswer ? (currentQuestion === data.length - 1 ? 'Finish' : 'Next') : 'Submit'}
           </Button>
