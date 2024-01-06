@@ -24,23 +24,55 @@ interface Subject {
 
 type Data = Subject[];
 
-
-const question1 = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Numquam inventore dolorem nam aspernatur amet beatae in aut? Sequi adipisci nemo dolore! Cum deleniti vel accusantium molestiae explicabo voluptatibus placeat, voluptas voluptate dolorem quod cumque enim praesentium soluta est, amet quia veniam. Hic, facilis laborum incidunt consequuntur neque aliquam ipsam esse iusto temporibus quisquam magni rerum totam quidem blanditiis corporis perferendis in laboriosam quia earum a sed voluptatem ullam numquam! Quisquam molestiae soluta quasi ipsum explicabo inventore maiores error officiis dolor voluptatibus consequatur possimus asperiores, nisi assumenda debitis suscipit perspiciatis minima nobis dolore earum! Laborum recusandae nesciunt quaerat praesentium blanditiis quasi!'
-
-const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void;}) => {
+const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuizData,setQuiz2Data }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void; setQuizData: any, setQuiz2Data }) => {
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const changeCon = (index2: number) => {
+    setActiveIndex(index2);
+    setQuizData(null);
+    setQuiz2Data(null);
+  }
+  const fetchQuizData = async () => {
+    setQuiz2Data(null);
+    try {
+      setActiveIndex(data.length)
+      const moduleid = localStorage.getItem('moduleid');
+      const websearch = localStorage.getItem('websearch');
+      const source_lang = localStorage.getItem('source_lang');
+      const response = await axios.get(`/api/quiz/${moduleid}/${source_lang}/${websearch}`);
+      setQuizData(response.data.quiz);
+    } catch (error) {
+      console.error('Error fetching quiz data:', error);
+    }
+  };
+
+  const fetchQuiz2Data = async () => {
+    setQuizData(null);
+    try {
+      setActiveIndex(data.length+1)
+      const moduleid = localStorage.getItem('moduleid');
+      const websearch = localStorage.getItem('websearch');
+      const source_lang = localStorage.getItem('source_lang');
+      const response = await axios.get(`/api/quiz2/${moduleid}/${source_lang}/${websearch}`);
+      setQuiz2Data(response.data.quiz);
+    } catch (error) {
+      console.error('Error fetching quiz data:', error);
+    }
+  };
 
   useEffect(() => {
     setSelectedSubject(data[activeIndex]);
     setCurrentIndex(activeIndex);
   }, [activeIndex]);
-
   if (isLoading) {
-    return <></>;
+    return (
+      <>
+      </>
+    );
   }
 
   return (
-    <VStack w={"20%"} minWidth={"20%"} spacing={4} shadow={"dark-lg"} bg={useColorModeValue('white', 'white')} color={useColorModeValue('black', 'white')}>
+    <VStack w={"20%"} minWidth={"20%"} spacing={4} shadow={"xl"} bg={useColorModeValue('white', 'white')} color={useColorModeValue('black', 'white')}>
       <Box w="full" bg={useColorModeValue('purple.500', 'white')} p={5}>
         <Text className='main-heading' textAlign={'center'} color={useColorModeValue('white', 'white')} fontSize={30}>
           <b>Lessons</b>
@@ -50,7 +82,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { dat
         {data.map((item: Subject, index: number) => (
           <Button
             key={index}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => changeCon(index)}
             mb={5}
             bg={activeIndex === index ? "purple.600" : ""}
             color={activeIndex === index ? "white" : "black"}
@@ -70,7 +102,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { dat
         ))}
         <Button
           key={data.length}
-          onClick={() => setActiveIndex(data.length)}
+          onClick={fetchQuizData}
           mb={5}
           bg={activeIndex === data.length ? "purple.600" : ""}
           color={activeIndex === data.length ? "white" : "black"}
@@ -88,11 +120,11 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { dat
           </Flex>
         </Button>
         <Button
-          key={data.length}
-          onClick={() => setActiveIndex(data.length)}
+          key={data.length + 1}
+          onClick={fetchQuiz2Data}
           mb={5}
-          bg={activeIndex === data.length ? "purple.600" : ""}
-          color={activeIndex === data.length ? "white" : "black"}
+          bg={activeIndex === data.length + 1 ? "purple.600" : ""}
+          color={activeIndex === data.length + 1 ? "white" : "black"}
           _hover={{ bg: useColorModeValue('purple.300', 'white'), color: "black", transform: "scale(1.05)" }}
           transition="all 0.2s"
           p={4}
@@ -113,7 +145,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { dat
 
 
 
-const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subject: Subject; isLoading: boolean; images: string[]; index: number; data_len: number,quiz: any}) => {
+const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }: { subject: Subject; isLoading: boolean; images: string[]; index: number; data_len: number, quiz: any ,quiz2: any }) => {
   const toast = useToast();
   const [isSpinnerLoading, setIsSpinnerLoading] = useState(false);
   const [audioSrc, setAudioSrc] = useState(null);
@@ -125,7 +157,7 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
     return (
       <Box textAlign="center" w="205vh" height={"60vh"}>
         <Spinner size="xl" mt={"140px"} color="purple.500" />
-        <Text mt={4}>Loading...</Text>
+        <Text mt={4}>Loading Content...</Text>
       </Box>
     );
   }
@@ -191,10 +223,10 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
   };
   return (
     <>
-      {index !== data_len && (
+      {index < data_len && (
         <Box px={5} mt={4} w={"80%"}>
           <Text className='main-heading' mb={5} fontSize={"5xl"}><b>{subject.title_for_the_content}</b></Text>
-          <Text className='feature-heading' mb={5} fontSize={"3xl"}>Find it boring to read? Download and study throught voice!</Text>
+          <Text className='feature-heading' mb={5} fontSize={"3xl"}>Find it boring to read? Download and study through voice!</Text>
           <Button
             variant="outline"
             mb={10}
@@ -215,7 +247,7 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
           ) : null}
           <Text textAlign="justify" className='content' mb={10} fontSize={"xl"} overflowWrap="break-word">{subject.content}</Text>
           <Center>
-          <Image boxSize={{ base: '50px', md: '100px', lg: '500px' }}  src={images[index]} alt="Subject Image" mb={5} mt={5} />
+            <Image boxSize={{ base: '50px', md: '100px', lg: '500px' }} src={images[index]} alt="Subject Image" mb={5} mt={5} />
           </Center>
           <VStack spacing={8} mb={8}>
             {subject.subsections.map((section, index) => (
@@ -247,9 +279,29 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
             Download Course</Button>
         </Box>
       )}
-       {index === data_len && (
-        <Quiz data={quiz}></Quiz>
+      {index === data_len && (
+        quiz ? (
+          <Quiz data={quiz}></Quiz>
+        ) : (
+          <Box textAlign="center" w="100%" mt={40}>
+            <Spinner size="xl" color="purple.500" />
+            <Text mt={4}>Loading Quiz...</Text>
+          </Box>
+          
+        )
       )}
+      {index === data_len+1 && (
+        quiz2 ? (
+          <Quiz data={quiz2}></Quiz>
+        ) : (
+          <Box textAlign="center" w="100%" mt={40}>
+            <Spinner size="xl" color="purple.500" />
+            <Text mt={4}>Loading Quiz...</Text>
+          </Box>
+          
+        )
+      )}
+
     </>
   );
 };
@@ -262,7 +314,10 @@ const Content = () => {
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [quizdata, setQuizData] = useState([]);
+  const [quizdata, setQuizData] = useState(null);
+  const [quiz2data, setQuiz2Data] = useState(null);
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -273,7 +328,6 @@ const Content = () => {
         const response = await axios.get(`/api/query2/${moduleid}/${source_lang}/${websearch}`);
         setImages(response.data.images);
         setData(response.data.content);
-        setQuizData(response.data.quiz)
         setSelectedSubject(response.data.content.length > 0 ? response.data.content[0] : null);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -295,11 +349,14 @@ const Content = () => {
             data={data}
             setSelectedSubject={setSelectedSubject}
             setCurrentIndex={setCurrentIndex}
+            setQuizData={setQuizData}
+            setQuiz2Data={setQuiz2Data}
             isLoading={isLoading}
 
           />
           <ContentSec
             quiz={quizdata}
+            quiz2={quiz2data}
             subject={selectedSubject}
             isLoading={isLoading}
             images={images}
