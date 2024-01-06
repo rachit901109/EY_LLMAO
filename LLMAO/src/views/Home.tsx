@@ -2,6 +2,7 @@ import { Tab, Tabs, TabList, TabPanel, TabPanels, SlideFade } from '@chakra-ui/r
 import Navbar from '../components/navbar_landing';
 import CourseCard from '../components/CourseCard';
 import Footer from '../components/footer';
+import ChatWidget from '../components/Chat_widget'
 
 import { useState, useEffect } from 'react';  
 
@@ -70,6 +71,8 @@ const completed_courses : {[key : string]: string} = {
           </TabPanel>
         </TabPanels>
       </Tabs>
+      <ChatWidget />
+
       <Footer></Footer>
     </div>
   );
