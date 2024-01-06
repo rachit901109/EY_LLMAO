@@ -1,4 +1,4 @@
-import { Box, Heading, useToast, Spinner, useColorModeValue, Flex, Text, VStack, Link, List, ListItem, Button, Image } from '@chakra-ui/react';
+import { Box, Heading, useToast, Spinner, useColorModeValue, Flex, Text, VStack, Link, List, ListItem, Button, Image, Center } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar_Landing from '../components/navbar';
@@ -84,7 +84,26 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex }: { dat
           height="auto"
         >
           <Flex align="center" justify={'flex-start'}>
-            <Box>Quiz</Box>
+            <Box>Quiz 1: Theoretical Test</Box>
+          </Flex>
+        </Button>
+        <Button
+          key={data.length}
+          onClick={() => setActiveIndex(data.length)}
+          mb={5}
+          bg={activeIndex === data.length ? "purple.600" : ""}
+          color={activeIndex === data.length ? "white" : "black"}
+          _hover={{ bg: useColorModeValue('purple.300', 'white'), color: "black", transform: "scale(1.05)" }}
+          transition="all 0.2s"
+          p={4}
+          borderRadius="md"
+          textAlign={'center'}
+          w="100%"
+          whiteSpace="normal"
+          height="auto"
+        >
+          <Flex align="center" justify={'flex-start'}>
+            <Box>Quiz 2: Applied Knowledge</Box>
           </Flex>
         </Button>
       </Box>
@@ -175,7 +194,7 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
       {index !== data_len && (
         <Box px={5} mt={4} w={"80%"}>
           <Text className='main-heading' mb={5} fontSize={"5xl"}><b>{subject.title_for_the_content}</b></Text>
-          <Text className='feature-heading' mb={5} fontSize={"3xl"}>Dont Wanna read and Want to Study with Voice!!</Text>
+          <Text className='feature-heading' mb={5} fontSize={"3xl"}>Find it boring to read? Download and study throught voice!</Text>
           <Button
             variant="outline"
             mb={10}
@@ -194,8 +213,10 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
               Your browser does not support the audio element.
             </audio>
           ) : null}
-          <Image src={images[index]} alt="Subject Image" mb={5} mt={5} />
           <Text textAlign="justify" className='content' mb={10} fontSize={"xl"} overflowWrap="break-word">{subject.content}</Text>
+          <Center>
+          <Image boxSize={{ base: '50px', md: '100px', lg: '500px' }}  src={images[index]} alt="Subject Image" mb={5} mt={5} />
+          </Center>
           <VStack spacing={8} mb={8}>
             {subject.subsections.map((section, index) => (
               <Box key={index}>
@@ -214,7 +235,7 @@ const ContentSec = ({ subject, isLoading, images, index,data_len,quiz }: { subje
               </ListItem>
             ))}
           </List>
-          <Text fontSize="3xl" className='feature-heading'>Want to Learn Offline? Download the whole Course Here:</Text>
+          <Text fontSize="3xl" className='feature-heading'>Want to Learn Offline? Download the whole Course here:</Text>
           <Button
             variant="outline"
             mb={10}

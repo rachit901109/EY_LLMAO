@@ -33,7 +33,7 @@ function Modules() {
   const [searchTerm, setSearchTerm] = useState("");
   const [webSearchOn, setWebSearchOn] = useState(false);
   const languages = [
-    { code: 'auto', name: 'Auto' },
+    { code: 'auto', name: 'Language : Auto' },
     { code: 'hi', name: 'Hindi' },
     { code: 'te', name: 'Telugu' },
     { code: 'ta', name: 'Tamil' },
@@ -113,11 +113,12 @@ function Modules() {
           color={"white"}
           rounded="md"
           _hover={{
-            transform: "translateY(-4px)",
+            transform: "translateY(-2px)",
             boxShadow: "md",
             transition: "transform 0.3s ease",  // Add transition property for smooth transition
+            bg: "purple.600"
           }}
-          bg={"blue.400"}
+          bg={"purple.400"}
           boxShadow="lg"
           onClick={onLearnClick}
           mt={4}

@@ -68,19 +68,19 @@ Module Name: {module_name}
     return output
 
 def generate_content(output):
-    prompt_content_gen = """I'm seeking your expertise on the subject of {sub_module_name}\
+    prompt_content_gen = """I'm seeking your expertise on the subject of {sub_module_name}.\
 As a knowledgeable and educational chatbot, I'm confident in your ability to provide \
-a comprehensive overview of this sub-module. Please generate a detailed and \
+a comprehensive and detailed explanation of this sub-module. Please generate a detailed and \
 informative description that covers essential aspects such as definition, \
 explanation, use cases, applications, and any other relevant details. \
-Ensure that the content exceeds 400 words to offer a thorough understanding of the topic.
+Ensure that the content exceeds 1000 words to offer a thorough understanding of the topic.
 
-In your response, consider breaking down the information into subsections for clarity. \
+In your response, consider breaking down the information into subsections for clarity and make it detailed, elaborating every subsection. \
 If there are specific examples or real-world applications related to the subject, \
 please include them to enhance practical understanding. Additionally, conclude your \
 response by suggesting relevant URLs for further reading to empower users with \
-additional resources on the subject. Make sure your output is in a valid json format where the keys are the subject_name, \
-title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls (should be a list) Make sure return a valid json output.
+additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
+title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
 """
     all_content = []
     for key,val in output.items():
@@ -161,7 +161,7 @@ def generate_content_from_web(sub_module_name):
     You have access to the subject's information which you have to use while generating \ 
     a detailed and informative description that covers essential aspects such as definition, \
     explanation, use cases, applications, and any other relevant details. \
-    Ensure that the content exceeds 400 words to offer a thorough understanding of the topic.
+    Ensure that the content exceeds 800 words to offer a thorough understanding of the topic.
 
     SUBJECT INFORMATION : {search_result}
 
@@ -170,7 +170,7 @@ def generate_content_from_web(sub_module_name):
     please include them to enhance practical understanding. Additionally, conclude your \
     response by suggesting relevant URLs for further reading to empower users with \
     additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-    title_for_the_content, content, subsections (which is a list of dictionaries with the keys - title and content) and urls.
+    title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
     """
 
     all_content = []
@@ -286,11 +286,12 @@ def add_page_number(canvas, docs):
 
 
 def generate_quiz(sub_modules):
-    quiz_prompt = """As an educational chatbot named ISAAC, your task is to create a set of 10 quiz questions \
-with multiple-choice options that should cover all the sub-modules. The questions should be tricky and difficult to efficiently test the knowledge of the student. \
+    quiz_prompt = """As an educational chatbot named ISSAC, your task is to create a set of 10 theoretical quiz questions \
+with multiple-choice options that should cover all the sub-modules. The questions should be theoretical-based and difficult to \
+efficiently test the theoretical knowledge of the student. \
 Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
 ```
-  "question": "Question 1",
+  "question": "The question here",
   "options": ["Option A", "Option B", "Option C", "Option D"],
   "correct_option": "The correct option string here."
   "explanation": "Explanation for Question 1"
@@ -322,9 +323,10 @@ def generate_quiz_from_web(sub_modules):
     tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
     search_result = tavily_client.get_search_context(','.join(sub_modules), search_depth="advanced", max_tokens=4000)
 
-    quiz_prompt_for_web = """As an educational chatbot named ISAAC, your task is to create a set of 10 quiz questions \
+    quiz_prompt_for_web = """As an educational chatbot named ISAAC, your task is to create a set of 10 theoretical quiz questions \
 with multiple-choice options that should cover all the sub-modules. You will be given information from the internet related to the sub-modules. \
-Use this information to create the quiz questions. The questions should be tricky and difficult to efficiently test the knowledge of the student. \
+Use this information to create the quiz questions. The questions should be theoretical-based and difficult to \
+efficiently test the theoretical knowledge of the student. \
 
 Sub Modules : {sub_modules}
 
@@ -333,7 +335,7 @@ Search Result = {search_result}
 
 Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
 ```
-  "question": "Question 1",
+  "question": "The question here",
   "options": ["Option A", "Option B", "Option C", "Option D"],
   "correct_option": "The correct option string here."
   "explanation": "Explanation for Question 1"
@@ -355,6 +357,39 @@ Create a set of 10 quiz questions following the above-mentioned format.
                 seed = 42
     )
     
+    print(completion.choices[0].message.content)
+    output = ast.literal_eval(completion.choices[0].message.content)
+
+    return output
+
+def generate_applied_quiz(sub_modules):
+    quiz_prompt = """As an educational chatbot named ISSAC, your task is to create a set of 10 creative and application-based quiz questions \
+with multiple-choice options that should cover all the sub-modules. Create questions in a scenario-based manner like the ones in a word problem or applied problems
+to efficiently test the understanding of concepts and principles to solve real-world or hypothetical situations based on the sub modules. The questions should be descriptive and lengthy to give a complete scenario to the student. \
+Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
+```
+  "question": "The question here",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correct_option": "The correct option string here."
+  "explanation": "Explanation for Question 1"
+
+  ...[and so on]
+```
+
+Create a set of 10 quiz questions following the above-mentioned format.
+```
+Sub Modules : {sub_modules}
+"""
+    client = OpenAI()
+    completion = client.chat.completions.create(
+                model = 'gpt-3.5-turbo-1106',
+                messages = [
+                    {'role':'user', 'content': quiz_prompt.format(sub_modules = sub_modules)},
+                ],
+                response_format = {'type':'json_object'},
+                seed = 42
+    )
+
     print(completion.choices[0].message.content)
     output = ast.literal_eval(completion.choices[0].message.content)
 
