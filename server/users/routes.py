@@ -4,7 +4,7 @@ from server.models import User, Topic, Module, Query
 import os
 import json
 from flask_cors import cross_origin
-from server.users.utils import generate_quiz,module_image_from_web,generate_module_summary,generate_content,generate_submodules,generate_content_from_web,generate_module_summary_from_web,generate_submodules_from_web,trending_module_summary_from_web,generate_pdf
+from server.users.utils import *
 from deep_translator import GoogleTranslator
 from lingua import LanguageDetectorBuilder
 from iso639 import Lang
@@ -12,12 +12,33 @@ from server.recommender_system.recommendations import recommend_module, popular_
 from sqlalchemy import desc
 from gtts import gTTS
 from io import BytesIO
+import iso639
+
 
 users = Blueprint(name='users', import_name=__name__)
 
 # Detector for language detection
 detector = LanguageDetectorBuilder.from_all_languages().with_preloaded_language_models().build()
+tools = [
+    {
+        'type': 'function',
+        'function': {
 
+            'name': 'retrieval_augmented_generation',
+            'description': 'Fetches information about Nyaymitra\'s platform to answer user\'s query',
+            'parameters': {
+                'type': 'object',
+                'properties': {
+                    'query': {
+                        'type': 'string',
+                        'description': 'The query to use for searching the vector database of Nyaymitra'
+                    },
+                },
+                'required': ['query']
+            }
+        }
+    },
+]
 # register route  --> take username from client only store in database if username is not taking
 @users.route('/register',methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -47,7 +68,6 @@ def register():
     new_user = User(fname=fname, lname=lname, user_name=user_name, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
     db.session.add(new_user)
     db.session.commit()
-
     # return response
     response = jsonify({"message": "User created successfully", "id":new_user.user_id, "email":new_user.email, "response":True}), 200
     return response
@@ -74,7 +94,14 @@ def login():
     # start user session
     session["user_id"] = user.user_id
     print("user id is this:-",session.get('user_id'))
-
+    client = OpenAI()
+    assistant = client.beta.assistants.create(
+        name="MINDCRAFT",
+        instructions="You are a helpful assistant for the website Nyaymitra. Use the functions provided to you to answer user's question about the Nyaymitra platform. Help the user with navigating and getting information about the Nyaymitra website.Provide the navigation links defined in the document whenever required",
+        model="gpt-3.5-turbo-1106",
+        tools=tools
+    )
+    session['assistant_id'] = assistant.id
     # return response
     return jsonify({"message": "User logged in successfully", "user_name":user.user_name, "email":user.email, "response":True}), 200
 
@@ -310,11 +337,7 @@ def query_module(module_id, source_language, websearch):
     if module.submodule_content is not None:
         trans_submodule_content = translate_submodule_content(module.submodule_content, source_language)
         print(f"Translated submodule content: {trans_submodule_content}")
-        subsections_list = module.submodule_content[0]['subsections']
-        subsections = [d['title'] for d in subsections_list]
-        print("Submodules:-----------------------",subsections)
-        quiz = generate_quiz(subsections)
-        return jsonify({"message": "Query successful", "images":images,"quiz": quiz["quizData"], "content": trans_submodule_content, "response": True}), 200
+        return jsonify({"message": "Query successful", "images":images,"content": trans_submodule_content, "response": True}), 200
     
     # if submodules are not generated generate and save them in database
     if websearch=="true":
@@ -427,3 +450,147 @@ def generate_audio():
     audio_file.seek(0)
     # file_path=text_to_speech(trans_output, language=source_lang, directory='audio_files')
     return send_file(audio_file, mimetype='audio/mp3', as_attachment=True, download_name='generated_audio.mp3')
+
+
+
+@users.route('/quiz/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def gen_quiz(module_id, source_language, websearch):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    module = Module.query.get(module_id)
+    subsections_list = module.submodule_content[0]['subsections']
+    subsections = [d['title'] for d in subsections_list]
+    print("Submodules:-----------------------",subsections)
+    quiz = generate_quiz(subsections)
+    return jsonify({"message": "Query successful","quiz": quiz["quizData"],"response": True}), 200
+
+@users.route('/quiz2/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def gen_quiz2(module_id, source_language, websearch):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    module = Module.query.get(module_id)
+    subsections_list = module.submodule_content[0]['subsections']
+    subsections = [d['title'] for d in subsections_list]
+    print("Submodules:-----------------------",subsections)
+    quiz = generate_applied_quiz(subsections)
+    print("quiz---------------",quiz)
+    return jsonify({"message": "Query successful","quiz": quiz["quizData"],"response": True}), 200
+
+
+###ASSISTANT API SECTION#######################
+def wait_on_run(run_id, thread_id):
+    client = OpenAI()
+    while True:
+        run = client.beta.threads.runs.retrieve(
+            thread_id=thread_id,
+            run_id=run_id,
+        )
+        print('RUN STATUS', run.status)
+        time.sleep(0.5)
+        if run.status in ['failed', 'completed', 'requires_action']:
+            return run
+
+
+client = OpenAI()
+
+
+def submit_tool_outputs(thread_id, run_id, tools_to_call):
+    tools_outputs = []
+    for tool in tools_to_call:
+        output = None
+        tool_call_id = tool.id
+        tool_name = tool.function.name
+        tool_args = tool.function.arguments
+        print('TOOL CALLED:', tool_name)
+        print('ARGUMENTS:', tool_args)
+        tool_to_use = available_tools.get(tool_name)
+        if tool_name =='retrieval_augmented_generation':
+            tool_args_dict = ast.literal_eval(tool_args)
+            query = tool_args_dict['query']
+            output = tool_to_use(query)
+        if output:
+            tools_outputs.append(
+                {'tool_call_id': tool_call_id, 'output': output})
+
+    return client.beta.threads.runs.submit_tool_outputs(thread_id=thread_id, run_id=run_id, tool_outputs=tools_outputs)
+
+
+def retrieval_augmented_generation(query, vectordb):
+    relevant_docs = vectordb.similarity_search(query)
+    rel_docs = [doc.page_content for doc in relevant_docs]
+    output = '\n'.join(rel_docs)
+    print(output)
+    return output
+
+
+available_tools = {
+    'retrieval_augmented_generation': retrieval_augmented_generation,
+}
+
+@users.route('/chatbot-route', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def chatbot_route():
+    data = request.get_json()
+    print(data)
+    tool_check = []
+    query = data.get('userdata', '')
+    if query:
+        source_language = Lang(str(detector.detect_language_of(query)).split('.')[1].title()).pt1
+        if source_language != 'en':
+            trans_query = GoogleTranslator(source=source_language, target='en').translate(query)
+        else:
+            trans_query = query
+        assistant_id = session['assistant_id']
+        print('ASSISTANT ID', assistant_id)
+        thread = client.beta.threads.create()
+        print('THREAD ID', thread.id)
+        print(trans_query)
+        message = client.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content= trans_query,
+        )
+        run = client.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id=session['assistant_id'],
+        )
+        run = wait_on_run(run.id, thread.id)
+
+        if run.status == 'failed':
+            print(run.error)
+        elif run.status == 'requires_action':
+            run = submit_tool_outputs(thread.id, run.id, run.required_action.submit_tool_outputs.tool_calls)
+            run = wait_on_run(run.id,thread.id)
+        messages = client.beta.threads.messages.list(thread_id=thread.id,order="asc")
+        print('message',messages)
+        content = None
+        for thread_message in messages.data:
+            content = thread_message.content
+        print("Content List", content)
+        if len(tool_check) == 0:
+            chatbot_reply = content[0].text.value
+            print("Chatbot reply",chatbot_reply)
+            if source_language != 'en':
+                trans_output = GoogleTranslator(source='auto', target=source_language).translate(chatbot_reply)
+            else:
+                trans_output = chatbot_reply
+            response = {'chatbotResponse': trans_output,'function_name': 'normal_search'}
+        return jsonify(response)
+    else:
+        return jsonify({'error': 'User message not provided'}), 400
+##############################################################################
+        

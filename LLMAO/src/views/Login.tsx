@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar_Landing from '../components/navbar_landing';
+import Navbar_Landing from '../components/navbar';
 import Footer from '../components/footer'
 import axios from 'axios'; 
 import {
@@ -43,7 +43,7 @@ const Login = () => {
       const response = await axios.post('/api/login', data, { withCredentials: true });
   
       if (response.data.response) {
-        localStorage.setItem('authenticated', 'true');
+        sessionStorage.setItem('authenticated', 'true');
         toast({
           title: 'Login successful.',
           description: 'You have successfully logged in.',

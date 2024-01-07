@@ -1,12 +1,15 @@
 import { Grid, Box, useColorModeValue, Spinner,Text,Flex } from '@chakra-ui/react';
-import Navbar from '../components/navbar_landing';
+import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import MyCard from '../components/myCard';
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
+import { useSessionCheck } from "./useSessionCheck";
+import ChatWidget from '../components/Chat_widget'
 
 
 function Trending() {
+  useSessionCheck();
   const [trendingData1, setTrendingData1] = useState([]);
   const [trendingData2, setTrendingData2] = useState([]);
   const [trendingData3, setTrendingData3] = useState([]);
@@ -86,6 +89,7 @@ function Trending() {
           </>
         )}
       </Box>
+      <ChatWidget />
       <Footer></Footer>
     </>
   );

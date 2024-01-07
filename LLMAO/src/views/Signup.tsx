@@ -22,7 +22,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import Navbar_Landing from '../components/navbar_landing';
+import Navbar_Landing from '../components/navbar';
 import Footer from '../components/footer'
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useNavigate } from 'react-router-dom';
@@ -214,17 +214,16 @@ const Signup = () => {
       const response = await axios.post('/api/register', data, { withCredentials: true });
 
       if (response.data.response) {
-        localStorage.setItem('authenticated', 'true');
         // Account created successfully
         toast({
           title: 'Account created.',
-          description: "We've created your account for you.",
+          description: "We've created your account for you. You can Login Now!!",
           status: 'success',
           duration: 3000,
           isClosable: true,
         });
         console.log(response.data);
-        navigate('/home');
+        navigate('/login');
       } else {
         // User already exists
         toast({

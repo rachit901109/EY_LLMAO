@@ -5,6 +5,7 @@ import {
   Button,
   useColorModeValue,
   HStack,
+  Spinner,
   Text,
   Grid,
   Flex,
@@ -12,14 +13,17 @@ import {
   Heading,
   Switch,
 } from "@chakra-ui/react";
-import Navbar from "../components/navbar_landing";
+import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 import MyCard from "../components/myCard";
 import axios from "axios";
 import { BsFire } from "react-icons/bs";
+import { useSessionCheck } from "./useSessionCheck";
+import ChatWidget from '../components/Chat_widget'
 
 
 function Modules() {
+  useSessionCheck();
   const [beginnerData, setBeginnerData] = useState([]);
   const [beginnerModuleIdData, setBeginnerModuleIdData] = useState({});
   const [advanceModuleIdData, setAdvanceModuleIdData] = useState({});
@@ -28,10 +32,11 @@ function Modules() {
   const [isLoading, setIsLoading] = useState(false);
   const [showTabs, setShowTabs] = useState(false);
   const [activeTab, setActiveTab] = useState("beginner");
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [webSearchOn, setWebSearchOn] = useState(false);
   const languages = [
-    { code: 'auto', name: 'Auto' },
+    { code: 'auto', name: 'Language : Auto' },
     { code: 'hi', name: 'Hindi' },
     { code: 'te', name: 'Telugu' },
     { code: 'ta', name: 'Tamil' },
@@ -48,6 +53,7 @@ function Modules() {
 
   const fetchData = async (route: string, setDataFunction: any, setModuleIdFunction: any) => {
     setIsLoading(true);
+    setIsLoadingData(true);
     try {
       const response = await axios.get(route);
       setModuleIdFunction(response.data.module_ids);
@@ -63,6 +69,7 @@ function Modules() {
       console.error("Error fetching data:", error);
     } finally {
       setIsLoading(false);
+      setIsLoadingData(false);
     }
   };
 
@@ -111,11 +118,12 @@ function Modules() {
           color={"white"}
           rounded="md"
           _hover={{
-            transform: "translateY(-4px)",
+            transform: "translateY(-2px)",
             boxShadow: "md",
             transition: "transform 0.3s ease",  // Add transition property for smooth transition
+            bg: "purple.600"
           }}
-          bg={"blue.400"}
+          bg={"purple.400"}
           boxShadow="lg"
           onClick={onLearnClick}
           mt={4}
@@ -132,62 +140,74 @@ function Modules() {
           </Select>
         </Flex>
       </HStack>
-      <HStack justifyContent={"center"} mt={6}>
-        {showTabs && (
-          <>
-            <Button
-              onClick={() => handleTabClick("beginner")}
-              mx={2}
-              variant={activeTab === "beginner" ? "solid" : "outline"}
-              colorScheme="purple"
+
+      {isLoadingData ? (
+        <Box textAlign="center" w="205vh" height={"60vh"}>
+          <Spinner size="xl" mt={"140px"} color="purple.500" />
+          <Text mt={4}>Loading...</Text>
+        </Box>
+      ) : (
+        <>
+          <HStack justifyContent={"center"} mt={6}>
+            {showTabs && (
+              <>
+                <Button
+                  onClick={() => handleTabClick("beginner")}
+                  mx={2}
+                  variant={activeTab === "beginner" ? "solid" : "outline"}
+                  colorScheme="purple"
+                >
+                  Basic Modules
+                </Button>
+                <Button
+                  onClick={() => handleTabClick("advanced")}
+                  mx={2}
+                  variant={activeTab === "advanced" ? "solid" : "outline"}
+                  colorScheme="purple"
+                >
+                  Advanced Modules
+                </Button>
+              </>
+            )}
+          </HStack>
+
+          <Flex direction={{ base: "column", md: "row" }} minHeight={"60vh"} mb={10}>
+            <Grid
+              templateColumns={{
+                base: "repeat(auto-fill, minmax(200px, 1fr))",
+                md: "repeat(4, 1fr)",
+              }}
+              gap={8}
+              mt={2}
+              mx={8}
+              display={activeTab === "beginner" ? "grid" : "none"}
             >
-              Basic Modules
-            </Button>
-            <Button
-              onClick={() => handleTabClick("advanced")}
-              mx={2}
-              variant={activeTab === "advanced" ? "solid" : "outline"}
-              colorScheme="purple"
+              {beginnerData.map(({ title, content }) => (
+                <MyCard key={title} title={title} module_ids={beginnerModuleIdData} content={content as string} source_language={sourceLanguage} websearch={webSearchOn} />
+              ))}
+
+
+            </Grid>
+
+            <Grid
+              templateColumns={{
+                base: "repeat(auto-fill, minmax(200px, 1fr))",
+                md: "repeat(4, 1fr)",
+              }}
+              gap={8}
+              mt={2}
+              mx={8}
+              display={activeTab === "advanced" ? "grid" : "none"}
             >
-              Advanced Modules
-            </Button>
-          </>
-        )}
-      </HStack>
+              {advancedData.map(({ title, content }) => (
+                <MyCard key={title} title={title} module_ids={advanceModuleIdData} content={content as string} source_language={sourceLanguage} websearch={webSearchOn} />
+              ))}
+            </Grid>
+          </Flex>
+        </>
+      )}
 
-      <Flex direction={{ base: "column", md: "row" }} minHeight={"60vh"} mb={10}>
-        <Grid
-          templateColumns={{
-            base: "repeat(auto-fill, minmax(200px, 1fr))",
-            md: "repeat(4, 1fr)",
-          }}
-          gap={8}
-          mt={2}
-          mx={8}
-          display={activeTab === "beginner" ? "grid" : "none"}
-        >
-          {beginnerData.map(({ title, content }) => (
-            <MyCard key={title} title={title} module_ids={beginnerModuleIdData} content={content as string} source_language={sourceLanguage} websearch={webSearchOn} />
-          ))}
-
-
-        </Grid>
-
-        <Grid
-          templateColumns={{
-            base: "repeat(auto-fill, minmax(200px, 1fr))",
-            md: "repeat(4, 1fr)",
-          }}
-          gap={8}
-          mt={2}
-          mx={8}
-          display={activeTab === "advanced" ? "grid" : "none"}
-        >
-          {advancedData.map(({ title, content }) => (
-            <MyCard key={title} title={title} module_ids={advanceModuleIdData} content={content as string} source_language={sourceLanguage} websearch={webSearchOn} />
-          ))}
-        </Grid>
-      </Flex>
+      <ChatWidget />
       <Footer />
     </div>
   );

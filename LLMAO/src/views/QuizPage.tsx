@@ -1,6 +1,6 @@
 import Quiz from '../components/Quiz';
 import {Center} from '@chakra-ui/react';
-import Navbar from '../components/navbar_landing'
+import Navbar from '../components/navbar'
 import Footer from '../components/footer'
 
 const question1 = 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Numquam inventore dolorem nam aspernatur amet beatae in aut? Sequi adipisci nemo dolore! Cum deleniti vel accusantium molestiae explicabo voluptatibus placeat, voluptas voluptate dolorem quod cumque enim praesentium soluta est, amet quia veniam. Hic, facilis laborum incidunt consequuntur neque aliquam ipsam esse iusto temporibus quisquam magni rerum totam quidem blanditiis corporis perferendis in laboriosam quia earum a sed voluptatem ullam numquam! Quisquam molestiae soluta quasi ipsum explicabo inventore maiores error officiis dolor voluptatibus consequatur possimus asperiores, nisi assumenda debitis suscipit perspiciatis minima nobis dolore earum! Laborum recusandae nesciunt quaerat praesentium blanditiis quasi!'
