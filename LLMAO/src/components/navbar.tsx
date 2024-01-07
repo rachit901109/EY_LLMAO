@@ -8,6 +8,10 @@ import {
   HStack,
   useColorModeValue,
   Link,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
 } from '@chakra-ui/react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
@@ -18,7 +22,7 @@ import { MdExplore } from "react-icons/md";
 import Logo from '../assets/images/Logo2.jpg'
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignIn, faUserPlus, faSignOut, faHome,faRobot } from '@fortawesome/free-solid-svg-icons';
+import { faSignIn, faUserPlus, faSignOut, faHome, faRobot, faUserCircle, faUser } from '@fortawesome/free-solid-svg-icons';
 export default function Nav() {
   const [authenticated, setAuthenticated] = useState(false);
   const navigate = useNavigate();
@@ -33,7 +37,7 @@ export default function Nav() {
     try {
       await axios.get('/api/logout', { withCredentials: true });
       setAuthenticated(false);
-      sessionStorage.removeItem('authenticated'); 
+      sessionStorage.removeItem('authenticated');
       localStorage.clear();
       navigate("/");
     } catch (error) {
@@ -135,16 +139,37 @@ export default function Nav() {
                 <PhoneIcon mr={2} mb={1} ></PhoneIcon>
                 Contact Us
               </Box>
+
               {authenticated && (
-                <Box
-                as="a"
-                px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), cursor: 'pointer', }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} onClick={handleLogout}
-                bg={location.pathname === '/contact' ? useColorModeValue('purple.600', 'purple.600') : ''}
-                color={location.pathname === '/contact' ? 'white' : ''}
-              >
-              <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faSignOut} />
-                Logout
-              </Box>
+                <Menu>
+                  {({ isOpen }) => (
+                    <>
+                      <MenuButton
+                        as={Box}
+                        px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), cursor: 'pointer', }} transition="transform 0.3s" _active={{ bg: 'purple.500' }}
+                        bg={location.pathname === '/not-there' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                        color={location.pathname === '/not-there' ? 'white' : ''}
+                      >
+                      <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px", fontSize: "20px" }} icon={faUserCircle} />
+                        User
+                      </MenuButton>
+                      <MenuList p={2}>
+                        <MenuItem as="a" href="/profile" px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), cursor: 'pointer', }} transition="transform 0.3s" _active={{ bg: 'purple.500' }}
+                          bg={location.pathname === '/profile' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                          color={location.pathname === '/profile' ? 'white' : ''}>
+                          <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faUser} />
+                          Profile Page
+                        </MenuItem>
+                        <MenuItem onClick={handleLogout} px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), cursor: 'pointer', }} transition="transform 0.3s" _active={{ bg: 'purple.500' }}
+                          bg={location.pathname === '/logout' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                          color={location.pathname === '/logout' ? 'white' : ''}>
+                          <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faSignOut} />
+                          Logout
+                        </MenuItem>
+                      </MenuList>
+                    </>
+                  )}
+                </Menu>
               )}
               {/* <Box>
                 <Button onClick={toggleColorMode} _hover={{bg: useColorModeValue('purple.500', 'purple.600'),transform: "scale(1.05)"}} mr={4} transition="transform 0.3s" bg={'rgba(0,0,0,0)'}>
