@@ -278,7 +278,7 @@ def generate_pdf(pdf_file_path, modulename, module_summary, submodule_content, s
 
     pdf.build(content, onFirstPage=add_page_number, onLaterPages=add_page_number)
 
-def add_page_number(canvas):
+def add_page_number(canvas, docs):
     # Add page numbers
     page_num = canvas.getPageNumber()
     text = "Page %d" % page_num
