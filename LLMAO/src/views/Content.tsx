@@ -157,7 +157,7 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
     return (
       <Box textAlign="center" w="205vh" height={"60vh"}>
         <Spinner size="xl" mt={"140px"} color="purple.500" />
-        <Text mt={4}>Loading Content...</Text>
+        <Text mt={4}>Generating Content...</Text>
       </Box>
     );
   }
@@ -285,7 +285,7 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
         ) : (
           <Box textAlign="center" w="100%" mt={40}>
             <Spinner size="xl" color="purple.500" />
-            <Text mt={4}>Loading Quiz...</Text>
+            <Text mt={4}>Generating Quiz...</Text>
           </Box>
           
         )
@@ -296,7 +296,7 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
         ) : (
           <Box textAlign="center" w="100%" mt={40}>
             <Spinner size="xl" color="purple.500" />
-            <Text mt={4}>Loading Quiz...</Text>
+            <Text mt={4}>Generating Quiz...</Text>
           </Box>
           
         )
