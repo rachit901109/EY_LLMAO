@@ -17,7 +17,9 @@ from reportlab.lib.units import mm
 
 load_dotenv()
 
-openai.api_key = os.environ.get('OPENAI_API_KEY')
+openai_api_key1 = os.environ.get('OPENAI_API_KEY1')
+openai_api_key2 = os.environ.get('OPENAI_API_KEY2')
+
 tavily_api_key = os.environ.get('TAVILY_API_KEY')
 
 
@@ -32,7 +34,7 @@ values are the brief summary of that module.
 ```
 Topic: {topic}
 ```"""
-    client = OpenAI()
+    client = OpenAI(api_key= openai_api_key1)
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -54,7 +56,8 @@ The output should be in json format where each key corresponds to the \
 sub-module number and the values are the sub-module names.
 Module Name: {module_name}
 """
-    client = OpenAI()
+    client = OpenAI(api_key= openai_api_key1)
+
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -67,7 +70,7 @@ Module Name: {module_name}
 
     return output
 
-def generate_content(output):
+def generate_content_one(output):
     prompt_content_gen = """I'm seeking your expertise on the subject of {sub_module_name}.\
 As a knowledgeable and educational chatbot, I'm confident in your ability to provide \
 a comprehensive and detailed explanation of this sub-module. Please generate a detailed and \
@@ -83,8 +86,10 @@ additional resources on the subject. Make sure your output is a valid json where
 title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
 """
     all_content = []
+    print('USING METHOD 1!!!!!!!!!!!')
     for key,val in output.items():
-        client = OpenAI()
+        client = OpenAI(api_key= openai_api_key1)
+
         completion = client.chat.completions.create(
                     model = 'gpt-3.5-turbo-1106',
                     messages = [
@@ -93,7 +98,40 @@ title_for_the_content, content, subsections (which should be a list of dictionar
                     response_format = {'type':'json_object'},
                     seed = 42
         )
-        print("Module Generated: ",key,"!")   
+        print("Method 1! Module Generated: ",key,"!")   
+        print(ast.literal_eval(completion.choices[0].message.content))
+        all_content.append(ast.literal_eval(completion.choices[0].message.content))
+        time.sleep(25)
+    return all_content
+
+def generate_content_two(output):
+    prompt_content_gen = """I'm seeking your expertise on the subject of {sub_module_name}.\
+As a knowledgeable and educational chatbot, I'm confident in your ability to provide \
+a comprehensive and detailed explanation of this sub-module. Please generate a detailed and \
+informative description that covers essential aspects such as definition, \
+explanation, use cases, applications, and any other relevant details. \
+Ensure that the content exceeds 1000 words to offer a thorough understanding of the topic.
+
+In your response, consider breaking down the information into subsections for clarity and make it detailed, elaborating every subsection. \
+If there are specific examples or real-world applications related to the subject, \
+please include them to enhance practical understanding. Additionally, conclude your \
+response by suggesting relevant URLs for further reading to empower users with \
+additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
+title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
+"""
+    all_content = []
+    print('USING METHOD 2!!!!!!!!!!!')
+    for key,val in output.items():
+        client = OpenAI(api_key=openai_api_key2)
+        completion = client.chat.completions.create(
+                    model = 'gpt-3.5-turbo-1106',
+                    messages = [
+                        {'role':'user', 'content': prompt_content_gen.format(sub_module_name = val)},
+                    ],
+                    response_format = {'type':'json_object'},
+                    seed = 42
+        )
+        print("Method 2! Module Generated: ",key,"!")   
         print(ast.literal_eval(completion.choices[0].message.content))
         all_content.append(ast.literal_eval(completion.choices[0].message.content))
         time.sleep(25)
