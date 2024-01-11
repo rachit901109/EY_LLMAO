@@ -5,6 +5,7 @@ import { Model } from "./Explorer";
 import { ConvaiClient } from 'convai-web-sdk';
 import { SETTINGS } from './constants';
 import Navbar from "../components/navbar";
+import { useSessionCheck } from "./useSessionCheck";
 
 interface Transcript {
   getIsFinal: () => boolean;
@@ -18,6 +19,7 @@ const convaiClient = new ConvaiClient({
 });
 
 export default function Issac3D(): JSX.Element {
+  useSessionCheck();
   const [userText, setUserText] = useState<string>("Press & Hold Space to Talk To ISSAC!");
   const finalizedUserText = useRef<string>("");
   const [npcText, setNpcText] = useState<string>("");

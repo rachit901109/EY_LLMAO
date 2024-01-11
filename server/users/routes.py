@@ -25,13 +25,13 @@ tools = [
         'function': {
 
             'name': 'retrieval_augmented_generation',
-            'description': 'Fetches information about Nyaymitra\'s platform to answer user\'s query',
+            'description': 'Fetches information about Mindcraft\'s platform to answer user\'s query',
             'parameters': {
                 'type': 'object',
                 'properties': {
                     'query': {
                         'type': 'string',
-                        'description': 'The query to use for searching the vector database of Nyaymitra'
+                        'description': 'The query to use for searching the vector database of Mindcraft'
                     },
                 },
                 'required': ['query']
@@ -97,9 +97,9 @@ def login():
     client = OpenAI()
     assistant = client.beta.assistants.create(
         name="MINDCRAFT",
-        instructions="You are a helpful assistant for the website Nyaymitra. Use the functions provided to you to answer user's question about the Nyaymitra platform. Help the user with navigating and getting information about the Nyaymitra website.Provide the navigation links defined in the document whenever required",
+        instructions="You are a helpful assistant for the website Mindcraft. Use the functions provided to you to answer user's question about the Mindcraft platform. Help the user with navigating and getting information about the Mindcraft website.Provide the navigation links defined in the document whenever required",
         model="gpt-3.5-turbo-1106",
-        tools=tools
+        # tools=tools
     )
     session['assistant_id'] = assistant.id
     # return response
