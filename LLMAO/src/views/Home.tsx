@@ -20,8 +20,13 @@ function Home() {
   const [inProp, setInProp] = useState(false);
 
   const handleTabsChange = (index: number) => {
-    setTabIndex(index);
-    setInProp(false);
+    if (index !== tabIndex) {
+      setInProp(false); 
+      setTimeout(() => {
+        setTabIndex(index);
+        setInProp(true); 
+      }, 200);
+    }
   };
 
   useEffect(() => {
@@ -54,7 +59,7 @@ function Home() {
   return (
     <div>
       <Navbar />
-      <Box bg="purple.700" color="white" p={4} mb={4}>
+      {/* <Box bg="purple.700" color="white" p={4} mb={4}>
         <Heading size="md" mb={2}>Your Trophies</Heading>
         <SimpleGrid columns={[1, 2, 3]} spacing={4}>
           {trophies.map((trophy, index) => (
@@ -66,7 +71,7 @@ function Home() {
             </Box>
           ))}
         </SimpleGrid>
-      </Box>
+      </Box> */}
       <Tabs my={4} mx={5} isFitted variant='enclosed' index={tabIndex} onChange={handleTabsChange}>
         <TabList borderBottom='0'>
           <Tab _selected={{ bgColor: 'purple.500', color: 'white' }} >Recommended Courses</Tab>
@@ -74,21 +79,21 @@ function Home() {
           <Tab _selected={{ bgColor: 'purple.500', color: 'white' }}>Completed</Tab>
         </TabList>
         <TabPanels>
-          <TabPanel shadow={"dark-lg"}>
+          <TabPanel >
             {Object.keys(recommended_courses).map((courseTitle) => (
               <SlideFade in={inProp} transition={{ enter: { duration: 0.7 } }} offsetY='50px' >
                 <CourseCard courseTitle={courseTitle} content={recommended_courses[courseTitle]} buttonText={'Start Learning'} />
               </SlideFade>
             ))}
           </TabPanel>
-          <TabPanel shadow={"dark-lg"}>
+          <TabPanel >
             {Object.keys(ongoing_courses).map((courseTitle) => (
               <SlideFade in={inProp} transition={{ enter: { duration: 0.7 } }} offsetY='50px' >
                 <CourseCard courseTitle={courseTitle} content={ongoing_courses[courseTitle]} buttonText={'Continue Learning'} />
               </SlideFade>
             ))}
           </TabPanel>
-          <TabPanel shadow={"dark-lg"}>
+          <TabPanel >
             {Object.keys(completed_courses).map((courseTitle) => (
               <SlideFade in={inProp} transition={{ enter: { duration: 0.7 } }} offsetY='50px' >
                 <CourseCard courseTitle={courseTitle} content={completed_courses[courseTitle]} buttonText={'Review Course'} />
@@ -98,7 +103,6 @@ function Home() {
         </TabPanels>
       </Tabs>
       <ChatWidget />
-
       <Footer></Footer>
     </div>
   );
