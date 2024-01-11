@@ -1,6 +1,7 @@
 from flask import request, session, jsonify,  Blueprint, send_file
 from server import db, bcrypt
 from server.models import User, Topic, Module, Query
+from concurrent.futures import ThreadPoolExecutor
 import os
 import json
 from flask_cors import cross_origin
@@ -16,6 +17,7 @@ import iso639
 
 
 users = Blueprint(name='users', import_name=__name__)
+
 
 # Detector for language detection
 detector = LanguageDetectorBuilder.from_all_languages().with_preloaded_language_models().build()
@@ -94,7 +96,7 @@ def login():
     # start user session
     session["user_id"] = user.user_id
     print("user id is this:-",session.get('user_id'))
-    client = OpenAI()
+    client = OpenAI(api_key = openai_api_key1)
     assistant = client.beta.assistants.create(
         name="MINDCRAFT",
         instructions="You are a helpful assistant for the website Nyaymitra. Use the functions provided to you to answer user's question about the Nyaymitra platform. Help the user with navigating and getting information about the Nyaymitra website.Provide the navigation links defined in the document whenever required",
@@ -285,8 +287,7 @@ def query_topic(topicname,level,websearch,source_lang):
     if(websearch=="true"):
         module_summary_content = generate_module_summary_from_web(topic=trans_topic_name,level=level)
     else:    
-        module_summary_content = generate_module_summary(topic=trans_topic_name,level=level)
-    
+        module_summary_content = generate_module_summary(topic=trans_topic_name,level=level)    
     
     module_ids = {}
     for modulename, modulesummary in module_summary_content.items():
@@ -318,44 +319,59 @@ def query_topic(topicname,level,websearch,source_lang):
 
 
 # module query --> generate mutlimodal content (with images) for submodules in a module
+
 @users.route('/query2/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def query_module(module_id, source_language, websearch):
     # check if user is logged in
     user_id = session.get("user_id", None)
     if user_id is None:
-        return jsonify({"message": "User not logged in", "response":False}), 401
+        return jsonify({"message": "User not logged in", "response": False}), 401
     
     # check if user exists
     user = User.query.get(user_id)
     if user is None:
-        return jsonify({"message": "User not found", "response":False}), 404
+        return jsonify({"message": "User not found", "response": False}), 404
 
-    # check if submodules are saved in database for give module_id
+    # check if submodules are saved in the database for the given module_id
     module = Module.query.get(module_id)
-    images= module_image_from_web(module.module_name)
+    images = module_image_from_web(module.module_name)
     if module.submodule_content is not None:
         trans_submodule_content = translate_submodule_content(module.submodule_content, source_language)
         print(f"Translated submodule content: {trans_submodule_content}")
-        return jsonify({"message": "Query successful", "images":images,"content": trans_submodule_content, "response": True}), 200
+        return jsonify({"message": "Query successful", "images": images, "content": trans_submodule_content, "response": True}), 200
     
-    # if submodules are not generated generate and save them in database
-    if websearch=="true":
+    # if submodules are not generated, generate and save them in the database
+    if websearch == "true":
         submodules = generate_submodules_from_web(module.module_name)
         print(submodules)
         content = generate_content_from_web(submodules)
     else:
         submodules = generate_submodules(module.module_name)
         print(submodules)
-        content = generate_content(submodules)
+        keys_list = list(submodules.keys())
+        submodules_split_one = {key: submodules[key] for key in keys_list[:3]}
+        submodules_split_two = {key: submodules[key] for key in keys_list[3:]}
+        
+        # Use concurrent.futures to run functions simultaneously
+        with ThreadPoolExecutor() as executor:
+            future_content_one = executor.submit(generate_content_one, submodules_split_one)
+            future_content_two = executor.submit(generate_content_two, submodules_split_two)
+
+        # Retrieve the results when both functions are done
+        content_one = future_content_one.result()
+        content_two = future_content_two.result()
+
+        content = content_one + content_two
+
     module.submodule_content = content
     db.session.commit()
 
-    # translate submodule content to source language
+    # translate submodule content to the source language
     trans_submodule_content = translate_submodule_content(content, source_language)
     print(f"Translated submodule content: {trans_submodule_content}")
     
-    return jsonify({"message": "Query successful","images": images, "content": trans_submodule_content, "response": True}), 200
+    return jsonify({"message": "Query successful", "images": images, "content": trans_submodule_content, "response": True}), 200
 
 
 # download route --> generate pdf for module summary and module content
@@ -493,7 +509,7 @@ def gen_quiz2(module_id, source_language, websearch):
 
 ###ASSISTANT API SECTION#######################
 def wait_on_run(run_id, thread_id):
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     while True:
         run = client.beta.threads.runs.retrieve(
             thread_id=thread_id,
@@ -505,8 +521,7 @@ def wait_on_run(run_id, thread_id):
             return run
 
 
-client = OpenAI()
-
+client = OpenAI(api_key = openai_api_key1)
 
 def submit_tool_outputs(thread_id, run_id, tools_to_call):
     tools_outputs = []
