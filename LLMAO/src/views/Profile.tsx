@@ -27,6 +27,8 @@ import * as yup from "yup";
 const profileSchema = yup.object().shape({
     fname: yup.string().required("First name is required"),
     lname: yup.string().required("Last name is required"),
+    fname: yup.string().required("First name is required"),
+    lname: yup.string().required("Last name is required"),
     email: yup
         .string()
         .email("Please introduce a valid email")
@@ -35,6 +37,7 @@ const profileSchema = yup.object().shape({
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
     age: yup.number().integer().min(1, 'Age must be a positive number').required('Age is required')
+    age: yup.number().integer().min(1, 'Age must be a positive number').required('Age is required')
 });
 
 const displayError = (fieldName, errors) => {
@@ -42,6 +45,16 @@ const displayError = (fieldName, errors) => {
 };
 
 const Profile = () => {
+    // const [profile, setProfile] = useState({
+    //     firstName: 'John',
+    //     lastName: 'Doe',
+    //     email: 'john.doe@example.com',
+    //     country: 'USA',
+    //     city: 'New York',
+    //     state: 'NY',
+    //     age: 30,
+    //     gender: 'male'
+    // });
     // const [profile, setProfile] = useState({
     //     firstName: 'John',
     //     lastName: 'Doe',
@@ -62,8 +75,18 @@ const Profile = () => {
         age: '',
         interests: '',
         user_name: '',
+        fname: '',
+        lname: '',
+        email: '',
+        country: '',
+        city: '',
+        state: '',
+        age: '',
+        interests: '',
+        user_name: '',
     });
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const toast = useToast();
 

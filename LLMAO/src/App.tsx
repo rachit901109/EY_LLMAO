@@ -12,7 +12,6 @@ import Profile from './views/Profile';
 import Issac2 from './views/Issac3D'
 
 
-
 function App() {
   return (
     <Router>
