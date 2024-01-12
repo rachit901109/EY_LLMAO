@@ -179,10 +179,29 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
           isMulti="true"
           placeholder="Select multiple interests"
         >
-          <option value="Automobiles">Automobiles</option>
-          <option value="Artificial Intelligence">Artificial Intelligence</option>
+          <option value="Machine Learning">Machine Learning</option>
+          <option value="Deep Learning">Deep Learning</option>
+          <option value="Natural Language Processing">Natural Language Processing</option>
           <option value="Computer Vision">Computer Vision</option>
+          <option value="Reinforcement Learning">Reinforcement Learning</option>
           <option value="Data Science">Data Science</option>
+          <option value="Neural Networks">Neural Networks</option>
+          <option value="AI Ethics">AI Ethics</option>
+          <option value="TensorFlow">TensorFlow</option>
+          <option value="PyTorch">PyTorch</option>
+          <option value="Supervised Learning">Supervised Learning</option>
+          <option value="Unsupervised Learning">Unsupervised Learning</option>
+          <option value="Recommender Systems">Recommender Systems</option>
+          <option value="Data Preprocessing">Data Preprocessing</option>
+          <option value="Time Series Analysis">Time Series Analysis</option>
+          <option value="Ensemble Learning">Ensemble Learning</option>
+          <option value="Regression Analysis">Regression Analysis</option>
+          <option value="Classification">Classification</option>
+          <option value="Clustering">Clustering</option>
+          <option value="Autoencoders">Autoencoders</option>
+          <option value="Automobiles">Automobiles</option>
+          <option value="Computer Vision">Computer Vision</option>
+          <option value="Artificial Intelligence">Artificial Intelligence</option>
         </Select>
         <FormErrorMessage>
           {errors.interest && errors.interest.message}

@@ -19,3 +19,4 @@ iso639-lang
 reportlab
 sentence-transformers
 gtts
+pytz
