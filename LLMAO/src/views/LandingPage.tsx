@@ -150,7 +150,7 @@ export default function SplitScreen() {
               <b>Multilingual Support</b>
             </Text>
             <Text textAlign={'justify'} className='content' fontSize={{ base: 'md', lg: 'lg' }} mt={4}>
-              Bid farewell to language barriers with MindCraft's revolutionary approach. Our platform seamlessly integrates multilingual support, eliminating obstacles to knowledge acquisition for learners across the globe. Now, individuals from diverse linguistic backgrounds can immerse themselves in educational content tailored to their language preferences. This inclusive feature ensures that no matter where you are or what language you speak, MindCraft opens doors to a world of learning. Embrace a truly global educational experience, breaking down traditional language constraints and fostering a community where knowledge knows no linguistic bounds. Welcome to a future of education without borders.
+            Break free from language barriers with MindCraft's groundbreaking platform. Our seamless multilingual support lets learners worldwide dive into personalized educational content. Wherever you are, whatever language you speak, MindCraft opens doors to a global learning experience. Embrace education without borders – welcome to a future where knowledge knows no limits!
             </Text>
           </Box>
         </Flex>
@@ -179,7 +179,7 @@ export default function SplitScreen() {
             <b>Intelligent System for Academic Assistance and Coaching (ISAAC)</b>
           </Text>
           <Text textAlign={'justify'} className='content' fontSize={{ base: 'md', lg: 'lg' }} mt={4}>
-            Introducing ISAAC, MindCraft's Intelligent System for Academic Assistance and Coaching, your dedicated learning companion. ISAAC is designed to personalize your educational journey, offering tailored assistance and coaching. With a commitment to ensuring your understanding, ISAAC provides detailed explanations, empowering you to grasp every concept with confidence. This intelligent system engages dynamically with your progress, adapting its support to match your unique learning needs. Say hello to a personalized, interactive learning experience with ISAAC, where guidance meets innovation, and knowledge acquisition becomes a seamless and enriching adventure.</Text>
+          Introducing ISAAC, MindCraft's personalized learning companion. Tailored assistance, detailed explanations, and dynamic engagement make your educational journey seamless and enriching. Say hello to innovation and guidance, redefining knowledge acquisition.</Text>
         </Box>
         <Box
           flexShrink={0}
@@ -235,7 +235,7 @@ export default function SplitScreen() {
             <b>Evaluate and Progress with Quizzes & Assignments</b>
           </Text>
           <Text textAlign={'justify'} className='content' fontSize={{ base: 'md', lg: 'lg' }} mt={4}>
-            Elevate your learning experience on MindCraft by assessing your knowledge through module quizzes and targeted assignments. Our platform empowers you to customize your educational journey with courses spanning from beginner to advanced levels. This tailored approach ensures that the curriculum aligns seamlessly with your expertise and individual learning requirements. Dive into specialized assessments designed to reinforce your understanding of key concepts, allowing you to progress confidently through each stage of your learning adventure. With MindCraft, education becomes a personalized, dynamic, and rewarding journey that adapts to your unique needs and aspirations.</Text>
+          Enhance your learning on MindCraft with module quizzes and targeted assignments. Customize your journey from beginner to advanced courses, aligning the curriculum with your expertise. Specialized assessments reinforce key concepts, enabling confident progression. MindCraft transforms education into a personalized, dynamic, and rewarding adventure tailored to your unique needs and aspirations.</Text>
         </Box>
       </Flex>
       </motion.div>
@@ -264,7 +264,7 @@ export default function SplitScreen() {
             <b>Rewarding Engagement with Badges and Certificates</b>
           </Text>
           <Text textAlign={'justify'} className='content' fontSize={{ base: 'md', lg: 'lg' }} mt={4}>
-            At MindCraft, we believe in recognizing and celebrating your accomplishments. Engage in your learning journey and be rewarded through our robust system. Receive badges and certificates for your daily commitment and achievements, serving as tangible markers of your progress. Our carefully crafted reward system is designed to motivate and inspire, encouraging you to strive for excellence in your educational pursuits. As you accumulate badges and certificates, you not only showcase your dedication but also unlock a sense of accomplishment that propels you forward on your path to success. Join us in creating a culture of achievement and continual growth at MindCraft.</Text>
+          Celebrate your milestones at MindCraft with our rewarding system. Earn badges and certificates for daily commitment and achievements, tangible markers of your progress. Our carefully crafted rewards motivate and inspire, propelling you forward on your path to success. Join us in creating a culture of achievement and continual growth.</Text>
         </Box>
         <Box
           flexShrink={0}
