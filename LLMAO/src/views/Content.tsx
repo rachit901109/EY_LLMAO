@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
 import Quiz from '../components/Quiz';
 import { useSessionCheck } from "./useSessionCheck";
+import ChatWidget from '../components/Chat_widget'
 
 interface Subsection {
   title: string;
@@ -365,6 +366,7 @@ const Content = () => {
           />
         </Box>
       </Flex>
+      <ChatWidget />
       <Footer />
     </>
   );
