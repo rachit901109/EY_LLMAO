@@ -27,8 +27,6 @@ import * as yup from "yup";
 const profileSchema = yup.object().shape({
     fname: yup.string().required("First name is required"),
     lname: yup.string().required("Last name is required"),
-    fname: yup.string().required("First name is required"),
-    lname: yup.string().required("Last name is required"),
     email: yup
         .string()
         .email("Please introduce a valid email")
@@ -76,7 +74,6 @@ const Profile = () => {
         user_name: '',
     });
     const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const toast = useToast();
 
