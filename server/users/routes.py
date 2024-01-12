@@ -352,6 +352,8 @@ def query_module(module_id, source_language, websearch):
             submodules_split_three = {key: submodules[key] for key in keys_list[4:]}
             future_content_one = executor.submit(generate_content_from_web_one, submodules_split_one)
             future_content_two = executor.submit(generate_content_from_web_two, submodules_split_two)
+            # future_content_three = executor.submit(generate_content_from_web_three, submodules_split_three)
+
 
         else:
             submodules = generate_submodules(module.module_name)
