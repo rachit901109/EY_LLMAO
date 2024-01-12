@@ -25,8 +25,8 @@ import * as yup from "yup";
 
 // Profile validation schema
 const profileSchema = yup.object().shape({
-    firstName: yup.string().required("First name is required"),
-    lastName: yup.string().required("Last name is required"),
+    fname: yup.string().required("First name is required"),
+    lname: yup.string().required("Last name is required"),
     email: yup
         .string()
         .email("Please introduce a valid email")
@@ -34,8 +34,7 @@ const profileSchema = yup.object().shape({
     country: yup.string().required("Country is required"),
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
-    age: yup.number().integer().min(1, 'Age must be a positive number').required('Age is required'),
-    gender: yup.string().required('Gender is required'),
+    age: yup.number().integer().min(1, 'Age must be a positive number').required('Age is required')
 });
 
 const displayError = (fieldName, errors) => {
@@ -43,18 +42,29 @@ const displayError = (fieldName, errors) => {
 };
 
 const Profile = () => {
+    // const [profile, setProfile] = useState({
+    //     firstName: 'John',
+    //     lastName: 'Doe',
+    //     email: 'john.doe@example.com',
+    //     country: 'USA',
+    //     city: 'New York',
+    //     state: 'NY',
+    //     age: 30,
+    //     gender: 'male'
+    // });
     const [profile, setProfile] = useState({
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        country: 'USA',
-        city: 'New York',
-        state: 'NY',
-        age: 30,
-        gender: 'male'
+        fname: '',
+        lname: '',
+        email: '',
+        country: '',
+        city: '',
+        state: '',
+        age: '',
+        interests: '',
+        user_name: '',
     });
     const [isEditing, setIsEditing] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const toast = useToast();
 
     const { register, handleSubmit, formState: { errors }, setValue } = useForm({
@@ -62,23 +72,28 @@ const Profile = () => {
         defaultValues: profile
     });
 
-    // useEffect(() => {
-    //     // Fetch user profile data from Flask backend
-    //     axios.get('/api/user-profile')
-    //         .then(response => {
-    //             setProfile(response.data);
-    //             setIsLoading(false);
-
-    //             // Pre-fill form fields with fetched data
-    //             Object.keys(response.data).forEach(key => {
-    //                 setValue(key, response.data[key]);
-    //             });
-    //         })
-    //         .catch(error => {
-    //             console.error("Error fetching user data:", error);
-    //             setIsLoading(false);
-    //         });
-    // }, [setValue]);
+    useEffect(() => {
+        // Fetch user profile data from Flask backend
+        axios.get('/api/user_profile')
+            .then(response => {
+                console.log("profile",response.data.user_info)
+                setProfile(response.data.user_info);
+                setValue("fname", response.data.user_info.fname || '');
+                setValue("lname", response.data.user_info.lname || '');
+                setValue("email", response.data.user_info.email || '');
+                setValue("country", response.data.user_info.country || '');
+                setValue("state", response.data.user_info.state || '');
+                setValue("city", response.data.user_info.city || '');
+                setValue("age", response.data.user_info.age || '');
+                setValue("user_name", response.data.user_info.username || '');
+                setValue("interests", response.data.user_info.interests || '');
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error("Error fetching user data:", error);
+                setIsLoading(false);
+            });
+    }, []);
 
     const onSubmit = (data) => {
         setProfile(data);
@@ -89,7 +104,6 @@ const Profile = () => {
             duration: 3000,
             isClosable: true,
         });
-        // You can make an API call to save the updated profile if needed.
     };
 
     if (isLoading) {
@@ -116,13 +130,13 @@ const Profile = () => {
                         <Flex flexDirection={{ base: 'column', md: 'row' }} flexWrap="wrap" justifyContent="space-between">
                             <FormControl flex="1" mr={{ base: 0, md: 4 }}>
                                 <FormLabel>First Name</FormLabel>
-                                <Input id="firstName" {...register("firstName")} />
+                                <Input id="firstName" {...register("fname")} />
                                 <Text color="red.500">{displayError('firstName', errors)}</Text>
                             </FormControl>
 
                             <FormControl flex="1" ml={{ base: 0, md: 4 }}>
                                 <FormLabel>Last Name</FormLabel>
-                                <Input id="lastName" {...register("lastName")} />
+                                <Input id="lastName" {...register("lname")} />
                                 <Text color="red.500">{displayError('lastName', errors)}</Text>
                             </FormControl>
                         </Flex>
@@ -160,6 +174,12 @@ const Profile = () => {
                             <Text color="red.500">{displayError('age', errors)}</Text>
                         </FormControl>
                         </Flex>
+
+                        <FormControl mt={4} mb={4}>
+                            <FormLabel>Interests</FormLabel>
+                            <Input id="interests" {...register("interests")} />
+                            <Text color="red.500">{displayError('interests', errors)}</Text>
+                        </FormControl>
 
                         <Button mt={4} colorScheme="purple" type="submit">Save Changes</Button>
                     </form>

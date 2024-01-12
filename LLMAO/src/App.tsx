@@ -10,7 +10,6 @@ import Content from './views/Content'
 // import Issac from './views/Issac'
 import Profile from './views/Profile';
 import Issac2 from './views/Issac3D'
-import Oral from './components/Oral'
 
 
 function App() {
@@ -29,7 +28,6 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/trending" element={<Trending />} />
         <Route path="/content" element={<Content />} />
-        <Route path="/oral" element={<Oral />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
