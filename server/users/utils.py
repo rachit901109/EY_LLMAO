@@ -164,7 +164,7 @@ def generate_submodules_from_web(module_name):
     output = ast.literal_eval(completion.choices[0].message.content)
     return output
 
-def generate_content_from_web_one(sub_module_name):
+def generate_content_from_web(sub_module_name, api_key_to_use):
     content_generation_prompt = """I'm seeking your expertise on the subject of {sub_module_name}.\
     You have access to the subject's information which you have to use while generating \ 
     a detailed and informative description that covers essential aspects such as definition, \
@@ -180,13 +180,15 @@ def generate_content_from_web_one(sub_module_name):
     additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
     title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
     """
-    print('THREAD 1 RUNNING...')
+    flag = 1 if api_key_to_use== 'first' else (2 if api_key_to_use=='second' else 3 )
+    print(f'THREAD {flag} RUNNING...')
+    openai_api_key = openai_api_key1 if flag == 1 else(openai_api_key2 if flag == 2 else openai_api_key3)
     all_content = []
     tavily_client = TavilyClient(api_key=tavily_api_key)
     for key, val in sub_module_name.items():    
         print('Searching content for module:', key)
         search_result = tavily_client.get_search_context(val, search_depth="advanced", max_tokens=4000)
-        client = OpenAI(api_key=openai_api_key1)
+        client = OpenAI(api_key=openai_api_key)
         completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -199,47 +201,6 @@ def generate_content_from_web_one(sub_module_name):
         output = ast.literal_eval(completion.choices[0].message.content)
         print(output)
         all_content.append(output)
-        time.sleep(25)
-
-    return all_content
-
-def generate_content_from_web_two(sub_module_name):
-    content_generation_prompt = """I'm seeking your expertise on the subject of {sub_module_name}.\
-    You have access to the subject's information which you have to use while generating \ 
-    a detailed and informative description that covers essential aspects such as definition, \
-    explanation, use cases, applications, and any other relevant details. \
-    Ensure that the content exceeds 800 words to offer a thorough understanding of the topic.
-
-    SUBJECT INFORMATION : {search_result}
-
-    In your response, consider breaking down the information into subsections for clarity. \
-    If there are specific examples or real-world applications related to the subject, \
-    please include them to enhance practical understanding. Additionally, conclude your \
-    response by suggesting relevant URLs for further reading to empower users with \
-    additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-    title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
-    """
-    print('THREAD 2 RUNNING...')
-    all_content = []
-    tavily_client = TavilyClient(api_key=tavily_api_key)
-    for key, val in sub_module_name.items():    
-        print('Searching content for module:', key)
-        search_result = tavily_client.get_search_context(val, search_depth="advanced", max_tokens=4000)
-        client = OpenAI(api_key=openai_api_key2)
-        completion = client.chat.completions.create(
-                model = 'gpt-3.5-turbo-1106',
-                messages = [
-                    {'role':'user', 'content': content_generation_prompt.format(sub_module_name = val, search_result = search_result)},
-                ],
-                response_format = {'type':'json_object'},
-                seed = 42,
-        )
-        print('Module Generated:', key, '!')
-        output = ast.literal_eval(completion.choices[0].message.content)
-        print(output)
-        all_content.append(output)
-        time.sleep(25)
-
     return all_content
 
 def generate_content_from_web_three(sub_module_name):
@@ -310,9 +271,18 @@ Follow the provided JSON format diligently, incorporating information from the s
 
 def module_image_from_web(module):
     tavily_client = TavilyClient(api_key=tavily_api_key)
-    search_result = tavily_client.search(module,max_results=7 ,search_depth="advanced",include_images=True)
-    images = search_result['images']
-    return images
+    max_retries = 3
+    for attempt in range(1, max_retries + 1):
+        try:
+            search_result = tavily_client.search(module, max_results=7, search_depth="advanced", include_images=True)
+            images = search_result['images']
+            return images
+        except Exception as e:
+            print(f"Error in attempt {attempt}: {e}")
+            if attempt < max_retries:
+                time.sleep(5)
+            else:
+                raise 
 
 
 def generate_pdf(pdf_file_path, modulename, module_summary, submodule_content, src_lang):

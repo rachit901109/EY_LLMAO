@@ -5,12 +5,12 @@ import Home from './views/Home';
 import LandingPage from './views/LandingPage'
 import Trending from './views/Trending';
 import Modules from './views/Modules'
-import QuizPage from './views/QuizPage'
 import Contact from './views/Contact'
 import Content from './views/Content'
-import Issac from './views/Issac'
+// import Issac from './views/Issac'
 import Profile from './views/Profile';
 import Issac2 from './views/Issac3D'
+import Oral from './components/Oral'
 
 
 function App() {
@@ -26,10 +26,10 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         {/* <Route path="/issac" element={<Issac />} /> */}
         <Route path="/issac" element={<Issac2 />} />
-        <Route path="/quiz" element={<QuizPage />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/trending" element={<Trending />} />
         <Route path="/content" element={<Content />} />
+        <Route path="/oral" element={<Oral />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
