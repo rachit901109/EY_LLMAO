@@ -564,13 +564,16 @@ def gen_quiz2(module_id, source_language, websearch):
     user = User.query.get(user_id)
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
+    
     module = Module.query.get(module_id)
     subsections_list = module.submodule_content[0]['subsections']
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
+
     quiz = generate_applied_quiz(subsections)
+    translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
-    return jsonify({"message": "Query successful", "quiz": quiz["quizData"], "response": True}), 200
+    return jsonify({"message": "Query successful", "quiz": translated_quiz, "respons    e": True}), 200
 
 
 ###ASSISTANT API SECTION#######################
@@ -674,4 +677,3 @@ def chatbot_route():
     else:
         return jsonify({'error': 'User message not provided'}), 400
 ##############################################################################
-        
