@@ -123,8 +123,20 @@ def user_profile():
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
     
+    user_info = {}
+    user_info['fname'] = user.fname
+    user_info['lname'] = user.lname
+    user_info['user_name'] = user.user_name
+    user_info['email'] = user.email
+    user_info['country'] = user.country
+    user_info['state'] = user.state
+    user_info['city'] = user.city
+    user_info['age'] = user.age
+    user_info['interests'] = user.interests
+    user_info['date_joined'] = user.date_joined
+
     # return response
-    return jsonify({"message": "User found", "user_name":user.user_name, "email":user.email, "country":user.country, "state":user.state, "city":user.city, "gender":user.gender, "interests":user.interests, "date_joined":user.date_joined, "response":True}), 200
+    return jsonify({"message": "User found", "user_info":user_info, "response":True}), 200
 
 
 @users.route('/user_dashboard', methods=['GET'])
@@ -252,6 +264,27 @@ def translate_submodule_content(content, target_language):
         trans_content.append(temp)
     return trans_content
 
+def translate_quiz(quiz_data, target_language):
+    if target_language=='en':
+        return quiz_data
+    
+    trans_quiz=[]
+    for entry in quiz_data:
+        temp = {}
+        for key, val in entry.items():
+            if key != 'options':
+                temp[key] = GoogleTranslator(source='auto', target=target_language).translate(str(val))
+            else:
+                temp[key] = []
+                for option in val:
+                    temp[key].append(GoogleTranslator(source='auto', target=target_language).translate(str(option)))
+
+        trans_quiz.append(temp)
+    
+    return trans_quiz
+
+
+
 
 # query route --> if websearch is true then fetch from web and feed into model else directly feed into model
 # save frequently searched queries in database for faster retrieval
@@ -361,6 +394,7 @@ def query_module(module_id, source_language, websearch):
         print(f"Translated submodule content: {trans_submodule_content}")
         return jsonify({"message": "Query successful", "images": module.image_urls, "content": trans_submodule_content, "response": True}), 200
     
+    images = module_image_from_web(module.module_name)
     # if submodules are not generated, generate and save them in the database
     with ThreadPoolExecutor() as executor:
         if websearch == "true":
@@ -372,7 +406,7 @@ def query_module(module_id, source_language, websearch):
             submodules_split_three = {key: submodules[key] for key in keys_list[4:]}
             future_content_one = executor.submit(generate_content_from_web_one, submodules_split_one)
             future_content_two = executor.submit(generate_content_from_web_two, submodules_split_two)
-
+            future_content_three = executor.submit(generate_content_from_web_three, submodules_split_three)
         else:
             submodules = generate_submodules(module.module_name)
             print(submodules)
@@ -508,12 +542,15 @@ def gen_quiz(module_id, source_language, websearch):
     user = User.query.get(user_id)
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
+    
     module = Module.query.get(module_id)
     subsections_list = module.submodule_content[0]['subsections']
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
+
     quiz = generate_quiz(subsections)
-    return jsonify({"message": "Query successful","quiz": quiz["quizData"],"response": True}), 200
+    translated_quiz = translate_quiz(quiz["quizData"], source_language)
+    return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
 
 @users.route('/quiz2/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
@@ -532,7 +569,7 @@ def gen_quiz2(module_id, source_language, websearch):
     print("Submodules:-----------------------",subsections)
     quiz = generate_applied_quiz(subsections)
     print("quiz---------------",quiz)
-    return jsonify({"message": "Query successful","quiz": quiz["quizData"],"response": True}), 200
+    return jsonify({"message": "Query successful", "quiz": quiz["quizData"], "response": True}), 200
 
 
 ###ASSISTANT API SECTION#######################
