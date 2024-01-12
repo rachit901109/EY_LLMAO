@@ -19,6 +19,7 @@ load_dotenv()
 
 openai_api_key1 = os.environ.get('OPENAI_API_KEY1')
 openai_api_key2 = os.environ.get('OPENAI_API_KEY2')
+openai_api_key3 = os.environ.get('OPENAI_API_KEY3')
 
 tavily_api_key = os.environ.get('TAVILY_API_KEY')
 
@@ -50,7 +51,7 @@ Topic: {topic}
 
 def generate_submodules(module_name):
     prompt_submodules = """You are an educational chatbot named ISAAC. \
-You will be provided with a module name and your task is to generate 4-6 \
+You will be provided with a module name and your task is to generate 6 \
 'Sub-Modules' names that are related to the modules.  \
 The output should be in json format where each key corresponds to the \
 sub-module number and the values are the sub-module names.
@@ -70,7 +71,7 @@ Module Name: {module_name}
 
     return output
 
-def generate_content_one(output):
+def generate_content(output, api_key_to_use):
     prompt_content_gen = """I'm seeking your expertise on the subject of {sub_module_name}.\
 As a knowledgeable and educational chatbot, I'm confident in your ability to provide \
 a comprehensive and detailed explanation of this sub-module. Please generate a detailed and \
@@ -86,9 +87,12 @@ additional resources on the subject. Make sure your output is a valid json where
 title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
 """
     all_content = []
-    print('USING METHOD 1!!!!!!!!!!!')
+    flag = 1 if api_key_to_use== 'first' else (2 if api_key_to_use=='second' else 3 )
+    print(f'THREAD {flag} RUNNING...')
+    openai_api_key = openai_api_key1 if flag == 1 else(openai_api_key2 if flag == 2 else openai_api_key3)
     for key,val in output.items():
-        client = OpenAI(api_key= openai_api_key1)
+
+        client = OpenAI(api_key= openai_api_key)
 
         completion = client.chat.completions.create(
                     model = 'gpt-3.5-turbo-1106',
@@ -98,43 +102,9 @@ title_for_the_content, content, subsections (which should be a list of dictionar
                     response_format = {'type':'json_object'},
                     seed = 42
         )
-        print("Method 1! Module Generated: ",key,"!")   
+        print("Thread 1: Module Generated: ",key,"!")   
         print(ast.literal_eval(completion.choices[0].message.content))
         all_content.append(ast.literal_eval(completion.choices[0].message.content))
-        time.sleep(25)
-    return all_content
-
-def generate_content_two(output):
-    prompt_content_gen = """I'm seeking your expertise on the subject of {sub_module_name}.\
-As a knowledgeable and educational chatbot, I'm confident in your ability to provide \
-a comprehensive and detailed explanation of this sub-module. Please generate a detailed and \
-informative description that covers essential aspects such as definition, \
-explanation, use cases, applications, and any other relevant details. \
-Ensure that the content exceeds 1000 words to offer a thorough understanding of the topic.
-
-In your response, consider breaking down the information into subsections for clarity and make it detailed, elaborating every subsection. \
-If there are specific examples or real-world applications related to the subject, \
-please include them to enhance practical understanding. Additionally, conclude your \
-response by suggesting relevant URLs for further reading to empower users with \
-additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
-"""
-    all_content = []
-    print('USING METHOD 2!!!!!!!!!!!')
-    for key,val in output.items():
-        client = OpenAI(api_key=openai_api_key2)
-        completion = client.chat.completions.create(
-                    model = 'gpt-3.5-turbo-1106',
-                    messages = [
-                        {'role':'user', 'content': prompt_content_gen.format(sub_module_name = val)},
-                    ],
-                    response_format = {'type':'json_object'},
-                    seed = 42
-        )
-        print("Method 2! Module Generated: ",key,"!")   
-        print(ast.literal_eval(completion.choices[0].message.content))
-        all_content.append(ast.literal_eval(completion.choices[0].message.content))
-        time.sleep(25)
     return all_content
 
 def generate_module_summary_from_web(topic, level):
@@ -152,7 +122,7 @@ def generate_module_summary_from_web(topic, level):
 
     Follow the provided JSON format diligently, incorporating information from the search results into the summaries and ensuring the modules are appropriately {level} in difficulty."""
 
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
             model = 'gpt-3.5-turbo-1106',
             messages = [
@@ -171,7 +141,7 @@ def generate_submodules_from_web(module_name):
 
     sub_module_generation_prompt= """You are an educational assistant named ISAAC. \
     You will be provided with a module name and information on that module from the internet.
-    Your task is to generate 4-6 'Sub-Modules' names that are related to the modules.  \
+    Your task is to generate 6 'Sub-Modules' names that are related to the modules.  \
     The output should be in json format where each key corresponds to the \
     sub-module number and the values are the sub-module names.
 
@@ -182,7 +152,7 @@ def generate_submodules_from_web(module_name):
     Follow the provided JSON format diligently.
     """
 
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
             model = 'gpt-3.5-turbo-1106',
             messages = [
@@ -194,7 +164,7 @@ def generate_submodules_from_web(module_name):
     output = ast.literal_eval(completion.choices[0].message.content)
     return output
 
-def generate_content_from_web(sub_module_name):
+def generate_content_from_web_one(sub_module_name):
     content_generation_prompt = """I'm seeking your expertise on the subject of {sub_module_name}.\
     You have access to the subject's information which you have to use while generating \ 
     a detailed and informative description that covers essential aspects such as definition, \
@@ -210,13 +180,50 @@ def generate_content_from_web(sub_module_name):
     additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
     title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
     """
-
+    print('THREAD 1 RUNNING...')
     all_content = []
     tavily_client = TavilyClient(api_key=tavily_api_key)
     for key, val in sub_module_name.items():    
         print('Searching content for module:', key)
         search_result = tavily_client.get_search_context(val, search_depth="advanced", max_tokens=4000)
-        client = OpenAI()
+        client = OpenAI(api_key=openai_api_key1)
+        completion = client.chat.completions.create(
+                model = 'gpt-3.5-turbo-1106',
+                messages = [
+                    {'role':'user', 'content': content_generation_prompt.format(sub_module_name = val, search_result = search_result)},
+                ],
+                response_format = {'type':'json_object'},
+                seed = 42,
+        )
+        print('Module Generated:', key, '!')
+        output = ast.literal_eval(completion.choices[0].message.content)
+        print(output)
+        all_content.append(output)
+        time.sleep(25)
+
+def generate_content_from_web_two(sub_module_name):
+    content_generation_prompt = """I'm seeking your expertise on the subject of {sub_module_name}.\
+    You have access to the subject's information which you have to use while generating \ 
+    a detailed and informative description that covers essential aspects such as definition, \
+    explanation, use cases, applications, and any other relevant details. \
+    Ensure that the content exceeds 800 words to offer a thorough understanding of the topic.
+
+    SUBJECT INFORMATION : {search_result}
+
+    In your response, consider breaking down the information into subsections for clarity. \
+    If there are specific examples or real-world applications related to the subject, \
+    please include them to enhance practical understanding. Additionally, conclude your \
+    response by suggesting relevant URLs for further reading to empower users with \
+    additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
+    title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
+    """
+    print('THREAD 2 RUNNING...')
+    all_content = []
+    tavily_client = TavilyClient(api_key=tavily_api_key)
+    for key, val in sub_module_name.items():    
+        print('Searching content for module:', key)
+        search_result = tavily_client.get_search_context(val, search_depth="advanced", max_tokens=4000)
+        client = OpenAI(api_key=openai_api_key2)
         completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -247,7 +254,7 @@ Search Results: {search_result}
 
 Follow the provided JSON format diligently, incorporating information from the search results into the summaries.
 """
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
             model = 'gpt-3.5-turbo-1106',
             messages = [
@@ -342,7 +349,7 @@ Create a set of 10 quiz questions following the above-mentioned format.
 Sub Modules : {sub_modules}
 ```
 """
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -385,7 +392,7 @@ Create a set of 10 quiz questions following the above-mentioned format.
 
 """
 
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -418,7 +425,7 @@ Create a set of 10 quiz questions following the above-mentioned format.
 ```
 Sub Modules : {sub_modules}
 """
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [

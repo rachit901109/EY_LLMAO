@@ -76,6 +76,17 @@ export default function Nav() {
                   </Box>
                   <Box
                     as="a"
+                    px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/explore'}
+                    bg={location.pathname === '/explore' ? useColorModeValue('purple.600', 'purple.600') : ''}
+                    color={location.pathname === '/explore' ? 'white' : ''}
+                  >
+                    <HStack spacing={2}>
+                      <MdExplore size={24} />
+                      <span>Explore</span>
+                    </HStack>
+                  </Box>
+                  <Box
+                    as="a"
                     px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/issac'}
                     bg={location.pathname === '/issac' ? useColorModeValue('purple.600', 'purple.600') : ''}
                     color={location.pathname === '/issac' ? 'white' : ''}
@@ -94,17 +105,7 @@ export default function Nav() {
                       <span>Trending</span>
                     </HStack>
                   </Box>
-                  <Box
-                    as="a"
-                    px={2} py={1} borderRadius={'md'} fontSize={18} rounded={'md'} _hover={{ textDecoration: 'none', transform: "scale(1.05)", color: 'white', bg: useColorModeValue('purple.500', 'purple.600'), }} transition="transform 0.3s" _active={{ bg: 'purple.500' }} href={'/explore'}
-                    bg={location.pathname === '/explore' ? useColorModeValue('purple.600', 'purple.600') : ''}
-                    color={location.pathname === '/explore' ? 'white' : ''}
-                  >
-                    <HStack spacing={2}>
-                      <MdExplore size={24} />
-                      <span>Explore</span>
-                    </HStack>
-                  </Box>
+                  
                 </>
               )}
               {!authenticated && ( // Conditionally render Sign Up and Sign In buttons when not logged in
