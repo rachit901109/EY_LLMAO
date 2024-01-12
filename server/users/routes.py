@@ -18,7 +18,6 @@ import iso639
 
 users = Blueprint(name='users', import_name=__name__)
 
-
 # Detector for language detection
 detector = LanguageDetectorBuilder.from_all_languages().with_preloaded_language_models().build()
 tools = [
@@ -27,13 +26,13 @@ tools = [
         'function': {
 
             'name': 'retrieval_augmented_generation',
-            'description': 'Fetches information about Nyaymitra\'s platform to answer user\'s query',
+            'description': 'Fetches information about Mindcraft\'s platform to answer user\'s query',
             'parameters': {
                 'type': 'object',
                 'properties': {
                     'query': {
                         'type': 'string',
-                        'description': 'The query to use for searching the vector database of Nyaymitra'
+                        'description': 'The query to use for searching the vector database of Mindcraft'
                     },
                 },
                 'required': ['query']
@@ -41,6 +40,7 @@ tools = [
         }
     },
 ]
+
 # register route  --> take username from client only store in database if username is not taking
 @users.route('/register',methods=['POST'])
 @cross_origin(supports_credentials=True)
@@ -49,7 +49,7 @@ def register():
     data = request.json
     fname = data.get("firstName")  # Access the 'fname' variable from the JSON data
     lname = data.get("lastName")
-    user_name = fname + " " + lname
+    user_name = fname + "_" + lname
     email = data.get("email")
     password = data.get("password")
     country = data.get("country")
@@ -96,21 +96,50 @@ def login():
     # start user session
     session["user_id"] = user.user_id
     print("user id is this:-",session.get('user_id'))
+
+    # create assistant for user
     client = OpenAI(api_key = openai_api_key1)
     assistant = client.beta.assistants.create(
         name="MINDCRAFT",
-        instructions="You are a helpful assistant for the website Nyaymitra. Use the functions provided to you to answer user's question about the Nyaymitra platform. Help the user with navigating and getting information about the Nyaymitra website.Provide the navigation links defined in the document whenever required",
+        instructions="You are a helpful assistant for the website Mindcraft. Use the functions provided to you to answer user's question about the Mindcraft platform. Help the user with navigating and getting information about the Mindcraft website.Provide the navigation links defined in the document whenever required",
         model="gpt-3.5-turbo-1106",
-        tools=tools
+        # tools=tools
     )
     session['assistant_id'] = assistant.id
     # return response
     return jsonify({"message": "User logged in successfully", "user_name":user.user_name, "email":user.email, "response":True}), 200
 
 
-# user account  --> profile pic remaining, only keeping /user as route for now
-# later add /user/<int:user_id> route for viewing other users profile and user engagement
-@users.route('/user', methods=['GET'])
+@users.route('/user_profile', methods=['GET', 'POST'])
+@cross_origin(supports_credentials=True)
+def user_profile():
+    # check if user is logged in
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    user_info = {}
+    user_info['fname'] = user.fname
+    user_info['lname'] = user.lname
+    user_info['user_name'] = user.user_name
+    user_info['email'] = user.email
+    user_info['country'] = user.country
+    user_info['state'] = user.state
+    user_info['city'] = user.city
+    user_info['age'] = user.age
+    user_info['interests'] = user.interests
+    user_info['date_joined'] = user.date_joined
+
+    # return response
+    return jsonify({"message": "User found", "user_info":user_info, "response":True}), 200
+
+
+@users.route('/user_dashboard', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def getuser():
     # check if user is logged in
@@ -123,31 +152,34 @@ def getuser():
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
     
+    query_message = ""
     user_queries = user.user_query_association
     if user_queries is None:
         query_message = "You have not searched for any topic yet. Please search for a topic to get recommendations."
         recommended_topics = popular_topics()
         recommended_topic_names = [Topic.query.get(topic_id).topic_name for topic_id in recommended_topics]
+
+        return jsonify({"message": "User found", "interests":user.interests, "query_message":query_message, "recommended_topics":recommended_topic_names, "response":True}), 200
     else:
         latest_query = Query.query.filter_by(user_id=1).order_by(desc(Query.date_search)).first() 
         base_module = Module.query.filter_by(topic_id=latest_query.topic_id).first()
         recommended_modules = recommend_module(base_module.module_id)
-        recommended_topic_content = {}
+        recommended_module_summary = {}
         for module_id in recommended_modules:
             module = Module.query.get(module_id)
-            recommended_topic_content[module.module_name] = module.summary
+            recommended_module_summary[module.module_name] = module.summary
         
     
     # user_queries = [query.query_name for query in user.queries]
-    # user_completed_topics = {}
-    # user_started_topics = {}
+    user_completed_topics = {}
+    user_started_topics = {}
     
-    # for topic in user.completed_topics:
-    #     if topic.date_completed is None:
-    #         user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
-    #     user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
+    for topic in user.completed_topics:
+        if topic.date_completed is None:
+            user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
+        user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
 
-    response = {"message":"User found", "user_name":user.user_name, "email":user.email, "interests":user.interests, "response":True}
+    response = {"message":"User found", "interests":user.interests, "recommendations":recommended_module_summary, "response":True}
 
     return jsonify(response), 200
 
@@ -232,6 +264,27 @@ def translate_submodule_content(content, target_language):
         trans_content.append(temp)
     return trans_content
 
+def translate_quiz(quiz_data, target_language):
+    if target_language=='en':
+        return quiz_data
+    
+    trans_quiz=[]
+    for entry in quiz_data:
+        temp = {}
+        for key, val in entry.items():
+            if key != 'options':
+                temp[key] = GoogleTranslator(source='auto', target=target_language).translate(str(val))
+            else:
+                temp[key] = []
+                for option in val:
+                    temp[key].append(GoogleTranslator(source='auto', target=target_language).translate(str(option)))
+
+        trans_quiz.append(temp)
+    
+    return trans_quiz
+
+
+
 
 # query route --> if websearch is true then fetch from web and feed into model else directly feed into model
 # save frequently searched queries in database for faster retrieval
@@ -269,7 +322,7 @@ def query_topic(topicname,level,websearch,source_lang):
             db.session.commit()
             print(f"topic added to database: {topic}")
     else:
-        modules = Module.query.filter_by(topic_id=topic.topic_id, level=level).all()
+        modules = Module.query.filter_by(topic_id=topic.topic_id, websearch=websearch, level=level).all()
         if modules:
             module_ids = {module.module_name:module.module_id for module in modules}
             module_summary_content = {module.module_name:module.summary for module in modules}
@@ -294,6 +347,7 @@ def query_topic(topicname,level,websearch,source_lang):
         new_module = Module(
             module_name=modulename,
             topic_id=topic.topic_id,
+            websearch=websearch,
             level=level,
             summary=modulesummary
         )
@@ -335,12 +389,12 @@ def query_module(module_id, source_language, websearch):
 
     # check if submodules are saved in the database for the given module_id
     module = Module.query.get(module_id)
-    images = module_image_from_web(module.module_name)
     if module.submodule_content is not None:
         trans_submodule_content = translate_submodule_content(module.submodule_content, source_language)
         print(f"Translated submodule content: {trans_submodule_content}")
-        return jsonify({"message": "Query successful", "images": images, "content": trans_submodule_content, "response": True}), 200
+        return jsonify({"message": "Query successful", "images": module.image_urls, "content": trans_submodule_content, "response": True}), 200
     
+    images = module_image_from_web(module.module_name)
     # if submodules are not generated, generate and save them in the database
     with ThreadPoolExecutor() as executor:
         if websearch == "true":
@@ -350,10 +404,9 @@ def query_module(module_id, source_language, websearch):
             submodules_split_one = {key: submodules[key] for key in keys_list[:2]}
             submodules_split_two = {key: submodules[key] for key in keys_list[2:4]}
             submodules_split_three = {key: submodules[key] for key in keys_list[4:]}
-            future_content_one = executor.submit(generate_content_from_web_one, submodules_split_one)
-            future_content_two = executor.submit(generate_content_from_web_two, submodules_split_two)
-            # future_content_three = executor.submit(generate_content_from_web_three, submodules_split_three)
-
+            future_content_one = executor.submit(generate_content_from_web, submodules_split_one, 'first')
+            future_content_two = executor.submit(generate_content_from_web, submodules_split_two, 'second')
+            future_content_three = executor.submit(generate_content_from_web, submodules_split_three, 'third')
 
         else:
             submodules = generate_submodules(module.module_name)
@@ -374,13 +427,14 @@ def query_module(module_id, source_language, websearch):
     content = content_one + content_two + content_three
 
     module.submodule_content = content
+    module.image_urls = images
     db.session.commit()
 
     # translate submodule content to the source language
     trans_submodule_content = translate_submodule_content(content, source_language)
     print(f"Translated submodule content: {trans_submodule_content}")
     
-    return jsonify({"message": "Query successful", "images": images, "content": trans_submodule_content, "response": True}), 200
+    return jsonify({"message": "Query successful", "images": module.image_urls, "content": trans_submodule_content, "response": True}), 200
 
 
 # download route --> generate pdf for module summary and module content
@@ -489,12 +543,15 @@ def gen_quiz(module_id, source_language, websearch):
     user = User.query.get(user_id)
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
+    
     module = Module.query.get(module_id)
     subsections_list = module.submodule_content[0]['subsections']
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
+
     quiz = generate_quiz(subsections)
-    return jsonify({"message": "Query successful","quiz": quiz["quizData"],"response": True}), 200
+    translated_quiz = translate_quiz(quiz["quizData"], source_language)
+    return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
 
 @users.route('/quiz2/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
 @cross_origin(supports_credentials=True)
@@ -513,7 +570,7 @@ def gen_quiz2(module_id, source_language, websearch):
     print("Submodules:-----------------------",subsections)
     quiz = generate_applied_quiz(subsections)
     print("quiz---------------",quiz)
-    return jsonify({"message": "Query successful","quiz": quiz["quizData"],"response": True}), 200
+    return jsonify({"message": "Query successful", "quiz": quiz["quizData"], "response": True}), 200
 
 
 ###ASSISTANT API SECTION#######################
