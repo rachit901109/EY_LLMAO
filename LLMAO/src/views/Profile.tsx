@@ -93,16 +93,28 @@ const Profile = () => {
     }, []);
 
     const onSubmit = (data) => {
-        setProfile(data);
-        setIsEditing(false);
-        toast({
-            title: 'Profile updated.',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-        });
+        axios.post('/api/user_profile', data)
+            .then(response => {
+                setProfile(response.data.user_info);
+                setIsEditing(false);
+                toast({
+                    title: 'Profile updated.',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            })
+            .catch(error => {
+                console.error("Error updating user data:", error);
+                toast({
+                    title: 'Error updating profile.',
+                    description: 'An error occurred while updating the profile. Please try again.',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            });
     };
-
     if (isLoading) {
         return (
             <>

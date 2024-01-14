@@ -44,18 +44,19 @@ tools = [
 @cross_origin(supports_credentials=True)
 def register():
     # take user input
-    data = request.json
-    fname = data.get("firstName") 
-    lname = data.get("lastName")
-    email = data.get("email")
-    password = data.get("password")
-    country = data.get("country")
-    state = data.get("state")
-    city = data.get("city")
-    gender = data.get("gender")
-    age = data.get("age")
-    interests = data.get("interest")
-
+    fname = request.form['firstName']  # Access the 'fname' variable from the JSON data
+    lname = request.form['lastName']
+    email = request.form['email']
+    password = request.form['password']
+    country = request.form['country']
+    state = request.form['state']
+    city = request.form['city']
+    gender = request.form['gender']
+    age = request.form['age']
+    college = request.form['college']
+    course = request.form['course']
+    interests = request.form['interest']
+    college_id_file = request.files['collegeId']
     # check if user has already registered by same email
     print("id of the colege------",request.form)
     user_exists = User.query.filter_by(email=email).first() is not None
@@ -122,14 +123,16 @@ def user_profile():
     
     if request.method == 'POST':
         data = request.json
-        user.fname = data.get("firstName")
-        user.lname = data.get("lastName")
+        print("data is printed---------",data)
+        user.fname = data.get("fname")
+        user.lname = data.get("lname")
         user.email = data.get("email")
         user.country = data.get("country")
         user.state = data.get("state")
+        user.gender = data.get("gender")
         user.city = data.get("city")
         user.age = data.get("age")
-        user.interests = data.get("interest")
+        user.interests = data.get("interests")
         db.session.commit()
     
     user_info = {}
@@ -537,7 +540,11 @@ def gen_quiz(module_id, source_language, websearch):
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
 
-    quiz = generate_quiz(subsections)
+    if websearch:
+        quiz = generate_quiz(subsections)
+    else:
+        quiz = generate_quiz_from_web(subsections)
+    
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
 
@@ -559,6 +566,12 @@ def gen_quiz2(module_id, source_language, websearch):
     print("Submodules:-----------------------",subsections)
 
     quiz = generate_applied_quiz(subsections)
+
+    # if websearch:
+    #     quiz = generate_applied_quiz(subsections)
+    # else:
+    #     quiz = generate_quiz_from_web(subsections)
+
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "respons    e": True}), 200
