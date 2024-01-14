@@ -84,7 +84,7 @@ If there are specific examples or real-world applications related to the subject
 please include them to enhance practical understanding. Additionally, conclude your \
 response by suggesting relevant URLs for further reading to empower users with \
 additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
+title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls (which should be a list).
 """
     all_content = []
     flag = 1 if api_key_to_use== 'first' else (2 if api_key_to_use=='second' else 3 )
@@ -178,7 +178,7 @@ def generate_content_from_web(sub_module_name, api_key_to_use):
     please include them to enhance practical understanding. Additionally, conclude your \
     response by suggesting relevant URLs for further reading to empower users with \
     additional resources on the subject. Make sure your output is a valid json where the keys are the subject_name, \
-    title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls.
+    title_for_the_content, content, subsections (which should be a list of dictionaries with the keys - title and content) and urls (which should be a list).
     """
     flag = 1 if api_key_to_use== 'first' else (2 if api_key_to_use=='second' else 3 )
     print(f'THREAD {flag} RUNNING...')
@@ -419,10 +419,13 @@ Create a set of 10 quiz questions following the above-mentioned format.
     return output
 
 def generate_applied_quiz(sub_modules):
-    quiz_prompt = """As an educational chatbot named ISSAC, your task is to create a set of 10 creative and application-based quiz questions \
-with multiple-choice options that should cover all the sub-modules. Create questions in a scenario-based manner like the ones in a word problem or applied problems
-to efficiently test the understanding of concepts and principles to solve real-world or hypothetical situations based on the sub modules. The questions should be descriptive and lengthy to give a complete scenario to the student. \
-Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
+    quiz_prompt = """As an educational chatbot named ISSAC, your task is to create a set of 10 creative \
+        and application-based quiz questions with multiple-choice options that should be based on the sub-modules \
+        as well as any related sub-topic. Create questions in a scenario-based manner like the ones in a word problem \
+        or applied problems (starting with 'suppose...', 'imagine...', 'if...' or 'let's say...') to efficiently test the understanding of concepts and principles to solve real-world \
+        or hypothetical situations based on the sub modules. The questions should be descriptive and lengthy to give \
+        a complete scenario to the student. \
+        Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
 ```
   "question": "The question here",
   "options": ["Option A", "Option B", "Option C", "Option D"],
@@ -432,11 +435,11 @@ Ensure that the output is a valid JSON format, with a single 'quizData' which is
   ...[and so on]
 ```
 
-Create a set of 10 quiz questions following the above-mentioned format.
-```
+Create a set of 10 quiz questions that are in the described manner and follow the above-mentioned format.
+
 Sub Modules : {sub_modules}
 """
-    client = OpenAI(api_key=openai_api_key1)
+    client = OpenAI()
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -451,3 +454,46 @@ Sub Modules : {sub_modules}
 
     return output
 
+def generate_applied_quiz_from_web(sub_modules):
+    tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+    search_result = tavily_client.get_search_context(','.join(sub_modules), search_depth="advanced", max_tokens=4000)
+    quiz_prompt_for_web = """
+    As an educational chatbot named ISAAC, your task is to create a diverse set of 10 creative and application-based quiz questions \
+with multiple-choice options that should be based on the sub-modules. You will be given information from the internet related to the sub-modules. \
+Use this information to create the quiz questions.
+
+Sub Modules : {sub_modules}
+
+Search Result = ```{search_result}```
+
+
+Create questions in a scenario-based manner like the ones in a word problem or applied problems
+to efficiently test the understanding of concepts and principles to solve real-world or hypothetical situations based on the sub modules. \
+The questions should be descriptive and should provide hypothetical scenarios to give a complete scenario to the student. \
+
+Ensure that the output is a valid JSON format, with a single 'quizData' which is a list of dictionaries structured as follows:
+```
+  "question": "The question here",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correct_option": "The correct option string here."
+  "explanation": "Explanation for Question 1"
+
+  ...[and so on]
+```
+
+Create a set of 10 questions that follow the described manner and the above-mentioned format.
+"""
+    client = OpenAI()
+    completion = client.chat.completions.create(
+                model = 'gpt-3.5-turbo-1106',
+                messages = [
+                    {'role':'user', 'content': quiz_prompt_for_web.format(sub_modules = sub_modules, search_result = search_result)},
+                ],
+                response_format = {'type':'json_object'},
+                seed = 42
+    )
+
+    print(completion.choices[0].message.content)
+    output = ast.literal_eval(completion.choices[0].message.content)
+
+    return output
