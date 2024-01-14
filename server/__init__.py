@@ -12,6 +12,7 @@ def create_app(config_class=config):
     app = Flask(__name__)
 
     app.config.from_object(config_class)
+    app.json.sort_keys = False
     CORS(app, supports_credentials=True)
 
     db.init_app(app)

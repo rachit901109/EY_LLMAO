@@ -10,6 +10,8 @@ class Query(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.topic_id'), nullable=False)
 
     date_search = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone("Asia/Kolkata")))
+    level = db.Column(db.String(8), nullable=False)
+    websearch = db.Column(db.String(5), nullable=False)
     lang = db.Column(db.String(4), nullable=False)
 
     user = db.relationship('User', back_populates='user_query_association')
@@ -30,7 +32,7 @@ class OngoingModule(db.Model):
     module = db.relationship('Module', back_populates='onmodule_user_association')
 
     def __repr__(self):
-        return f'<module_id={self.module_id} user_id={self.user_id} date_started={self.date_started} level={self.level} remark={self.remark}>'
+        return f'<module_id={self.module_id} user_id={self.user_id} date_started={self.date_started} level={self.level}>'
     
 class CompletedModule(db.Model):
     """Completed Modules by user"""
@@ -41,12 +43,13 @@ class CompletedModule(db.Model):
     date_completed = db.Column(db.DateTime, nullable=True)
     theory_quiz_score = db.Column(db.Integer, nullable=True)
     application_quiz_score = db.Column(db.Integer, nullable=True)
+    assignment_score = db.Column(db.Integer, nullable=True)
 
     user = db.relationship('User', back_populates='user_module_association')
     module = db.relationship('Module', back_populates='module_comp_association')
 
     def __repr__(self):
-        return f'<module_id={self.module_id} user_id={self.user_id} level={self.level} date_completed={self.date_completed} quiz_score={self.quiz_score}>'
+        return f'<module_id={self.module_id} user_id={self.user_id} level={self.level} date_completed={self.date_completed} theory_quiz_score={self.theory_quiz_score} application_quiz_score={self.application_quiz_score} assignment_score={self.assignment_score}>'
     
    
 class CompletedTopics(db.Model):
@@ -70,7 +73,6 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     fname = db.Column(db.String(50), nullable=False)
     lname = db.Column(db.String(50), nullable=False)
-    user_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), nullable=False, unique=True)
     password = db.Column(db.String(50), nullable=False)
     country = db.Column(db.String(50), nullable=False)
@@ -94,7 +96,7 @@ class User(db.Model):
     completed_topics = association_proxy('user_topic_association', 'topic')
 
     def __repr__(self):
-        return f'<User user_id={self.user_id} user_name={self.user_name} email={self.email}>'
+        return f'<User user_id={self.user_id} email={self.email}>'
 
 
 class Topic(db.Model):
@@ -124,8 +126,7 @@ class Module(db.Model):
     submodule_content = db.Column(db.JSON, nullable=True)
     image_urls = db.Column(db.JSON, nullable=True)
 
-    theory_quiz = db.Column(db.JSON, nullable=True)
-    application_quiz = db.Column(db.JSON, nullable=True)
+    assignment_questions = db.Column(db.JSON, nullable=True)
     
     module_comp_association = db.relationship('CompletedModule', back_populates='module')
     completed_by = association_proxy('module_comp_association', 'user')
