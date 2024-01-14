@@ -53,6 +53,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
       setActiveIndex(data.length + 1)
       const moduleid = localStorage.getItem('moduleid');
       const websearch = localStorage.getItem('websearch');
+      const source_lang = localStorage.getItem('source_lang');
       const response = await axios.get(`/api/quiz2/${moduleid}/${source_lang}/${websearch}`);
       setQuiz2Data(response.data.quiz);
     } catch (error) {

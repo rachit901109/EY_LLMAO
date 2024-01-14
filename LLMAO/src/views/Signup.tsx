@@ -188,7 +188,7 @@ const Form2 = ({ register, errors, collegeIdFile, setCollegeIdFile }: { register
         </FormControl>
 
         <FormControl isInvalid={!!errors.course} mb={4}>
-          <FormLabel htmlFor="course">Course Name</FormLabel>
+          <FormLabel htmlFor="course">Current Course</FormLabel>
           <Input id="course" name="course" {...register("course")} />
           <FormErrorMessage>
             {errors.course && errors.course.message}
@@ -238,14 +238,14 @@ const Form2 = ({ register, errors, collegeIdFile, setCollegeIdFile }: { register
       </FormControl> */}
 
       <FormControl isInvalid={!!errors.interest} mb={4}>
-        <FormLabel htmlFor="interest">Interest</FormLabel>
+        <FormLabel htmlFor="interest">Interests</FormLabel>
         <Input
           id="interest"
           name="interest"
           variant="outline"
           colorScheme='purple'
           {...register('interest')}
-          placeholder="Write multiple interests with comma"
+          placeholder="List your interests using commas"
         />
         <FormErrorMessage>
           {errors.interest && errors.interest.message}
