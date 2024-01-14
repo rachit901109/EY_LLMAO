@@ -46,20 +46,22 @@ tools = [
 @cross_origin(supports_credentials=True)
 def register():
     # take user input
-    data = request.json
-    fname = data.get("firstName")  # Access the 'fname' variable from the JSON data
-    lname = data.get("lastName")
+    fname = request.form['firstName']  # Access the 'fname' variable from the JSON data
+    lname = request.form['lastName']
     user_name = fname + "_" + lname
-    email = data.get("email")
-    password = data.get("password")
-    country = data.get("country")
-    state = data.get("state")
-    city = data.get("city")
-    gender = data.get("gender")
-    age = data.get("age")
-    interests = data.get("interest")
-
+    email = request.form['email']
+    password = request.form['password']
+    country = request.form['country']
+    state = request.form['state']
+    city = request.form['city']
+    gender = request.form['gender']
+    age = request.form['age']
+    college = request.form['college']
+    course = request.form['course']
+    interests = request.form['interest']
+    college_id_file = request.files['collegeId']
     # check if user has already registered by same email
+    print("id of the colege------",request.form)
     user_exists = User.query.filter_by(email=email).first() is not None
 
     if user_exists:
@@ -132,6 +134,7 @@ def user_profile():
     user_info['state'] = user.state
     user_info['city'] = user.city
     user_info['age'] = user.age
+    user_info['gender'] = user.gender
     user_info['interests'] = user.interests
     user_info['date_joined'] = user.date_joined
 
