@@ -3,7 +3,6 @@ from server import db, bcrypt
 from server.models import User, Topic, Module, Query
 from concurrent.futures import ThreadPoolExecutor
 import os
-import json
 from flask_cors import cross_origin
 from server.users.utils import *
 from deep_translator import GoogleTranslator
@@ -13,7 +12,6 @@ from server.recommender_system.recommendations import recommend_module, popular_
 from sqlalchemy import desc
 from gtts import gTTS
 from io import BytesIO
-import iso639
 
 
 users = Blueprint(name='users', import_name=__name__)
@@ -46,20 +44,18 @@ tools = [
 @cross_origin(supports_credentials=True)
 def register():
     # take user input
-    fname = request.form['firstName']  # Access the 'fname' variable from the JSON data
-    lname = request.form['lastName']
-    user_name = fname + "_" + lname
-    email = request.form['email']
-    password = request.form['password']
-    country = request.form['country']
-    state = request.form['state']
-    city = request.form['city']
-    gender = request.form['gender']
-    age = request.form['age']
-    college = request.form['college']
-    course = request.form['course']
-    interests = request.form['interest']
-    college_id_file = request.files['collegeId']
+    data = request.json
+    fname = data.get("firstName") 
+    lname = data.get("lastName")
+    email = data.get("email")
+    password = data.get("password")
+    country = data.get("country")
+    state = data.get("state")
+    city = data.get("city")
+    gender = data.get("gender")
+    age = data.get("age")
+    interests = data.get("interest")
+
     # check if user has already registered by same email
     print("id of the colege------",request.form)
     user_exists = User.query.filter_by(email=email).first() is not None
@@ -69,10 +65,10 @@ def register():
     
     # hash password, create new user save to database
     hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
-    new_user = User(fname=fname, lname=lname, user_name=user_name, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
+    new_user = User(fname=fname, lname=lname, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
     db.session.add(new_user)
     db.session.commit()
-    # return response
+
     response = jsonify({"message": "User created successfully", "id":new_user.user_id, "email":new_user.email, "response":True}), 200
     return response
 
@@ -81,7 +77,6 @@ def register():
 @users.route('/login', methods=['POST'])
 @cross_origin(supports_credentials=True)
 def login():
-    # take user input
     data = request.json
     email = data.get("email")
     password = data.get("password")
@@ -97,7 +92,7 @@ def login():
     
     # start user session
     session["user_id"] = user.user_id
-    print("user id is this:-",session.get('user_id'))
+    print("user id in session:-",session.get('user_id'))
 
     # create assistant for user
     client = OpenAI(api_key = openai_api_key1)
@@ -108,8 +103,8 @@ def login():
         # tools=tools
     )
     session['assistant_id'] = assistant.id
-    # return response
-    return jsonify({"message": "User logged in successfully", "user_name":user.user_name, "email":user.email, "response":True}), 200
+
+    return jsonify({"message": "User logged in successfully", "email":user.email, "response":True}), 200
 
 
 @users.route('/user_profile', methods=['GET', 'POST'])
@@ -125,10 +120,21 @@ def user_profile():
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
     
+    if request.method == 'POST':
+        data = request.json
+        user.fname = data.get("firstName")
+        user.lname = data.get("lastName")
+        user.email = data.get("email")
+        user.country = data.get("country")
+        user.state = data.get("state")
+        user.city = data.get("city")
+        user.age = data.get("age")
+        user.interests = data.get("interest")
+        db.session.commit()
+    
     user_info = {}
     user_info['fname'] = user.fname
     user_info['lname'] = user.lname
-    user_info['user_name'] = user.user_name
     user_info['email'] = user.email
     user_info['country'] = user.country
     user_info['state'] = user.state
@@ -138,7 +144,6 @@ def user_profile():
     user_info['interests'] = user.interests
     user_info['date_joined'] = user.date_joined
 
-    # return response
     return jsonify({"message": "User found", "user_info":user_info, "response":True}), 200
 
 
@@ -257,8 +262,8 @@ def translate_submodule_content(content, target_language):
                 continue
             if key == 'subsections':
                 temp[key] = []
-                temp_subsections = {}
                 for subsection in value:
+                    temp_subsections = {}
                     for sub_key, sub_value in subsection.items():
                         temp_subsections[sub_key] = GoogleTranslator(source='auto', target=target_language).translate(str(sub_value))
                     temp[key].append(temp_subsections)
@@ -285,8 +290,6 @@ def translate_quiz(quiz_data, target_language):
         trans_quiz.append(temp)
     
     return trans_quiz
-
-
 
 
 # query route --> if websearch is true then fetch from web and feed into model else directly feed into model
@@ -317,7 +320,7 @@ def query_topic(topicname,level,websearch,source_lang):
     trans_topic_name = GoogleTranslator(source='auto', target='en').translate(topicname)
     print(f"Translated topic name: {trans_topic_name}")
 
-    # check if topic exists in database along with its modulenames and summaries
+# check if topic exists in database along with its modulenames and summaries
     topic = Topic.query.filter_by(topic_name=trans_topic_name.lower()).first()
     if topic is None:
             topic = Topic(topic_name=trans_topic_name.lower())
@@ -339,7 +342,7 @@ def query_topic(topicname,level,websearch,source_lang):
                 module_ids=trans_moduleids
             return jsonify({"message": "Query successful", "topic_id":topic.topic_id, "topic":trans_topic_name, "source_language":source_language, "module_ids":module_ids, "content": trans_module_summary_content, "response":True}), 200
 
-    # if topic does not exist in database then save topic generate module summary and save it in database
+
     if(websearch=="true"):
         module_summary_content = generate_module_summary_from_web(topic=trans_topic_name,level=level)
     else:    
@@ -359,7 +362,7 @@ def query_topic(topicname,level,websearch,source_lang):
         module_ids[modulename] = new_module.module_id
 
     # add user query to database
-    new_user_query = Query(user_id=user.user_id, topic_id=topic.topic_id, lang=source_language)
+    new_user_query = Query(user_id=user.user_id, topic_id=topic.topic_id, level=level, websearch=websearch, lang=source_language)
     db.session.add(new_user_query)
     db.session.commit()
     trans_moduleids = {}
@@ -445,25 +448,6 @@ def query_module(module_id, source_language, websearch):
 # currently generate pdf for latin and devanagari scripts 
 @users.route('/query2/<int:module_id>/<string:source_language>/download', methods=['GET'])
 def download_pdf(module_id, source_language):
-    # clean_modulename = modulename.replace(':',"_") 
-    # # Construct paths to module summary and content JSON files
-    # summary_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, "module_summary.json")
-    # content_file_path = os.path.join(os.getcwd(), "content", f"{topicname}_{level}", source_language, f"{clean_modulename}_content.json")
-
-    # # Check if both files exist
-    # if not os.path.exists(content_file_path):
-    #     return jsonify({"message": "Module content file not found", "response": False}), 404
-    # if not os.path.exists(summary_file_path):
-    #     return jsonify({"message": "Module summary file not found", "response": False}), 404
-    
-    # # Read module summary from JSON
-    # with open(summary_file_path, "r") as summary_file:
-    #     module_summary = json.load(summary_file)
-
-    # # Read module content from JSON
-    # with open(content_file_path, "r") as content_file:
-    #     module_content = json.load(content_file)
-
     # get module from database
     module = Module.query.get(module_id)
     modulename = module.module_name

@@ -7,7 +7,7 @@ load_dotenv()
 class config():
     # app configuration
     SECRET_KEY = os.environ.get('SECRET_KEY')
-
+    
     # sqlalchemy configurations
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = True
