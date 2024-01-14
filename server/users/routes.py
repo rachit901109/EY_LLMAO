@@ -46,7 +46,6 @@ def register():
     # take user input
     fname = request.form['firstName']  # Access the 'fname' variable from the JSON data
     lname = request.form['lastName']
-    user_name = fname + "_" + lname
     email = request.form['email']
     password = request.form['password']
     country = request.form['country']
@@ -124,14 +123,16 @@ def user_profile():
     
     if request.method == 'POST':
         data = request.json
-        user.fname = data.get("firstName")
-        user.lname = data.get("lastName")
+        print("data is printed---------",data)
+        user.fname = data.get("fname")
+        user.lname = data.get("lname")
         user.email = data.get("email")
         user.country = data.get("country")
         user.state = data.get("state")
+        user.gender = data.get("gender")
         user.city = data.get("city")
         user.age = data.get("age")
-        user.interests = data.get("interest")
+        user.interests = data.get("interests")
         db.session.commit()
     
     user_info = {}
@@ -538,7 +539,11 @@ def gen_quiz(module_id, source_language, websearch):
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
 
-    quiz = generate_quiz(subsections)
+    if websearch:
+        quiz = generate_quiz(subsections)
+    else:
+        quiz = generate_quiz_from_web(subsections)
+    
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
 
@@ -560,6 +565,12 @@ def gen_quiz2(module_id, source_language, websearch):
     print("Submodules:-----------------------",subsections)
 
     quiz = generate_applied_quiz(subsections)
+
+    # if websearch:
+    #     quiz = generate_applied_quiz(subsections)
+    # else:
+    #     quiz = generate_quiz_from_web(subsections)
+
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "respons    e": True}), 200

@@ -8,7 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
 import Quiz from '../components/Quiz';
 import { useSessionCheck } from "./useSessionCheck";
-import ChatWidget from '../components/Chat_widget'
+import ChatWidget from '../components/Chat_widget';
+import { useTranslation } from "react-i18next";
 
 interface Subsection {
   title: string;
@@ -25,9 +26,8 @@ interface Subject {
 
 type Data = Subject[];
 
-const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuizData,setQuiz2Data }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void; setQuizData: any, setQuiz2Data }) => {
+const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuizData, setQuiz2Data, trans }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void; setQuizData: any, setQuiz2Data: any, trans: any }) => {
   const [activeIndex, setActiveIndex] = useState(0);
-
   const changeCon = (index2: number) => {
     setActiveIndex(index2);
     setQuizData(null);
@@ -50,10 +50,9 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
   const fetchQuiz2Data = async () => {
     setQuizData(null);
     try {
-      setActiveIndex(data.length+1)
+      setActiveIndex(data.length + 1)
       const moduleid = localStorage.getItem('moduleid');
       const websearch = localStorage.getItem('websearch');
-      const source_lang = localStorage.getItem('source_lang');
       const response = await axios.get(`/api/quiz2/${moduleid}/${source_lang}/${websearch}`);
       setQuiz2Data(response.data.quiz);
     } catch (error) {
@@ -76,7 +75,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
     <VStack w={"20%"} minWidth={"20%"} spacing={4} shadow={"xl"} bg={useColorModeValue('white', 'white')} color={useColorModeValue('black', 'white')}>
       <Box w="full" bg={useColorModeValue('purple.500', 'white')} p={5}>
         <Text className='main-heading' textAlign={'center'} color={useColorModeValue('white', 'white')} fontSize={30}>
-          <b>Lessons</b>
+          <b>{trans('Lessons')}</b>
         </Text>
       </Box>
       <Box px={3}>
@@ -146,7 +145,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
 
 
 
-const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }: { subject: Subject; isLoading: boolean; images: string[]; index: number; data_len: number, quiz: any ,quiz2: any }) => {
+const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2, trans }: { subject: Subject; isLoading: boolean; images: string[]; index: number; data_len: number, quiz: any, quiz2: any, trans: any }) => {
   const toast = useToast();
   const [isSpinnerLoading, setIsSpinnerLoading] = useState(false);
   const [audioSrc, setAudioSrc] = useState(null);
@@ -227,14 +226,14 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
       {index < data_len && (
         <Box px={5} mt={4} w={"80%"}>
           <Text className='main-heading' mb={5} fontSize={"5xl"}><b>{subject.title_for_the_content}</b></Text>
-          <Text className='feature-heading' mb={5} fontSize={"3xl"}>Find it boring to read? Download and study through voice!</Text>
+          <Text className='feature-heading' mb={5} fontSize={"3xl"}>{trans('Find it boring to read? Download and study through voice!')}</Text>
           <Button
             variant="outline"
             mb={10}
             colorScheme="purple" _hover={{ bg: useColorModeValue('purple.600', 'purple.800'), color: useColorModeValue('white', 'white') }}
             onClick={() => fetchAudio(subject.subsections)}>
             <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faFileInvoice} />
-            Generate Audio</Button>
+            {trans('Generate Audio')}</Button>
           {isSpinnerLoading ? (
             <Box textAlign="center">
               <Spinner size="sm" color="purple.500" />
@@ -258,8 +257,8 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
               </Box>
             ))}
           </VStack>
-          <Text fontSize="3xl" className='feature-heading'><b>Links of Resources:</b></Text>
-          <List mb={5}>
+          <Text fontSize="3xl" className='feature-heading'><b>{trans('Links of Resources:')}</b></Text>
+          {/* <List mb={5}>
             {subject.urls.map((url, index) => (
               <ListItem key={index}>
                 <Link fontSize={20} href={url} isExternal color={useColorModeValue('purple.600', 'gray.500')}>
@@ -267,8 +266,25 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
                 </Link>
               </ListItem>
             ))}
+          </List> */}
+
+          <List mb={5}>
+            {Array.isArray(subject.urls) ? (
+              subject.urls.map((url, index) => (
+                <ListItem key={index}>
+                  <Link fontSize={20} href={url} isExternal color={useColorModeValue('purple.600', 'gray.500')}>
+                    {url}
+                  </Link>
+                </ListItem>
+              ))
+            ) : (
+              <Text>No Links available</Text>
+            )}
           </List>
-          <Text fontSize="3xl" className='feature-heading'>Want to Learn Offline? Download the whole Course here:</Text>
+
+
+
+          <Text fontSize="3xl" className='feature-heading'>{trans('Want to Learn Offline? Download the whole Course here:')}</Text>
           <Button
             variant="outline"
             mb={10}
@@ -277,7 +293,7 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
           >
             <FontAwesomeIcon style={{ marginRight: "6px", marginBottom: "1px" }} icon={faDownload} />
 
-            Download Course</Button>
+            {trans('Download Course')}</Button>
         </Box>
       )}
       {index === data_len && (
@@ -288,10 +304,10 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
             <Spinner size="xl" color="purple.500" />
             <Text mt={4}>Generating Quiz...</Text>
           </Box>
-          
+
         )
       )}
-      {index === data_len+1 && (
+      {index === data_len + 1 && (
         quiz2 ? (
           <Quiz data={quiz2}></Quiz>
         ) : (
@@ -299,7 +315,7 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2 }
             <Spinner size="xl" color="purple.500" />
             <Text mt={4}>Generating Quiz...</Text>
           </Box>
-          
+
         )
       )}
 
@@ -317,6 +333,8 @@ const Content = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [quizdata, setQuizData] = useState(null);
   const [quiz2data, setQuiz2Data] = useState(null);
+  const { t, i18n } = useTranslation();
+
 
 
 
@@ -325,6 +343,7 @@ const Content = () => {
       const moduleid = localStorage.getItem('moduleid');
       const websearch = localStorage.getItem('websearch');
       const source_lang = localStorage.getItem('source_lang');
+      i18n.changeLanguage(source_lang);
       try {
         const response = await axios.get(`/api/query2/${moduleid}/${source_lang}/${websearch}`);
         setImages(response.data.images);
@@ -353,6 +372,7 @@ const Content = () => {
             setQuizData={setQuizData}
             setQuiz2Data={setQuiz2Data}
             isLoading={isLoading}
+            trans={t}
 
           />
           <ContentSec
@@ -363,6 +383,7 @@ const Content = () => {
             images={images}
             data_len={data.length}
             index={currentIndex}
+            trans={t}
           />
         </Box>
       </Flex>
