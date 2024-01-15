@@ -12,8 +12,9 @@ type QuizQuestion = {
 
 type QuizProps = {
   data: QuizQuestion[];
+  trans: any;
 };
-const Quiz: React.FC<QuizProps> = ({ data }) => {
+const Quiz: React.FC<QuizProps> = ({ data, trans }) => {
   const navigate = useNavigate();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
@@ -65,11 +66,11 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
     setShowAnswer(true);
     setIsDisabled(true);
     if (value === data[currentQuestion].correct_option) {
-      setTextToDisplay(`Spot on! You picked the Correct Answer! Explanation:  ${data[currentQuestion]['explanation']}`);
+      setTextToDisplay(`${trans('Spot on! You picked the Correct Answer! Explanation:')}  ${data[currentQuestion]['explanation']}`);
       setScore(score + 1);
     }
     else {
-      const f_string = `Sorry, Your Answer is wrong! Correct Answer: ${data[currentQuestion]['correct_option']}. Explanation: ${data[currentQuestion]['explanation']}`;
+      const f_string = `${trans('Sorry, Your Answer is wrong! Correct Answer:')} ${data[currentQuestion]['correct_option']}. Explanation: ${data[currentQuestion]['explanation']}`;
       setTextToDisplay(f_string);
     }
   };
@@ -83,7 +84,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
       bodyText = `Your score is ${score} out of ${data.length}. Check out the resources and try again!`;
     } else {
       titleText = 'Congratulations!';
-      bodyText = `You've passed the quiz with a score of ${score} out of ${data.length}. Well done! You can Explore new Courses!`;
+      bodyText = `You've passed the quiz with a score of ${score} out of ${data.length}. Well done! You can move to the next Quiz`;
     }
   
     // Display the appropriate SweetAlert based on the score
@@ -97,7 +98,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
       if (score < 7) {
         window.location.reload();
       } else {
-        navigate('/explore');
+        window.location.reload();
       }
     }
     });
@@ -126,7 +127,7 @@ const Quiz: React.FC<QuizProps> = ({ data }) => {
           </Box>
           <Center>
             <Box width="70vw" mt={5}>
-              <Text className='content' fontSize={20}><b>Question {currentQuestion + 1}:</b> {data[currentQuestion].question}</Text>
+              <Text className='content' fontSize={20}><b>{trans('Question')} {currentQuestion + 1}:</b> {data[currentQuestion].question}</Text>
             </Box>
           </Center>
           <Center>

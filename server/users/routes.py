@@ -12,6 +12,8 @@ from server.recommender_system.recommendations import recommend_module, popular_
 from sqlalchemy import desc
 from gtts import gTTS
 from io import BytesIO
+from datetime import datetime
+from werkzeug.utils import secure_filename
 
 
 users = Blueprint(name='users', import_name=__name__)
@@ -396,6 +398,7 @@ def query_module(module_id, source_language, websearch):
     if user is None:
         return jsonify({"message": "User not found", "response": False}), 404
 
+    session["module_id"] = module_id
     # check if submodules are saved in the database for the given module_id
     module = Module.query.get(module_id)
     if module.submodule_content is not None:
@@ -541,9 +544,11 @@ def gen_quiz(module_id, source_language, websearch):
     print("Submodules:-----------------------",subsections)
 
     if websearch:
-        quiz = generate_quiz(subsections)
-    else:
+        print("WEB SEARCH OP quiz1--------------------------")
         quiz = generate_quiz_from_web(subsections)
+    else:
+        quiz = generate_quiz(subsections)
+
     
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
@@ -564,13 +569,12 @@ def gen_quiz2(module_id, source_language, websearch):
     subsections_list = module.submodule_content[0]['subsections']
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
+    if websearch:
+        print("WEB SEARCH OP quiz2--------------------------")
+        quiz = generate_applied_quiz_from_web(subsections)
+    else:
+        quiz = generate_applied_quiz(subsections)
 
-    quiz = generate_applied_quiz(subsections)
-
-    # if websearch:
-    #     quiz = generate_applied_quiz(subsections)
-    # else:
-    #     quiz = generate_quiz_from_web(subsections)
 
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
@@ -678,3 +682,41 @@ def chatbot_route():
     else:
         return jsonify({'error': 'User message not provided'}), 400
 ##############################################################################
+    
+##################whisper######################################
+@users.route('/query2/voice-save', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def save_voices():
+    try:
+        user_id = session.get("user_id", None)
+        module_id = session.get("module_id", None)
+        if user_id is None:
+            return jsonify({"message": "User not logged in", "response": False}), 401
+
+        # check if user exists
+        user = User.query.get(user_id)
+        if user is None:
+            return jsonify({"message": "User not found", "response": False}), 404
+        print("Module id:-----------", module_id)
+
+        # Create a folder to store the voice recordings if it doesn't exist
+        base_folder = os.path.join('voice_recordings', str(user_id), str(module_id))
+        os.makedirs(base_folder, exist_ok=True)
+
+        # Check if the post request has the file part
+        if 'voice' not in request.files:
+            return jsonify({"message": "No file part in the request", "response": False}), 400
+
+        # Get the voice file
+        voice = request.files['voice']
+
+        # Save the voice recording as a WAV file
+        filename = f'voice_{datetime.now().strftime("%Y%m%d%H%M%S")}.wav'
+        file_path = os.path.join(base_folder, secure_filename(filename))
+        voice.save(file_path)
+
+        return jsonify({'message': 'Voice saved successfully', 'response': True}), 200
+    except Exception as e:
+        return jsonify({'error': str(e), 'response': False}), 500
+
+###############################################################
