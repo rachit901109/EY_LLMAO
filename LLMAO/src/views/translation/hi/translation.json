@@ -4,5 +4,10 @@
     "Download Course": "कोर्स डाउनलोड करें",
     "Want to Learn Offline? Download the whole Course here:" : "ऑफ़लाइन सीखना चाहते हैं? पूरा कोर्स यहां डाउनलोड करें:",
     "Links of Resources:": "संसाधनों के लिंक:",
-    "Generate Audio":"ऑडियो जनरेट करें"
+    "Generate Audio":"ऑडियो जनरेट करें",
+    "Quiz 1: Theoretical Test":"क्विज़ 1: सैद्धांतिक परीक्षा",
+    "Quiz 2: Applied Knowledge": "प्रश्नोत्तरी 2: एप्लाइड नॉलेज",
+    "Question":"प्रश्न",
+    "Spot on! You picked the Correct Answer! Explanation:":"हाजिर! आपने सही उत्तर चुना है! व्याख्या:",
+    "Sorry, Your Answer is wrong! Correct Answer:":"क्षमा करें, आपका जवाब गलत है! Correct Answer:"
 }

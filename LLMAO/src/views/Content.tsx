@@ -7,6 +7,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faFileInvoice } from '@fortawesome/free-solid-svg-icons';
 import Quiz from '../components/Quiz';
+import VoiceQuiz from '../components/VoiceQuiz';
 import { useSessionCheck } from "./useSessionCheck";
 import ChatWidget from '../components/Chat_widget';
 import { useTranslation } from "react-i18next";
@@ -26,12 +27,13 @@ interface Subject {
 
 type Data = Subject[];
 
-const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuizData, setQuiz2Data, trans }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void; setQuizData: any, setQuiz2Data: any, trans: any }) => {
+const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuizData, setQuiz2Data, setQuiz3Data , trans }: { data: Data; setSelectedSubject: (subject: Subject) => void; isLoading: boolean; setCurrentIndex: (index: number) => void; setQuizData: any, setQuiz2Data: any,setQuiz3Data: any , trans: any }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const changeCon = (index2: number) => {
     setActiveIndex(index2);
     setQuizData(null);
     setQuiz2Data(null);
+    setQuiz3Data(null);
   }
   const fetchQuizData = async () => {
     setQuiz2Data(null);
@@ -56,6 +58,25 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
       const source_lang = localStorage.getItem('source_lang');
       const response = await axios.get(`/api/quiz2/${moduleid}/${source_lang}/${websearch}`);
       setQuiz2Data(response.data.quiz);
+    } catch (error) {
+      console.error('Error fetching quiz data:', error);
+    }
+  };
+
+  const fetchQuiz3Data = async () => {
+    setQuizData(null);
+    try {
+      setActiveIndex(data.length + 2)
+      // const moduleid = localStorage.getItem('moduleid');
+      // const websearch = localStorage.getItem('websearch');
+      // const source_lang = localStorage.getItem('source_lang');
+      // const response = await axios.get(`/api/quiz2/${moduleid}/${source_lang}/${websearch}`);
+      // setQuiz3Data(response.data.quiz);
+      setQuiz3Data( [
+        "What is the difference between supervised and unsupervised learning?",
+        "Explain the bias-variance tradeoff in machine learning.",
+    ]);
+
     } catch (error) {
       console.error('Error fetching quiz data:', error);
     }
@@ -117,7 +138,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
           height="auto"
         >
           <Flex align="center" justify={'flex-start'}>
-            <Box>Quiz 1: Theoretical Test</Box>
+            <Box>{trans('Quiz 1: Theoretical Test')}</Box>
           </Flex>
         </Button>
         <Button
@@ -136,7 +157,26 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
           height="auto"
         >
           <Flex align="center" justify={'flex-start'}>
-            <Box>Quiz 2: Applied Knowledge</Box>
+            <Box>{trans('Quiz 2: Applied Knowledge')}</Box>
+          </Flex>
+        </Button>
+        <Button
+          key={data.length + 2}
+          onClick={fetchQuiz3Data}
+          mb={5}
+          bg={activeIndex === data.length + 2 ? "purple.600" : ""}
+          color={activeIndex === data.length + 2 ? "white" : "black"}
+          _hover={{ bg: useColorModeValue('purple.300', 'white'), color: "black", transform: "scale(1.05)" }}
+          transition="all 0.2s"
+          p={4}
+          borderRadius="md"
+          textAlign={'center'}
+          w="100%"
+          whiteSpace="normal"
+          height="auto"
+        >
+          <Flex align="center" justify={'flex-start'}>
+            <Box>{trans('Quiz 3: Voice Quiz')}</Box>
           </Flex>
         </Button>
       </Box>
@@ -146,7 +186,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
 
 
 
-const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2, trans }: { subject: Subject; isLoading: boolean; images: string[]; index: number; data_len: number, quiz: any, quiz2: any, trans: any }) => {
+const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2, quiz3 ,trans }: { subject: Subject; isLoading: boolean; images: string[]; index: number; data_len: number, quiz: any, quiz2: any,quiz3: any ,trans: any }) => {
   const toast = useToast();
   const [isSpinnerLoading, setIsSpinnerLoading] = useState(false);
   const [audioSrc, setAudioSrc] = useState(null);
@@ -259,16 +299,6 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2, 
             ))}
           </VStack>
           <Text fontSize="3xl" className='feature-heading'><b>{trans('Links of Resources:')}</b></Text>
-          {/* <List mb={5}>
-            {subject.urls.map((url, index) => (
-              <ListItem key={index}>
-                <Link fontSize={20} href={url} isExternal color={useColorModeValue('purple.600', 'gray.500')}>
-                  {url}
-                </Link>
-              </ListItem>
-            ))}
-          </List> */}
-
           <List mb={5}>
             {Array.isArray(subject.urls) ? (
               subject.urls.map((url, index) => (
@@ -299,7 +329,7 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2, 
       )}
       {index === data_len && (
         quiz ? (
-          <Quiz data={quiz}></Quiz>
+          <Quiz data={quiz} trans={trans}></Quiz>
         ) : (
           <Box textAlign="center" w="100%" mt={40}>
             <Spinner size="xl" color="purple.500" />
@@ -310,7 +340,19 @@ const ContentSec = ({ subject, isLoading, images, index, data_len, quiz, quiz2, 
       )}
       {index === data_len + 1 && (
         quiz2 ? (
-          <Quiz data={quiz2}></Quiz>
+          <Quiz data={quiz2} trans={trans}></Quiz>
+        ) : (
+          <Box textAlign="center" w="100%" mt={40}>
+            <Spinner size="xl" color="purple.500" />
+            <Text mt={4}>Generating Quiz...</Text>
+          </Box>
+
+        )
+      )}
+
+      {index === data_len + 2 && (
+        quiz3 ? (
+          <VoiceQuiz data={quiz3} trans={trans}></VoiceQuiz>
         ) : (
           <Box textAlign="center" w="100%" mt={40}>
             <Spinner size="xl" color="purple.500" />
@@ -334,6 +376,7 @@ const Content = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [quizdata, setQuizData] = useState(null);
   const [quiz2data, setQuiz2Data] = useState(null);
+  const [quiz3data, setQuiz3Data] = useState(null);
   const { t, i18n } = useTranslation();
 
 
@@ -372,6 +415,7 @@ const Content = () => {
             setCurrentIndex={setCurrentIndex}
             setQuizData={setQuizData}
             setQuiz2Data={setQuiz2Data}
+            setQuiz3Data={setQuiz3Data}
             isLoading={isLoading}
             trans={t}
 
@@ -379,6 +423,7 @@ const Content = () => {
           <ContentSec
             quiz={quizdata}
             quiz2={quiz2data}
+            quiz3={quiz3data}
             subject={selectedSubject}
             isLoading={isLoading}
             images={images}
@@ -388,7 +433,7 @@ const Content = () => {
           />
         </Box>
       </Flex>
-      <ChatWidget />
+      {currentIndex <= data.length - 1 && <ChatWidget />}
       <Footer />
     </>
   );
