@@ -611,7 +611,7 @@ def add_theory_score(module_id, score):
 
 @users.route('/<int:module_id>/add_application_score/<int:score>')
 @cross_origin(supports_credentials=True)
-def add_application_score(module_id, score):
+def add_theory_score(module_id, score):
     user_id = session.get("user_id", None)
     if user_id is None:
         return jsonify({"message": "User not logged in", "response":False}), 401
