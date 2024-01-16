@@ -542,15 +542,14 @@ def gen_quiz(module_id, source_language, websearch):
         return jsonify({"message": "User not found", "response":False}), 404
     
     module = Module.query.get(module_id)
-    subsections_list = module.submodule_content[0]['subsections']
-    subsections = [d['title'] for d in subsections_list]
-    print("Submodules:-----------------------",subsections)
+    sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
+    print("Submodules:-----------------------",sub_module_names)
 
     if websearch:
         print("WEB SEARCH OP quiz1--------------------------")
-        quiz = generate_quiz_from_web(subsections)
+        quiz = generate_quiz_from_web(sub_module_names)
     else:
-        quiz = generate_quiz(subsections)
+        quiz = generate_quiz(sub_module_names)
 
     
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
@@ -575,14 +574,23 @@ def gen_quiz2(module_id, source_language, websearch):
     if completed_module.theory_quiz_score is None:
         return jsonify({"message": "User has not completed quiz1", "response":False}), 404
 
+<<<<<<< HEAD
     subsections_list = module.submodule_content[0]['subsections']
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
+=======
+    sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
+    print("Submodules:-----------------------",sub_module_names)
+>>>>>>> c54718da38ec667b17c34833e4f5a22042fe4d33
     if websearch:
         print("WEB SEARCH OP quiz2--------------------------")
-        quiz = generate_applied_quiz_from_web(subsections)
+        quiz = generate_applied_quiz_from_web(sub_module_names)
     else:
+<<<<<<< HEAD
         quiz = generate_applied_quiz(subsections)
+=======
+        quiz = generate_applied_quiz(sub_module_names)
+>>>>>>> c54718da38ec667b17c34833e4f5a22042fe4d33
 
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
