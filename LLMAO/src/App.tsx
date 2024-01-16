@@ -10,6 +10,7 @@ import Content from './views/Content'
 // import Issac from './views/Issac'
 import Profile from './views/Profile';
 import Issac2 from './views/Issac3D'
+import 'regenerator-runtime/runtime';
 import "./views/i18n"
 
 
