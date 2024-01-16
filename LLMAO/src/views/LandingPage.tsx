@@ -78,7 +78,7 @@ export default function SplitScreen() {
               </Text>
             </Heading>
             <Text textAlign={'justify'} minW={'500px'} className='content' fontSize={{ base: 'md', lg: 'lg' }}>
-              Discover a new era in education with MindCraft! Break language barriers, immerse in dynamic learning experiences, and enjoy personalized coaching from ISAAC. Effortlessly explore topics with voice search, assess your knowledge with quizzes, and track progress instantly. Earn badges, certificates, and empower self-directed learning with downloadable notes. Learn on-the-go with our Android app—MindCraft, crafting a brighter future for every learner. Welcome to innovation in education!
+            Discover a new era in education with MindCraft! Break language barriers, immerse in dynamic learning experiences, and enjoy personalized coaching from ISAAC. Effortlessly explore topics with voice search, assess your knowledge with quizzes, and track progress instantly. This innovative application is designed for students willing to learn and develop skills, catering to individuals from high school, undergraduate, and postgraduate levels. Earn badges, certificates, and empower self-directed learning with downloadable notes. Learn on-the-go with our Android app—MindCraft, crafting a brighter future for every learner. Welcome to innovation in education!
             </Text>
             <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
               <Link to="/login">

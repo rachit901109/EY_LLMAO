@@ -19,6 +19,7 @@ import {
   Stack,
   useToast,
   Text,
+  InputLeftElement,
   Select,
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
@@ -48,7 +49,10 @@ const form2Schema = yup.object().shape({
   country: yup.string().required("Country is required"),
   city: yup.string().required("City is required"),
   state: yup.string().required("State is required"),
+  gender: yup.string().required("Gender is required"),
   age: yup.number().integer().min(1, 'Age must be a positive number').required('Age is required'),
+  college: yup.string().required("College Name is required"),
+  course: yup.string().required("Course Name is required"),
   interest: yup.string().required('Interest is required'),
 });
 
@@ -56,7 +60,7 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
   return (
     <>
       <Text w="80vh" fontSize={'50px'} className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} textAlign={"center"} fontWeight="normal" mb="2%">
-        <b>User Registration</b>
+        <b>User Credentials</b>
       </Text>
       <Flex>
         <FormControl isInvalid={!!errors.firstName} mr="5%">
@@ -111,24 +115,34 @@ const Form1 = ({ register, errors }: { register: any; errors: any }) => {
   );
 };
 
-const Form2 = ({ register, errors }: { register: any; errors: any }) => {
+const Form2 = ({ register, errors, collegeIdFile, setCollegeIdFile }: { register: any; errors: any; collegeIdFile: File | null; setCollegeIdFile: React.Dispatch<React.SetStateAction<File | null>> }) => {
+
   return (
     <>
       <Text w="80vh" fontSize={'50px'} className='feature-heading' color={useColorModeValue('purple.600', 'purple.500')} textAlign={"center"} fontWeight="normal" mb="2%">
         User Details
       </Text>
-      <FormControl as={GridItem} colSpan={[6, 3]} isInvalid={!!errors.country} mb={4}>
-        <FormLabel
-          htmlFor="country"
-          fontWeight="md"
-        >
-          Country / Region
-        </FormLabel>
-        <Input id="country" name="country" {...register("country")} />
-        <FormErrorMessage>
-          {errors.country && errors.country.message}
-        </FormErrorMessage>
-      </FormControl>
+      <Flex>
+        <FormControl as={GridItem} colSpan={[6, 3]} isInvalid={!!errors.country} mb={4} mr="3%">
+          <FormLabel
+            htmlFor="country"
+          >
+            Country
+          </FormLabel>
+          <Input id="country" name="country" {...register("country")} />
+          <FormErrorMessage>
+            {errors.country && errors.country.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.state} mb={4}>
+          <FormLabel htmlFor="state">State</FormLabel>
+          <Input id="state" name="state" {...register("state")} />
+          <FormErrorMessage>
+            {errors.state && errors.state.message}
+          </FormErrorMessage>
+        </FormControl>
+      </Flex>
 
       <FormControl isInvalid={!!errors.city} mb={4}>
         <FormLabel htmlFor="city">City</FormLabel>
@@ -138,37 +152,52 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
         </FormErrorMessage>
       </FormControl>
 
-      <FormControl isInvalid={!!errors.state} mb={4}>
-        <FormLabel htmlFor="state">State</FormLabel>
-        <Input id="state" name="state" {...register("state")} />
-        <FormErrorMessage>
-          {errors.state && errors.state.message}
-        </FormErrorMessage>
-      </FormControl>
+      <Flex>
+        <FormControl as={GridItem} colSpan={[6, 3]} isInvalid={!!errors.gender} mb={4} mr="3%">
+          <FormLabel htmlFor="gender">Gender</FormLabel>
+          <RadioGroup colorScheme='purple' id="gender" name="gender">
+            <Stack direction="row">
+              <Radio value="male" {...register('gender')}>Male</Radio>
+              <Radio value="female" {...register('gender')}>Female</Radio>
+              <Radio value="other" {...register('gender')}>Other</Radio>
+            </Stack>
+          </RadioGroup>
+          <FormErrorMessage>
+            {errors.gender && errors.gender.message}
+          </FormErrorMessage>
+        </FormControl>
 
-      <FormControl mb={4} isInvalid={!!errors.gender}>
-        <FormLabel htmlFor="gender">Gender</FormLabel>
-        <RadioGroup colorScheme='purple' id="gender" name="gender" defaultValue="" {...register('gender')}>
-          <Stack direction="row">
-            <Radio value="male">Male</Radio>
-            <Radio value="female">Female</Radio>
-            <Radio value="other">Other</Radio>
-          </Stack>
-        </RadioGroup>
-        <FormErrorMessage>
-          {errors.gender && errors.gender.message}
-        </FormErrorMessage>
-      </FormControl>
+        <FormControl isInvalid={!!errors.age} mb={4}>
+          <FormLabel htmlFor="age">Age</FormLabel>
+          <Input id="age" name="age" type="number" {...register('age')} />
+          <FormErrorMessage>
+            {errors.age && errors.age.message}
+          </FormErrorMessage>
+        </FormControl>
+      </Flex>
 
-      <FormControl isInvalid={!!errors.age} mb={4}>
-        <FormLabel htmlFor="age">Age</FormLabel>
-        <Input id="age" name="age" type="number" {...register('age')} />
-        <FormErrorMessage>
-          {errors.age && errors.age.message}
-        </FormErrorMessage>
-      </FormControl>
+      <Flex>
+        <FormControl as={GridItem} colSpan={[6, 3]} isInvalid={!!errors.college} mb={4} mr="3%">
+          <FormLabel htmlFor="college">
+            College Name
+          </FormLabel>
+          <Input id="college" name="college" {...register("college")} />
+          <FormErrorMessage>
+            {errors.college && errors.college.message}
+          </FormErrorMessage>
+        </FormControl>
 
-      <FormControl isInvalid={!!errors.interest} mb={4}>
+        <FormControl isInvalid={!!errors.course} mb={4}>
+          <FormLabel htmlFor="course">Current Course</FormLabel>
+          <Input id="course" name="course" {...register("course")} />
+          <FormErrorMessage>
+            {errors.course && errors.course.message}
+          </FormErrorMessage>
+        </FormControl>
+      </Flex>
+
+
+      {/* <FormControl isInvalid={!!errors.interest} mb={4}>
         <FormLabel htmlFor="interest">Interest</FormLabel>
         <Select
           id="interest"
@@ -176,7 +205,7 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
           variant="outline"
           colorScheme='purple'
           {...register('interest')} // Assuming you have updated the useForm hook to handle multiple selections
-          isMulti="true"
+          multiple="true"
           placeholder="Select multiple interests"
         >
           <option value="Machine Learning">Machine Learning</option>
@@ -206,7 +235,52 @@ const Form2 = ({ register, errors }: { register: any; errors: any }) => {
         <FormErrorMessage>
           {errors.interest && errors.interest.message}
         </FormErrorMessage>
+      </FormControl> */}
+
+      <FormControl isInvalid={!!errors.interest} mb={4}>
+        <FormLabel htmlFor="interest">Interests</FormLabel>
+        <Input
+          id="interest"
+          name="interest"
+          variant="outline"
+          colorScheme='purple'
+          {...register('interest')}
+          placeholder="List your interests using commas"
+        />
+        <FormErrorMessage>
+          {errors.interest && errors.interest.message}
+        </FormErrorMessage>
       </FormControl>
+
+      <FormControl isInvalid={!!errors.collegeId} mb={4}>
+        <FormLabel htmlFor="college-id">College ID</FormLabel>
+        <InputGroup>
+          <InputLeftElement pointerEvents='none' color='gray.300' fontSize='1.2em'>
+          </InputLeftElement>
+          <input
+            id="college-id"
+            name="college-id"
+            type="file"
+            accept="image/*" // Accept only images
+            style={{ display: 'none' }}
+            {...register('collegeId')}
+            onChange={(e) => {
+              setCollegeIdFile(e.target.files[0]);
+            }}
+          />
+          <Button
+            onClick={() => document.getElementById('college-id').click()}
+            variant="outline"
+            colorScheme="purple"
+          >
+            {collegeIdFile ? collegeIdFile.name : 'Upload College ID'}
+          </Button>
+        </InputGroup>
+        <FormErrorMessage>
+          {errors.collegeId && errors.collegeId.message}
+        </FormErrorMessage>
+      </FormControl>
+
     </>
   );
 };
@@ -216,6 +290,7 @@ const Signup = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [progress, setProgress] = useState(50);
+  const [collegeIdFile, setCollegeIdFile] = useState(null);
 
   const resolver: any = step === 1 ? yupResolver(form1Schema) : yupResolver(form2Schema);
 
@@ -230,7 +305,29 @@ const Signup = () => {
 
   const onSubmit = async (data: { [key: string]: any }) => {
     try {
-      const response = await axios.post('/api/register', data, { withCredentials: true });
+      const formData = new FormData();
+      formData.append('firstName', data.firstName);
+      formData.append('lastName', data.lastName);
+      formData.append('email', data.email);
+      formData.append('password', data.password);
+
+      // Append user details data
+      formData.append('country', data.country);
+      formData.append('state', data.state);
+      formData.append('city', data.city);
+      formData.append('gender', data.gender);
+      formData.append('age', data.age);
+      formData.append('college', data.college);
+      formData.append('course', data.course);
+      formData.append('interest', data.interest);
+
+      // Append college ID file
+      formData.append('collegeId', collegeIdFile);
+      const response = await axios.post('/api/register', formData, {
+        withCredentials: true, headers: {
+          'Content-Type': 'multipart/form-data',
+        }
+      });
 
       if (response.data.response) {
         // Account created successfully
@@ -282,7 +379,7 @@ const Signup = () => {
           <Progress colorScheme="purple" size="sm" value={progress} hasStripe mb="5%" mx="5%" isAnimated />
           <form onSubmit={handleSubmit(onSubmit)}>
             {step === 1 && <Form1 register={register} errors={errors} />}
-            {step === 2 && <Form2 register={register} errors={errors} />}
+            {step === 2 && <Form2 register={register} errors={errors} collegeIdFile={collegeIdFile} setCollegeIdFile={setCollegeIdFile} />}
             <ButtonGroup mt="5%" w="100%">
               <Flex w="100%" justifyContent="space-between">
                 <Flex>

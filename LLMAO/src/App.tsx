@@ -10,6 +10,7 @@ import Content from './views/Content'
 // import Issac from './views/Issac'
 import Profile from './views/Profile';
 import Issac2 from './views/Issac3D'
+import "./views/i18n"
 
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
         <Route path="/explore" element={<Modules />} />
         <Route path="/profile" element={<Profile />} />
         {/* <Route path="/issac" element={<Issac />} /> */}
-        <Route path="/issac" element={<Issac2 />} />
+        {/* <Route path="/issac" element={<Issac2 />} /> */}
         <Route path="/contact" element={<Contact />} />
         <Route path="/trending" element={<Trending />} />
         <Route path="/content" element={<Content />} />

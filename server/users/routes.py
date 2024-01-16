@@ -12,6 +12,8 @@ from server.recommender_system.recommendations import recommend_module, popular_
 from sqlalchemy import desc
 from gtts import gTTS
 from io import BytesIO
+from datetime import datetime
+from werkzeug.utils import secure_filename
 
 
 users = Blueprint(name='users', import_name=__name__)
@@ -44,19 +46,21 @@ tools = [
 @cross_origin(supports_credentials=True)
 def register():
     # take user input
-    data = request.json
-    fname = data.get("firstName") 
-    lname = data.get("lastName")
-    email = data.get("email")
-    password = data.get("password")
-    country = data.get("country")
-    state = data.get("state")
-    city = data.get("city")
-    gender = data.get("gender")
-    age = data.get("age")
-    interests = data.get("interest")
-
+    fname = request.form['firstName']  # Access the 'fname' variable from the JSON data
+    lname = request.form['lastName']
+    email = request.form['email']
+    password = request.form['password']
+    country = request.form['country']
+    state = request.form['state']
+    city = request.form['city']
+    gender = request.form['gender']
+    age = request.form['age']
+    college = request.form['college']
+    course = request.form['course']
+    interests = request.form['interest']
+    college_id_file = request.files['collegeId']
     # check if user has already registered by same email
+    print("id of the colege------",request.form)
     user_exists = User.query.filter_by(email=email).first() is not None
 
     if user_exists:
@@ -121,14 +125,16 @@ def user_profile():
     
     if request.method == 'POST':
         data = request.json
-        user.fname = data.get("firstName")
-        user.lname = data.get("lastName")
+        print("data is printed---------",data)
+        user.fname = data.get("fname")
+        user.lname = data.get("lname")
         user.email = data.get("email")
         user.country = data.get("country")
         user.state = data.get("state")
+        user.gender = data.get("gender")
         user.city = data.get("city")
         user.age = data.get("age")
-        user.interests = data.get("interest")
+        user.interests = data.get("interests")
         db.session.commit()
     
     user_info = {}
@@ -139,6 +145,7 @@ def user_profile():
     user_info['state'] = user.state
     user_info['city'] = user.city
     user_info['age'] = user.age
+    user_info['gender'] = user.gender
     user_info['interests'] = user.interests
     user_info['date_joined'] = user.date_joined
 
@@ -391,6 +398,7 @@ def query_module(module_id, source_language, websearch):
     if user is None:
         return jsonify({"message": "User not found", "response": False}), 404
 
+    session["module_id"] = module_id
     # check if submodules are saved in the database for the given module_id
     module = Module.query.get(module_id)
     if module.submodule_content is not None:
@@ -534,7 +542,13 @@ def gen_quiz(module_id, source_language, websearch):
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
 
-    quiz = generate_quiz(subsections)
+    if websearch:
+        print("WEB SEARCH OP quiz1--------------------------")
+        quiz = generate_quiz_from_web(subsections)
+    else:
+        quiz = generate_quiz(subsections)
+
+    
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
 
@@ -554,8 +568,13 @@ def gen_quiz2(module_id, source_language, websearch):
     subsections_list = module.submodule_content[0]['subsections']
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
+    if websearch:
+        print("WEB SEARCH OP quiz2--------------------------")
+        quiz = generate_applied_quiz_from_web(subsections)
+    else:
+        quiz = generate_applied_quiz(subsections)
 
-    quiz = generate_applied_quiz(subsections)
+
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "respons    e": True}), 200
@@ -662,3 +681,41 @@ def chatbot_route():
     else:
         return jsonify({'error': 'User message not provided'}), 400
 ##############################################################################
+    
+##################whisper######################################
+@users.route('/query2/voice-save', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def save_voices():
+    try:
+        user_id = session.get("user_id", None)
+        module_id = session.get("module_id", None)
+        if user_id is None:
+            return jsonify({"message": "User not logged in", "response": False}), 401
+
+        # check if user exists
+        user = User.query.get(user_id)
+        if user is None:
+            return jsonify({"message": "User not found", "response": False}), 404
+        print("Module id:-----------", module_id)
+
+        # Create a folder to store the voice recordings if it doesn't exist
+        base_folder = os.path.join('voice_recordings', str(user_id), str(module_id))
+        os.makedirs(base_folder, exist_ok=True)
+
+        # Check if the post request has the file part
+        if 'voice' not in request.files:
+            return jsonify({"message": "No file part in the request", "response": False}), 400
+
+        # Get the voice file
+        voice = request.files['voice']
+
+        # Save the voice recording as a WAV file
+        filename = f'voice_{datetime.now().strftime("%Y%m%d%H%M%S")}.wav'
+        file_path = os.path.join(base_folder, secure_filename(filename))
+        voice.save(file_path)
+
+        return jsonify({'message': 'Voice saved successfully', 'response': True}), 200
+    except Exception as e:
+        return jsonify({'error': str(e), 'response': False}), 500
+
+###############################################################

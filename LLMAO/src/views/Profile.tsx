@@ -34,6 +34,9 @@ const profileSchema = yup.object().shape({
     country: yup.string().required("Country is required"),
     city: yup.string().required("City is required"),
     state: yup.string().required("State is required"),
+    gender: yup.string().required("Gender is required"),
+    course: yup.string().required("Course Name is required"),
+    college: yup.string().required("College Name is required"),
     age: yup.number().integer().min(1, 'Age must be a positive number').required('Age is required')
 });
 
@@ -42,26 +45,6 @@ const displayError = (fieldName, errors) => {
 };
 
 const Profile = () => {
-    // const [profile, setProfile] = useState({
-    //     firstName: 'John',
-    //     lastName: 'Doe',
-    //     email: 'john.doe@example.com',
-    //     country: 'USA',
-    //     city: 'New York',
-    //     state: 'NY',
-    //     age: 30,
-    //     gender: 'male'
-    // });
-    // const [profile, setProfile] = useState({
-    //     firstName: 'John',
-    //     lastName: 'Doe',
-    //     email: 'john.doe@example.com',
-    //     country: 'USA',
-    //     city: 'New York',
-    //     state: 'NY',
-    //     age: 30,
-    //     gender: 'male'
-    // });
     const [profile, setProfile] = useState({
         fname: '',
         lname: '',
@@ -71,7 +54,9 @@ const Profile = () => {
         state: '',
         age: '',
         interests: '',
-        user_name: '',
+        college: '',
+        course: '',
+        gender: '',
     });
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -93,9 +78,11 @@ const Profile = () => {
                 setValue("email", response.data.user_info.email || '');
                 setValue("country", response.data.user_info.country || '');
                 setValue("state", response.data.user_info.state || '');
+                setValue("gender", response.data.user_info.gender || '');
                 setValue("city", response.data.user_info.city || '');
                 setValue("age", response.data.user_info.age || '');
-                setValue("user_name", response.data.user_info.username || '');
+                setValue("college", response.data.user_info.college || '');
+                setValue("course", response.data.user_info.course || '');
                 setValue("interests", response.data.user_info.interests || '');
                 setIsLoading(false);
             })
@@ -106,16 +93,28 @@ const Profile = () => {
     }, []);
 
     const onSubmit = (data) => {
-        setProfile(data);
-        setIsEditing(false);
-        toast({
-            title: 'Profile updated.',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-        });
+        axios.post('/api/user_profile', data)
+            .then(response => {
+                setProfile(response.data.user_info);
+                setIsEditing(false);
+                toast({
+                    title: 'Profile updated.',
+                    status: 'success',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            })
+            .catch(error => {
+                console.error("Error updating user data:", error);
+                toast({
+                    title: 'Error updating profile.',
+                    description: 'An error occurred while updating the profile. Please try again.',
+                    status: 'error',
+                    duration: 3000,
+                    isClosable: true,
+                });
+            });
     };
-
     if (isLoading) {
         return (
             <>
@@ -171,17 +170,37 @@ const Profile = () => {
                             </FormControl>
                         </Flex>
 
+                        <FormControl mt={4} mr={{ base: 0, md: 4 }}>
+                            <FormLabel>City</FormLabel>
+                            <Input id="city" {...register("city")} />
+                            <Text color="red.500">{displayError('city', errors)}</Text>
+                        </FormControl>
+
                         <Flex flexDirection={{ base: 'column', md: 'row' }} mt={4} flexWrap="wrap" justifyContent="space-between">
                             <FormControl flex="1" mr={{ base: 0, md: 4 }}>
-                                <FormLabel>City</FormLabel>
-                                <Input id="city" {...register("city")} />
-                                <Text color="red.500">{displayError('city', errors)}</Text>
+                                <FormLabel>Gender</FormLabel>
+                                <Input id="gender" {...register("gender")} />
+                                <Text color="red.500">{displayError('gender', errors)}</Text>
                             </FormControl>
 
                             <FormControl flex="1" mr={{ base: 0, md: 4 }}>
                                 <FormLabel>Age</FormLabel>
                                 <Input id="age" {...register("age")} />
                                 <Text color="red.500">{displayError('age', errors)}</Text>
+                            </FormControl>
+                        </Flex>
+
+                        <Flex flexDirection={{ base: 'column', md: 'row' }} mt={4} flexWrap="wrap" justifyContent="space-between">
+                            <FormControl flex="1" mr={{ base: 0, md: 4 }}>
+                                <FormLabel>College</FormLabel>
+                                <Input id="college" {...register("college")} />
+                                <Text color="red.500">{displayError('college', errors)}</Text>
+                            </FormControl>
+
+                            <FormControl flex="1" mr={{ base: 0, md: 4 }}>
+                                <FormLabel>Course</FormLabel>
+                                <Input id="course" {...register("course")} />
+                                <Text color="red.500">{displayError('course', errors)}</Text>
                             </FormControl>
                         </Flex>
 
