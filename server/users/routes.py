@@ -629,7 +629,7 @@ def gen_quiz2(module_id, source_language, websearch):
     completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
     if completed_module.theory_quiz_score is None:
         return jsonify({"message": "User has not completed quiz1", "response":False}), 404
-
+    
     sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
     print("Submodules:-----------------------",sub_module_names)
     if websearch:
@@ -641,6 +641,37 @@ def gen_quiz2(module_id, source_language, websearch):
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
+
+@users.route('/quiz3/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def gen_quiz3(module_id, source_language, websearch):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    module = Module.query.get(module_id)
+
+    # check if user has completed quiz1 or not
+    # completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
+    # if completed_module.theory_quiz_score is None:
+    #     return jsonify({"message": "User has not completed quiz1", "response":False}), 404
+    
+    sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
+    print("Submodules:-----------------------",sub_module_names)
+    if websearch:
+        print("WEB SEARCH OP quiz2=3--------------------------")
+        quiz = generate_conversation_quiz_from_web(sub_module_names)
+    else:
+        quiz = generate_conversation_quiz(sub_module_names)
+
+    # translated_quiz = translate_quiz(quiz["quizData"], source_language)
+    print("quiz---------------",quiz)
+    return jsonify({"message": "Query successful", "quiz": quiz, "response": True}), 200
 
 
 @users.route('/<int:module_id>/add_theory_score/<int:score>')
@@ -841,3 +872,39 @@ def save_voices():
         return jsonify({'error': str(e), 'response': False}), 500
 
 ###############################################################
+    
+####################quiz 3 evaluation##############################
+@users.route('/evaluate_quiz', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def evaluate_quiz():
+    try:
+        user_id = session.get("user_id", None)
+        module_id = session.get("module_id", None)
+        if user_id is None:
+            return jsonify({"message": "User not logged in", "response": False}), 401
+
+        # check if user exists
+        user = User.query.get(user_id)
+        if user is None:
+            return jsonify({"message": "User not found", "response": False}), 404
+        # Get the responses from the request data
+        responses = request.json.get('responses')
+        print("responses",responses)
+        # Perform evaluation logic (replace this with your actual evaluation logic)
+        evaluation_result = evaluate_conversation_quiz(responses)
+        # evaluation_result = {
+        #     "accuracy": 7,
+        #     "completeness": 6,
+        #     "clarity": 8,
+        #     "relevance": 9,
+        #     "understanding": 8,
+        #     "feedback": "Overall, your answers demonstrate a good understanding of machine learning concepts and their applications. However, there are some areas for improvement. In the first question, the answer lacks specific examples of real-world scenarios where machine learning is applied. For the second question, while the explanation of supervised and unsupervised learning is accurate, examples of each are missing. The answer to the third question is accurate, but could benefit from more detailed explanation and specific examples. The answer to the fourth question is comprehensive and relevant. In the fifth question, the answer could be improved by providing more examples and elaborating further on the impact of feature selection and engineering on model performance. Overall, your responses are clear and well-organized, but adding specific examples and more detailed explanations would further enhance the completeness and understanding of your answers."
+        # }
+
+        # Return the evaluation result
+        return jsonify(evaluation_result), 200
+
+    except Exception as e:
+        print(f"Error during evaluation: {str(e)}")
+        return jsonify({"error": "An error occurred during evaluation"}), 500
+###################################################################
