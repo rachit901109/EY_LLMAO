@@ -1,6 +1,6 @@
 from flask import request, session, jsonify,  Blueprint, send_file
 from server import db, bcrypt
-from server.models import User, Topic, Module, Query
+from server.models import User, Topic, Module, Query, CompletedModule
 from concurrent.futures import ThreadPoolExecutor
 import os
 from flask_cors import cross_origin
@@ -55,10 +55,10 @@ def register():
     city = request.form['city']
     gender = request.form['gender']
     age = request.form['age']
-    college = request.form['college']
-    course = request.form['course']
+    college_name = request.form['college']
+    course_name = request.form['course']
     interests = request.form['interest']
-    college_id_file = request.files['collegeId']
+    student_id_file = request.files['collegeId']
     # check if user has already registered by same email
     print("id of the colege------",request.form)
     user_exists = User.query.filter_by(email=email).first() is not None
@@ -68,7 +68,7 @@ def register():
     
     # hash password, create new user save to database
     hash_pass = bcrypt.generate_password_hash(password).decode('utf-8')
-    new_user = User(fname=fname, lname=lname, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, interests=interests)
+    new_user = User(fname=fname, lname=lname, email=email, password=hash_pass, country=country, state=state, city=city, gender=gender, age=age, college_name=college_name, course_name=course_name, interests=interests, student_id=student_id_file.read())
     db.session.add(new_user)
     db.session.commit()
 
@@ -135,6 +135,8 @@ def user_profile():
         user.city = data.get("city")
         user.age = data.get("age")
         user.interests = data.get("interests")
+        user.college_name = data.get("college_name")
+        user.course_name = data.get("course_name")
         db.session.commit()
     
     user_info = {}
@@ -148,6 +150,8 @@ def user_profile():
     user_info['gender'] = user.gender
     user_info['interests'] = user.interests
     user_info['date_joined'] = user.date_joined
+    user_info['college_name'] = user.college_name
+    user_info['course_name'] = user.course_name
 
     return jsonify({"message": "User found", "user_info":user_info, "response":True}), 200
 
@@ -565,6 +569,12 @@ def gen_quiz2(module_id, source_language, websearch):
         return jsonify({"message": "User not found", "response":False}), 404
     
     module = Module.query.get(module_id)
+
+    # check if user has completed quiz1 or not
+    completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
+    if completed_module.theory_quiz_score is None:
+        return jsonify({"message": "User has not completed quiz1", "response":False}), 404
+
     subsections_list = module.submodule_content[0]['subsections']
     subsections = [d['title'] for d in subsections_list]
     print("Submodules:-----------------------",subsections)
@@ -574,11 +584,48 @@ def gen_quiz2(module_id, source_language, websearch):
     else:
         quiz = generate_applied_quiz(subsections)
 
-
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
-    return jsonify({"message": "Query successful", "quiz": translated_quiz, "respons    e": True}), 200
+    return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
 
+
+@users.route('/<int:module_id>/add_theory_score/<int:score>')
+@cross_origin(supports_credentials=True)
+def add_theory_score(module_id, score):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    module = Module.query.get(module_id)
+    completed_module = CompletedModule(user_id=user_id, module_id=module_id, level=module.level, theory_quiz_score=score)
+    db.session.add(completed_module)
+    db.session.commit()
+
+    return jsonify({"message": "Score added successfully", "response": True}), 200
+
+@users.route('/<int:module_id>/add_application_score/<int:score>')
+@cross_origin(supports_credentials=True)
+def add_application_score(module_id, score):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    module = Module.query.get(module_id)
+    completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
+    completed_module.application_quiz_score = score
+    db.session.commit()
+
+    return jsonify({"message": "Score added successfully", "response": True}), 200
 
 ###ASSISTANT API SECTION#######################
 def wait_on_run(run_id, thread_id):
