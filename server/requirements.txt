@@ -21,3 +21,4 @@ reportlab
 sentence-transformers
 gtts
 pytz
+google-search-results
