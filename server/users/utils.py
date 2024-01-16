@@ -13,6 +13,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Image
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.units import mm
+from serpapi import GoogleSearch
 
 
 load_dotenv()
@@ -20,6 +21,7 @@ load_dotenv()
 openai_api_key1 = os.environ.get('OPENAI_API_KEY1')
 openai_api_key2 = os.environ.get('OPENAI_API_KEY2')
 openai_api_key3 = os.environ.get('OPENAI_API_KEY3')
+google_serp_api_key = os.environ.get('GOOGLE_SERP_API_KEY')
 
 tavily_api_key = os.environ.get('TAVILY_API_KEY')
 
@@ -270,19 +272,18 @@ Follow the provided JSON format diligently, incorporating information from the s
     return output
 
 def module_image_from_web(module):
-    tavily_client = TavilyClient(api_key=tavily_api_key)
-    max_retries = 3
-    for attempt in range(1, max_retries + 1):
-        try:
-            search_result = tavily_client.search(module, max_results=7, search_depth="advanced", include_images=True)
-            images = search_result['images']
-            return images
-        except Exception as e:
-            print(f"Error in attempt {attempt}: {e}")
-            if attempt < max_retries:
-                time.sleep(5)
-            else:
-                raise 
+    params = {
+    "q": module,
+    "engine": "google_images",
+    "ijn": "0",
+    "api_key": google_serp_api_key
+    }
+
+    search = GoogleSearch(params)
+    results = search.get_dict()
+    image_results = results["images_results"]
+    image_links = [i['original'] for i in image_results[:10]]
+    return image_links
 
 
 def generate_pdf(pdf_file_path, modulename, module_summary, submodule_content, src_lang):
