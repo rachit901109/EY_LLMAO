@@ -74,7 +74,7 @@ const VoiceQuiz = ({ data, trans }) => {
 
     const handleFinish = async () => {
         console.log("Response", responses)
-        const response = await axios.post('YOUR_FLASK_API_ENDPOINT', { responses });
+        const response = await axios.post('/api/evaluate_quiz', { responses });
         const evaluationResponse = response.data;
         console.log("Evaluation Response", evaluationResponse);
         setEvaluation(evaluationResponse);
@@ -100,7 +100,15 @@ const VoiceQuiz = ({ data, trans }) => {
                                 <Text className="content" fontSize={20}>
                                     <b>Evaluation Results:</b>
                                 </Text>
-                                <Text className="content" fontSize={15}>
+                                <Text fontSize={18} mt={10}>
+                                    Question asked:
+                                </Text>
+                                {data.map((question, index) => (
+                                    <Text key={index} className="content" fontSize={15}>
+                                        {`${index + 1}. ${question}`}
+                                    </Text>
+                                ))}
+                                <Text className="content" fontSize={18} mt={10}>
                                     Accuracy: {evaluation.accuracy}
                                     <br />
                                     Completeness: {evaluation.completeness}
@@ -127,14 +135,12 @@ const VoiceQuiz = ({ data, trans }) => {
                             </Box>
                         </Center>
                     )}
-                </Box>
-                <Flex mt={5}>
                     {evaluation ? (
-                        <Button onClick={() => navigate('/explore')} colorScheme="purple">
+                        <Button onClick={() => navigate('/explore')} mt={5} colorScheme="purple">
                             Explore Other Courses
                         </Button>
                     ) : (
-                        <Button onClick={handleButtonClick} colorScheme="purple">
+                        <Button onClick={handleButtonClick} mt={5} colorScheme="purple">
                             {showAnswer ? (
                                 currentQuestion === data.length - 1 ? 'Finish' : 'Next'
                             ) : (
@@ -142,7 +148,7 @@ const VoiceQuiz = ({ data, trans }) => {
                             )}
                         </Button>
                     )}
-                </Flex>
+                </Box>
             </Box>
         </div>
     );

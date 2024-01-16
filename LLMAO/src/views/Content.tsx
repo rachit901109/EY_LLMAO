@@ -67,15 +67,15 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
     setQuizData(null);
     try {
       setActiveIndex(data.length + 2)
-      // const moduleid = localStorage.getItem('moduleid');
-      // const websearch = localStorage.getItem('websearch');
-      // const source_lang = localStorage.getItem('source_lang');
-      // const response = await axios.get(`/api/quiz2/${moduleid}/${source_lang}/${websearch}`);
-      // setQuiz3Data(response.data.quiz);
-      setQuiz3Data( [
-        "What is the difference between supervised and unsupervised learning?",
-        "Explain the bias-variance tradeoff in machine learning.",
-    ]);
+      const moduleid = localStorage.getItem('moduleid');
+      const websearch = localStorage.getItem('websearch');
+      const source_lang = localStorage.getItem('source_lang');
+      const response = await axios.get(`/api/quiz3/${moduleid}/${source_lang}/${websearch}`);
+      setQuiz3Data(response.data.quiz);
+    //   setQuiz3Data( [
+    //     "What is the difference between supervised and unsupervised learning?",
+    //     "Explain the bias-variance tradeoff in machine learning.",
+    // ]);
 
     } catch (error) {
       console.error('Error fetching quiz data:', error);
