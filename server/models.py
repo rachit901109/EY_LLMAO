@@ -81,6 +81,9 @@ class User(db.Model):
     gender = db.Column(db.String(50), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     interests = db.Column(db.String(100), nullable=False) #comma separated values
+    college_name = db.Column(db.String(100), nullable=False)
+    course_name = db.Column(db.String(50), nullable=False)
+    student_id = db.Column(db.LargeBinary, nullable=False)
     date_joined = db.Column(db.DateTime, nullable=False, default=datetime.now(timezone("Asia/Kolkata")))
 
     user_query_association = db.relationship('Query', back_populates='user')
