@@ -156,7 +156,7 @@ def user_profile():
     return jsonify({"message": "User found", "user_info":user_info, "response":True}), 200
 
 
-@users.route('/user_dashboard', methods=['GET'])
+@users.route('<int:user_id>/dashboard', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def getuser():
     # check if user is logged in
