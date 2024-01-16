@@ -1,6 +1,6 @@
 from flask import request, session, jsonify,  Blueprint, send_file
 from server import db, bcrypt
-from server.models import User, Topic, Module, Query, CompletedModule
+from server.models import User, Topic, Module, Query, CompletedModule, OngoingModule
 from concurrent.futures import ThreadPoolExecutor
 import os
 from flask_cors import cross_origin
@@ -188,13 +188,13 @@ def getuser():
         
     
     # user_queries = [query.query_name for query in user.queries]
-    user_completed_topics = {}
-    user_started_topics = {}
+    user_completed_modules = {}
+    user_ongoing_modules = {}
     
-    for topic in user.completed_topics:
-        if topic.date_completed is None:
-            user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
-        user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
+    # for topic in user.completed_topics:
+    #     if topic.date_completed is None:
+    #         user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
+    #     user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
 
     response = {"message":"User found", "interests":user.interests, "recommendations":recommended_module_summary, "response":True}
 
@@ -424,6 +424,7 @@ def query_topic(topicname,level,websearch,source_lang):
     new_user_query = Query(user_id=user.user_id, topic_id=topic.topic_id, level=level, websearch=websearch, lang=source_language)
     db.session.add(new_user_query)
     db.session.commit()
+
     trans_moduleids = {}
     if source_language !='en':
         for key, value in module_ids.items():
@@ -495,6 +496,11 @@ def query_module(module_id, source_language, websearch):
 
     module.submodule_content = content
     module.image_urls = images
+    db.session.commit()
+
+    # add module to ongoing modules for user
+    ongoing_module = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module_id, level=module.level).first()
+    db.session.delete(ongoing_module)
     db.session.commit()
 
     # translate submodule content to the source language
@@ -688,6 +694,7 @@ def add_theory_score(module_id, score):
 
     return jsonify({"message": "Score added successfully", "response": True}), 200
 
+
 @users.route('/<int:module_id>/add_application_score/<int:score>')
 @cross_origin(supports_credentials=True)
 def add_application_score(module_id, score):
@@ -703,6 +710,26 @@ def add_application_score(module_id, score):
     module = Module.query.get(module_id)
     completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
     completed_module.application_quiz_score = score
+    db.session.commit()
+
+    return jsonify({"message": "Score added successfully", "response": True}), 200
+
+
+@users.route('/<int:module_id>/add_assignment_score/<int:score>')
+@cross_origin(supports_credentials=True)
+def add_assignment_score(module_id, score):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    module = Module.query.get(module_id)
+    completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
+    completed_module.assignment_score = score
     db.session.commit()
 
     return jsonify({"message": "Score added successfully", "response": True}), 200
