@@ -459,3 +459,63 @@ Create a set of 10 questions that follow the described manner and the above-ment
     output = ast.literal_eval(completion.choices[0].message.content)
 
     return output
+
+def generate_conversation_quiz(sub_modules):
+    quiz_prompt = """You are an educational examiner and your task is to ask various conceptual questions to a student(asking them to explain or elaborate their answers) \
+based on the specified list of topics. \
+Imagine as if you are talking to the student while asking the questions.
+Ensure that the output is a valid JSON format, with the keys being the question number and values being the questions.
+
+Create a set of 10 concept-based quiz questions in the above-mentioned format.
+```
+Sub Modules : {sub_modules}
+```
+"""
+    client = OpenAI()
+    completion = client.chat.completions.create(
+                model = 'gpt-3.5-turbo-1106',
+                messages = [
+                    {'role':'user', 'content': quiz_prompt.format(sub_modules = sub_modules)},
+                ],
+                response_format = {'type':'json_object'},
+                seed = 42
+    )
+
+    print(completion.choices[0].message.content)
+    output = ast.literal_eval(completion.choices[0].message.content)
+    output_list = list(output.values())
+
+    return output_list
+
+def generate_conversation_quiz_from_web(sub_modules):
+    tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
+    search_result = tavily_client.get_search_context(','.join(sub_modules), search_depth="advanced", max_tokens=4000)
+    quiz_prompt = """You are an educational examiner and your task is to ask various conceptual questions to a student (asking them to explain or elaborate their answers) \
+based on the specified list of topics. \
+Imagine as if you are talking to the student while asking the questions. You will be given information from the internet related to the sub-modules. \
+Use this information to create the questions.
+
+Sub Modules : ```{sub_modules}```
+
+Search Result = ```{search_result}```
+
+Ensure that the output is a valid JSON format, with the keys being the question number and values being the questions.
+
+Create a set of 10 concept-based quiz questions in the above-mentioned format.
+
+"""
+    client = OpenAI()
+    completion = client.chat.completions.create(
+                model = 'gpt-3.5-turbo-1106',
+                messages = [
+                    {'role':'user', 'content': quiz_prompt.format(sub_modules = sub_modules, search_result = search_result)},
+                ],
+                response_format = {'type':'json_object'},
+                seed = 42
+    )
+
+    print(completion.choices[0].message.content)
+    output = ast.literal_eval(completion.choices[0].message.content)
+    output_list = list(output.values())
+
+    return output_list
