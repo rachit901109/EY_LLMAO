@@ -239,13 +239,63 @@ def delete():
 
 # trending route --> Fetching trending topics from web and generating module summary
 # later make it user personalized
-@users.route('/query2/trending/<string:domain>', methods=['GET'])
+@users.route('/query2/trending/<string:domain>/<string:module_name>/<string:summary>/<string:source_lang>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def trending_query(domain):
-    text=trending_module_summary_from_web(domain)
-    print(text)
-    return jsonify({"message": "Query successful", "domain": domain,  "content": text, "response":True}), 200
+def trending_query(domain, module_name, summary, source_lang):
+    # check if user is logged in
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    topic = Topic.query.filter_by(topic_name=domain.lower()).first()
+    if topic is None:
+        topic = Topic(topic_name=domain.lower())
+        db.session.add(topic)
+        db.session.commit()
 
+    module = Module.query.filter_by(module_name=module_name, topic_id=topic.topic_id, level='trending', websearch=True).first()
+    if module is not None:
+        trans_submodule_content = translate_submodule_content(module.submodule_content, source_lang)
+        print(f"Translated submodule content: {trans_submodule_content}")
+        return jsonify({"message": "Query successful", "images": module.image_urls, "content": trans_submodule_content, "response": True}), 200
+    
+    # add module to database
+    new_module = Module(module_name=module_name, topic_id=topic.topic_id, level='trending', websearch=True, summary=summary)
+    db.session.add(new_module)
+    db.session.commit()
+
+    images = module_image_from_web(module.module_name)
+    with ThreadPoolExecutor() as executor:
+        submodules = generate_submodules_from_web(module.module_name)
+        print(submodules)
+        keys_list = list(submodules.keys())
+        submodules_split_one = {key: submodules[key] for key in keys_list[:2]}
+        submodules_split_two = {key: submodules[key] for key in keys_list[2:4]}
+        submodules_split_three = {key: submodules[key] for key in keys_list[4:]}
+        future_content_one = executor.submit(generate_content_from_web, submodules_split_one, 'first')
+        future_content_two = executor.submit(generate_content_from_web, submodules_split_two, 'second')
+        future_content_three = executor.submit(generate_content_from_web, submodules_split_three, 'third')
+
+        content_one = future_content_one.result()
+        content_two = future_content_two.result()
+        content_three = future_content_three.result()
+
+        content = content_one + content_two + content_three
+
+        module.submodule_content = content
+        module.image_urls = images
+        db.session.commit()
+
+        # translate submodule content to the source language
+        trans_submodule_content = translate_submodule_content(content, source_lang)
+        print(f"Translated submodule content: {trans_submodule_content}")
+
+        return jsonify({"message": "Query successful", "images": module.image_urls, "content": trans_submodule_content, "response": True}), 200
 
 def translate_module_summary(content, target_language):
     if target_language=='en':
