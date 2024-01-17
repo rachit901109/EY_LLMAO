@@ -105,7 +105,11 @@ def login():
         model="gpt-3.5-turbo-1106",
         # tools=tools
     )
+    thread = client.beta.threads.create()
+
+    session['thread'] = thread
     session['assistant_id'] = assistant.id
+
 
     return jsonify({"message": "User logged in successfully", "email":user.email, "response":True}), 200
 
@@ -692,7 +696,7 @@ def gen_quiz3(module_id, source_language, websearch):
     # if completed_module.theory_quiz_score is None:
     #     return jsonify({"message": "User has not completed quiz1", "response":False}), 404
     
-    sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
+    sub_module_names = [submodule['subject_name'] for submodule in module.submodule_content]
     print("Submodules:-----------------------",sub_module_names)
     if websearch:
         print("WEB SEARCH OP quiz2=3--------------------------")
@@ -828,7 +832,7 @@ def chatbot_route():
             trans_query = query
         assistant_id = session['assistant_id']
         print('ASSISTANT ID', assistant_id)
-        thread = client.beta.threads.create()
+        thread = session['thread']
         print('THREAD ID', thread.id)
         print(trans_query)
         message = client.beta.threads.messages.create(
