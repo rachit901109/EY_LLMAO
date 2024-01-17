@@ -510,7 +510,7 @@ Create a set of 10 concept-based quiz questions in the above-mentioned format.
 Sub Modules : {sub_modules}
 ```
 """
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -543,7 +543,7 @@ Ensure that the output is a valid JSON format, with the keys being the question 
 Create a set of 10 concept-based quiz questions in the above-mentioned format.
 
 """
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [
@@ -584,7 +584,7 @@ provide a low score in the respective parameters and give an appropriate feedbac
 Make sure your output is a valid json where the keys are the accuracy, \
 completeness, clarity, relevance, understanding and feedback.
 """
-    client = OpenAI()
+    client = OpenAI(api_key=openai_api_key1)
     completion = client.chat.completions.create(
                 model = 'gpt-3.5-turbo-1106',
                 messages = [

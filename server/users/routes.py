@@ -105,7 +105,11 @@ def login():
         model="gpt-3.5-turbo-1106",
         # tools=tools
     )
+    thread = client.beta.threads.create()
+
+    session['thread'] = thread
     session['assistant_id'] = assistant.id
+
 
     return jsonify({"message": "User logged in successfully", "email":user.email, "response":True}), 200
 
@@ -530,8 +534,8 @@ def query_module(module_id, source_language, websearch):
     db.session.commit()
 
     # add module to ongoing modules for user
-    ongoing_module = OngoingModule(user_id=user.user_id, module_id=module_id, level=module.level)
-    db.session.add(ongoing_module)
+    ongoing_module = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module_id, level=module.level).first()
+    db.session.delete(ongoing_module)
     db.session.commit()
 
     # translate submodule content to the source language
@@ -693,7 +697,7 @@ def gen_quiz3(module_id, source_language, websearch):
     # if completed_module.theory_quiz_score is None:
     #     return jsonify({"message": "User has not completed quiz1", "response":False}), 404
     
-    sub_module_names = [submodule['subject_name'] for submodule in module.submodule_content]
+    sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
     print("Submodules:-----------------------",sub_module_names)
     if websearch:
         print("WEB SEARCH OP quiz2=3--------------------------")
@@ -701,9 +705,9 @@ def gen_quiz3(module_id, source_language, websearch):
     else:
         quiz = generate_conversation_quiz(sub_module_names)
 
-    translated_questions = translate_assignment(quiz["quizData"], source_language)
+    # translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
-    return jsonify({"message": "Query successful", "quiz": translated_questions, "response": True}), 200
+    return jsonify({"message": "Query successful", "quiz": quiz, "response": True}), 200
 
 
 @users.route('/<int:module_id>/add_theory_score/<int:score>')
@@ -829,7 +833,7 @@ def chatbot_route():
             trans_query = query
         assistant_id = session['assistant_id']
         print('ASSISTANT ID', assistant_id)
-        thread = client.beta.threads.create()
+        thread = session['thread']
         print('THREAD ID', thread.id)
         print(trans_query)
         message = client.beta.threads.messages.create(
