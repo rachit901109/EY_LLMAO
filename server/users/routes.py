@@ -241,8 +241,14 @@ def delete():
     return jsonify({"message": "User deleted successfully", "response":True}), 200
 
 
-# trending route --> Fetching trending topics from web and generating module summary
-# later make it user personalized
+@users.route('/query2/trending/<string:domain>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def trending_data(domain):
+    text=trending_module_summary_from_web(domain)
+    print(text)
+    return jsonify({"message": "Query successful", "domain": domain,  "content": text, "response":True}), 200
+
+
 @users.route('/query2/trending/<string:domain>/<string:module_name>/<string:summary>/<string:source_lang>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def trending_query(domain, module_name, summary, source_lang):
