@@ -605,7 +605,7 @@ based on the specified list of topics. \
 Imagine as if you are talking to the student while asking the questions.
 Ensure that the output is a valid JSON format, with the keys being the question number and values being the questions.
 
-Create a set of 10 concept-based quiz questions in the above-mentioned format.
+Create a set of 5 concept-based quiz questions in the above-mentioned format.
 ```
 Sub Modules : {sub_modules}
 ```
@@ -640,7 +640,7 @@ Search Result = ```{search_result}```
 
 Ensure that the output is a valid JSON format, with the keys being the question number and values being the questions.
 
-Create a set of 10 concept-based quiz questions in the above-mentioned format.
+Create a set of 5 concept-based quiz questions in the above-mentioned format.
 
 """
     client = OpenAI(api_key=openai_api_key1)
