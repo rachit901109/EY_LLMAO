@@ -502,8 +502,8 @@ def query_module(module_id, source_language, websearch):
     db.session.commit()
 
     # add module to ongoing modules for user
-    ongoing_module = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module_id, level=module.level).first()
-    db.session.delete(ongoing_module)
+    ongoing_module = OngoingModule(user_id=user.user_id, module_id=module_id, level=module.level)
+    db.session.add(ongoing_module)
     db.session.commit()
 
     # translate submodule content to the source language
@@ -665,7 +665,7 @@ def gen_quiz3(module_id, source_language, websearch):
     # if completed_module.theory_quiz_score is None:
     #     return jsonify({"message": "User has not completed quiz1", "response":False}), 404
     
-    sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
+    sub_module_names = [submodule['subject_name'] for submodule in module.submodule_content]
     print("Submodules:-----------------------",sub_module_names)
     if websearch:
         print("WEB SEARCH OP quiz2=3--------------------------")
