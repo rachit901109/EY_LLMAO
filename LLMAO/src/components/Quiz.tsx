@@ -89,7 +89,7 @@ const Quiz: React.FC<QuizProps> = ({ data, trans }) => {
 
       if (quizType === 'first') {
         // Call the first API
-        axios.post('/api/add_theory_score', { score })
+        axios.get(`/api/add_theory_score/${score}`)
           .then(response => {
             console.log(response.data);
           })
@@ -98,7 +98,7 @@ const Quiz: React.FC<QuizProps> = ({ data, trans }) => {
           });
       } else if (quizType === 'second') {
         // Call the second API
-        axios.post('/api/second_api_route', { score })
+        axios.get(`/api/add_application_score/${score}`)
           .then(response => {
             console.log(response.data);
           })

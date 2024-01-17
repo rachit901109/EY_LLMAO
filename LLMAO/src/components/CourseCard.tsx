@@ -14,9 +14,9 @@ interface QuizData {
 }
 
 interface CourseData {
-  moduleTopic: string;
-  moduleSummary: string;
-  quiz: [number | null, number | null, QuizData | null];
+  module_name: string;
+  module_summary: string;
+  quiz_score: [number | null, number | null, QuizData | null];
 }
 
 interface CardProps {
@@ -24,7 +24,7 @@ interface CardProps {
 }
 
 const CourseCard: React.FC<CardProps> = ({ courseData }) => {
-  const [quiz1Score, quiz2Score, quiz3Data] = courseData.quiz;
+  const [quiz1Score, quiz2Score, quiz3Data] = courseData.quiz_score;
 
   const chartData = [['Quiz', 'Score'], ['Quiz 1', quiz1Score || 0], ['Quiz 2', quiz2Score || 0]];
 
@@ -39,29 +39,41 @@ const CourseCard: React.FC<CardProps> = ({ courseData }) => {
       _hover={{ transform: 'scale(1.03)' }}
     >
       <Stack p={4}>
-        <Heading size="md">{courseData.moduleTopic}</Heading>
-        <Text py="2">{courseData.moduleSummary}</Text>
+        <Heading size="md">{courseData.module_name}</Heading>
+        <Text py="2">{courseData.module_summary}</Text>
       </Stack>
       <Stack p={4} borderTopWidth="1px">
-        <Chart
-          width={'100%'}
-          height={'300px'}
-          chartType="BarChart"
-          loader={<div>Loading Chart</div>}
-          data={chartData}
-          options={{
-            chart: {
-              title: 'Quiz Scores',
-              subtitle: 'Quiz 1 and Quiz 2',
-            },
-            vAxis: {
-              ticks: [0, 2, 4, 6, 8, 10], // Explicitly set the ticks
-            },
-          }}
-        />
-
-
-
+        {(quiz1Score !== null || quiz2Score !== null) && (
+          <Box>
+            <Chart
+              width={'100%'}
+              height={'300px'}
+              chartType="BarChart"
+              loader={<div>Loading Chart</div>}
+              data={chartData}
+              options={{
+                chart: {
+                  title: 'Quiz Scores',
+                  subtitle: 'Quiz 1 and Quiz 2',
+                },
+                hAxis: {
+                  viewWindow: {
+                    min: 0,
+                    max: 10
+                  }
+                },
+                vAxis: {
+                  // No changes to the vAxis options are necessary
+                },
+              }}
+            />
+          </Box>
+        )}
+        {quiz1Score === null && quiz2Score === null && (
+          <Box textAlign="center" p={4}>
+            <Text fontSize="xl">Quiz 1 Quiz 2 Quiz 3 not given</Text>
+          </Box>
+        )}
         {quiz3Data !== null && (
           <>
             <Text className="content" fontSize={20}>Quiz 3 Score:</Text>

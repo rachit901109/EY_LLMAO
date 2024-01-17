@@ -54,8 +54,8 @@ const Profile = () => {
         state: '',
         age: '',
         interests: '',
-        college: '',
-        course: '',
+        college_name: '',
+        course_name: '',
         gender: '',
     });
     const [isEditing, setIsEditing] = useState(false);
@@ -81,8 +81,8 @@ const Profile = () => {
                 setValue("gender", response.data.user_info.gender || '');
                 setValue("city", response.data.user_info.city || '');
                 setValue("age", response.data.user_info.age || '');
-                setValue("college", response.data.user_info.college || '');
-                setValue("course", response.data.user_info.course || '');
+                setValue("college_name", response.data.user_info.college_name || '');
+                setValue("course_name", response.data.user_info.course_name || '');
                 setValue("interests", response.data.user_info.interests || '');
                 setIsLoading(false);
             })
@@ -193,14 +193,14 @@ const Profile = () => {
                         <Flex flexDirection={{ base: 'column', md: 'row' }} mt={4} flexWrap="wrap" justifyContent="space-between">
                             <FormControl flex="1" mr={{ base: 0, md: 4 }}>
                                 <FormLabel>College</FormLabel>
-                                <Input id="college" {...register("college")} />
-                                <Text color="red.500">{displayError('college', errors)}</Text>
+                                <Input id="college" {...register("college_name")} />
+                                <Text color="red.500">{displayError('college_name', errors)}</Text>
                             </FormControl>
 
                             <FormControl flex="1" mr={{ base: 0, md: 4 }}>
                                 <FormLabel>Course</FormLabel>
-                                <Input id="course" {...register("course")} />
-                                <Text color="red.500">{displayError('course', errors)}</Text>
+                                <Input id="course" {...register("course_name")} />
+                                <Text color="red.500">{displayError('course_name', errors)}</Text>
                             </FormControl>
                         </Flex>
 

@@ -78,6 +78,8 @@ const VoiceQuiz = ({ data, trans }) => {
         const evaluationResponse = response.data;
         console.log("Evaluation Response", evaluationResponse);
         setEvaluation(evaluationResponse);
+        const secondResponse = await axios.post('/api/add_assignment_score', { evaluationResponse });
+        const secondData = secondResponse.data;
         // Swal.fire({
         //     title: 'Quiz Finished!',
         //     text: "Your score will be evaluated By AI and you will be notified by the result. Meanwhile, you can explore other courses.",
