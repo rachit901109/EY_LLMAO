@@ -469,7 +469,7 @@ based on the specified list of topics. \
 Imagine as if you are talking to the student while asking the questions.
 Ensure that the output is a valid JSON format, with the keys being the question number and values being the questions.
 
-Create a set of 3 concept-based quiz questions in the above-mentioned format.
+Create a set of 2 concept-based quiz questions in the above-mentioned format.
 ```
 Sub Modules : {sub_modules}
 ```
