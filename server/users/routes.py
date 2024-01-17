@@ -500,7 +500,7 @@ def query_module(module_id, source_language, websearch):
 
     # add module to ongoing modules for user
     ongoing_module = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module_id, level=module.level).first()
-    db.session.delete(ongoing_module)
+    db.session.add(ongoing_module)
     db.session.commit()
 
     # translate submodule content to the source language
