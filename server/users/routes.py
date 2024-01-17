@@ -1,6 +1,6 @@
 from flask import request, session, jsonify,  Blueprint, send_file
 from server import db, bcrypt
-from server.models import User, Topic, Module, Query, CompletedModule
+from server.models import User, Topic, Module, Query, CompletedModule, OngoingModule
 from concurrent.futures import ThreadPoolExecutor
 import os
 from flask_cors import cross_origin
@@ -105,7 +105,11 @@ def login():
         model="gpt-3.5-turbo-1106",
         # tools=tools
     )
+    thread = client.beta.threads.create()
+
+    session['thread'] = thread
     session['assistant_id'] = assistant.id
+
 
     return jsonify({"message": "User logged in successfully", "email":user.email, "response":True}), 200
 
@@ -188,13 +192,13 @@ def getuser():
         
     
     # user_queries = [query.query_name for query in user.queries]
-    user_completed_topics = {}
-    user_started_topics = {}
+    user_completed_modules = {}
+    user_ongoing_modules = {}
     
-    for topic in user.completed_topics:
-        if topic.date_completed is None:
-            user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
-        user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
+    # for topic in user.completed_topics:
+    #     if topic.date_completed is None:
+    #         user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
+    #     user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
 
     response = {"message":"User found", "interests":user.interests, "recommendations":recommended_module_summary, "response":True}
 
@@ -239,13 +243,63 @@ def delete():
 
 # trending route --> Fetching trending topics from web and generating module summary
 # later make it user personalized
-@users.route('/query2/trending/<string:domain>', methods=['GET'])
+@users.route('/query2/trending/<string:domain>/<string:module_name>/<string:summary>/<string:source_lang>', methods=['GET'])
 @cross_origin(supports_credentials=True)
-def trending_query(domain):
-    text=trending_module_summary_from_web(domain)
-    print(text)
-    return jsonify({"message": "Query successful", "domain": domain,  "content": text, "response":True}), 200
+def trending_query(domain, module_name, summary, source_lang):
+    # check if user is logged in
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    topic = Topic.query.filter_by(topic_name=domain.lower()).first()
+    if topic is None:
+        topic = Topic(topic_name=domain.lower())
+        db.session.add(topic)
+        db.session.commit()
 
+    module = Module.query.filter_by(module_name=module_name, topic_id=topic.topic_id, level='trending', websearch=True).first()
+    if module is not None:
+        trans_submodule_content = translate_submodule_content(module.submodule_content, source_lang)
+        print(f"Translated submodule content: {trans_submodule_content}")
+        return jsonify({"message": "Query successful", "images": module.image_urls, "content": trans_submodule_content, "response": True}), 200
+    
+    # add module to database
+    new_module = Module(module_name=module_name, topic_id=topic.topic_id, level='trending', websearch=True, summary=summary)
+    db.session.add(new_module)
+    db.session.commit()
+
+    images = module_image_from_web(module.module_name)
+    with ThreadPoolExecutor() as executor:
+        submodules = generate_submodules_from_web(module.module_name)
+        print(submodules)
+        keys_list = list(submodules.keys())
+        submodules_split_one = {key: submodules[key] for key in keys_list[:2]}
+        submodules_split_two = {key: submodules[key] for key in keys_list[2:4]}
+        submodules_split_three = {key: submodules[key] for key in keys_list[4:]}
+        future_content_one = executor.submit(generate_content_from_web, submodules_split_one, 'first')
+        future_content_two = executor.submit(generate_content_from_web, submodules_split_two, 'second')
+        future_content_three = executor.submit(generate_content_from_web, submodules_split_three, 'third')
+
+        content_one = future_content_one.result()
+        content_two = future_content_two.result()
+        content_three = future_content_three.result()
+
+        content = content_one + content_two + content_three
+
+        module.submodule_content = content
+        module.image_urls = images
+        db.session.commit()
+
+        # translate submodule content to the source language
+        trans_submodule_content = translate_submodule_content(content, source_lang)
+        print(f"Translated submodule content: {trans_submodule_content}")
+
+        return jsonify({"message": "Query successful", "images": module.image_urls, "content": trans_submodule_content, "response": True}), 200
 
 def translate_module_summary(content, target_language):
     if target_language=='en':
@@ -374,6 +428,7 @@ def query_topic(topicname,level,websearch,source_lang):
     new_user_query = Query(user_id=user.user_id, topic_id=topic.topic_id, level=level, websearch=websearch, lang=source_language)
     db.session.add(new_user_query)
     db.session.commit()
+
     trans_moduleids = {}
     if source_language !='en':
         for key, value in module_ids.items():
@@ -444,6 +499,11 @@ def query_module(module_id, source_language, websearch):
 
     module.submodule_content = content
     module.image_urls = images
+    db.session.commit()
+
+    # add module to ongoing modules for user
+    ongoing_module = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module_id, level=module.level).first()
+    db.session.delete(ongoing_module)
     db.session.commit()
 
     # translate submodule content to the source language
@@ -573,7 +633,7 @@ def gen_quiz2(module_id, source_language, websearch):
     completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
     if completed_module.theory_quiz_score is None:
         return jsonify({"message": "User has not completed quiz1", "response":False}), 404
-
+    
     sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
     print("Submodules:-----------------------",sub_module_names)
     if websearch:
@@ -585,6 +645,37 @@ def gen_quiz2(module_id, source_language, websearch):
     translated_quiz = translate_quiz(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
     return jsonify({"message": "Query successful", "quiz": translated_quiz, "response": True}), 200
+
+@users.route('/quiz3/<int:module_id>/<string:source_language>/<string:websearch>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def gen_quiz3(module_id, source_language, websearch):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    module = Module.query.get(module_id)
+
+    # check if user has completed quiz1 or not
+    # completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
+    # if completed_module.theory_quiz_score is None:
+    #     return jsonify({"message": "User has not completed quiz1", "response":False}), 404
+    
+    sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
+    print("Submodules:-----------------------",sub_module_names)
+    if websearch:
+        print("WEB SEARCH OP quiz2=3--------------------------")
+        quiz = generate_conversation_quiz_from_web(sub_module_names)
+    else:
+        quiz = generate_conversation_quiz(sub_module_names)
+
+    # translated_quiz = translate_quiz(quiz["quizData"], source_language)
+    print("quiz---------------",quiz)
+    return jsonify({"message": "Query successful", "quiz": quiz, "response": True}), 200
 
 
 @users.route('/<int:module_id>/add_theory_score/<int:score>')
@@ -606,6 +697,7 @@ def add_theory_score(module_id, score):
 
     return jsonify({"message": "Score added successfully", "response": True}), 200
 
+
 @users.route('/<int:module_id>/add_application_score/<int:score>')
 @cross_origin(supports_credentials=True)
 def add_application_score(module_id, score):
@@ -621,6 +713,26 @@ def add_application_score(module_id, score):
     module = Module.query.get(module_id)
     completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
     completed_module.application_quiz_score = score
+    db.session.commit()
+
+    return jsonify({"message": "Score added successfully", "response": True}), 200
+
+
+@users.route('/<int:module_id>/add_assignment_score/<int:score>')
+@cross_origin(supports_credentials=True)
+def add_assignment_score(module_id, score):
+    user_id = session.get("user_id", None)
+    if user_id is None:
+        return jsonify({"message": "User not logged in", "response":False}), 401
+    
+    # check if user exists
+    user = User.query.get(user_id)
+    if user is None:
+        return jsonify({"message": "User not found", "response":False}), 404
+    
+    module = Module.query.get(module_id)
+    completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
+    completed_module.assignment_score = score
     db.session.commit()
 
     return jsonify({"message": "Score added successfully", "response": True}), 200
@@ -689,7 +801,7 @@ def chatbot_route():
             trans_query = query
         assistant_id = session['assistant_id']
         print('ASSISTANT ID', assistant_id)
-        thread = client.beta.threads.create()
+        thread = session['thread']
         print('THREAD ID', thread.id)
         print(trans_query)
         message = client.beta.threads.messages.create(
@@ -764,3 +876,39 @@ def save_voices():
         return jsonify({'error': str(e), 'response': False}), 500
 
 ###############################################################
+    
+####################quiz 3 evaluation##############################
+@users.route('/evaluate_quiz', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def evaluate_quiz():
+    try:
+        user_id = session.get("user_id", None)
+        module_id = session.get("module_id", None)
+        if user_id is None:
+            return jsonify({"message": "User not logged in", "response": False}), 401
+
+        # check if user exists
+        user = User.query.get(user_id)
+        if user is None:
+            return jsonify({"message": "User not found", "response": False}), 404
+        # Get the responses from the request data
+        responses = request.json.get('responses')
+        print("responses",responses)
+        # Perform evaluation logic (replace this with your actual evaluation logic)
+        evaluation_result = evaluate_conversation_quiz(responses)
+        # evaluation_result = {
+        #     "accuracy": 7,
+        #     "completeness": 6,
+        #     "clarity": 8,
+        #     "relevance": 9,
+        #     "understanding": 8,
+        #     "feedback": "Overall, your answers demonstrate a good understanding of machine learning concepts and their applications. However, there are some areas for improvement. In the first question, the answer lacks specific examples of real-world scenarios where machine learning is applied. For the second question, while the explanation of supervised and unsupervised learning is accurate, examples of each are missing. The answer to the third question is accurate, but could benefit from more detailed explanation and specific examples. The answer to the fourth question is comprehensive and relevant. In the fifth question, the answer could be improved by providing more examples and elaborating further on the impact of feature selection and engineering on model performance. Overall, your responses are clear and well-organized, but adding specific examples and more detailed explanations would further enhance the completeness and understanding of your answers."
+        # }
+
+        # Return the evaluation result
+        return jsonify(evaluation_result), 200
+
+    except Exception as e:
+        print(f"Error during evaluation: {str(e)}")
+        return jsonify({"error": "An error occurred during evaluation"}), 500
+###################################################################
