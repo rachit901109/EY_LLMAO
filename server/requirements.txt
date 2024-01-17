@@ -22,3 +22,5 @@ sentence-transformers
 gtts
 pytz
 google-search-results
+langchain
+faiss-cpu

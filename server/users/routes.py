@@ -14,12 +14,39 @@ from gtts import gTTS
 from io import BytesIO
 from datetime import datetime
 from werkzeug.utils import secure_filename
-
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceBgeEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders import PyPDFLoader
 
 users = Blueprint(name='users', import_name=__name__)
 
 # Detector for language detection
 detector = LanguageDetectorBuilder.from_all_languages().with_preloaded_language_models().build()
+
+device_type = 'cpu'
+
+model_name = "BAAI/bge-small-en-v1.5"
+
+encode_kwargs = {'normalize_embeddings': True} # set True to compute cosine similarity
+
+EMBEDDINGS = HuggingFaceBgeEmbeddings(
+    model_name=model_name,
+    model_kwargs={'device': device_type },
+    encode_kwargs=encode_kwargs
+)
+
+
+FEATURE_DOCS_PATH = 'assistant_data/Description.pdf'
+loader = PyPDFLoader(FEATURE_DOCS_PATH)
+docs = loader.load()
+docs_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+split_docs = docs_splitter.split_documents(docs)
+NYAYMITRA_FEATURES_VECTORSTORE = FAISS.from_documents(split_docs, EMBEDDINGS)
+NYAYMITRA_FEATURES_VECTORSTORE.save_local('assistant_data/faiss_index_assistant')
+print('CREATED VECTORSTORE')
+VECTORDB = FAISS.load_local('assistant_data/faiss_index_assistant', EMBEDDINGS)
+
 tools = [
     {
         'type': 'function',
@@ -103,7 +130,7 @@ def login():
         name="MINDCRAFT",
         instructions="You are a helpful assistant for the website Mindcraft. Use the functions provided to you to answer user's question about the Mindcraft platform. Help the user with navigating and getting information about the Mindcraft website.Provide the navigation links defined in the document whenever required",
         model="gpt-3.5-turbo-1106",
-        # tools=tools
+        tools=tools
     )
     thread = client.beta.threads.create()
 
@@ -838,7 +865,7 @@ def submit_tool_outputs(thread_id, run_id, tools_to_call):
     return client.beta.threads.runs.submit_tool_outputs(thread_id=thread_id, run_id=run_id, tool_outputs=tools_outputs)
 
 
-def retrieval_augmented_generation(query, vectordb):
+def retrieval_augmented_generation(query, vectordb=VECTORDB):
     relevant_docs = vectordb.similarity_search(query)
     rel_docs = [doc.page_content for doc in relevant_docs]
     output = '\n'.join(rel_docs)
