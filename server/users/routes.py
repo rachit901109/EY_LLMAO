@@ -241,8 +241,14 @@ def delete():
     return jsonify({"message": "User deleted successfully", "response":True}), 200
 
 
-# trending route --> Fetching trending topics from web and generating module summary
-# later make it user personalized
+@users.route('/query2/trending/<string:domain>', methods=['GET'])
+@cross_origin(supports_credentials=True)
+def trending_data(domain):
+    text=trending_module_summary_from_web(domain)
+    print(text)
+    return jsonify({"message": "Query successful", "domain": domain,  "content": text, "response":True}), 200
+
+
 @users.route('/query2/trending/<string:domain>/<string:module_name>/<string:summary>/<string:source_lang>', methods=['GET'])
 @cross_origin(supports_credentials=True)
 def trending_query(domain, module_name, summary, source_lang):
@@ -311,7 +317,6 @@ def translate_module_summary(content, target_language):
         trans_content[trans_key] = GoogleTranslator(source='en', target=target_language).translate(str(value))
     return trans_content
 
-
 def translate_submodule_content(content, target_language):
     if target_language=='en':
         return content
@@ -354,6 +359,38 @@ def translate_quiz(quiz_data, target_language):
     
     return trans_quiz
 
+def translate_assignment(questions, target_language):
+    if target_language=='en':
+        return questions
+    
+    trans_questions=[]
+    for entry in questions:
+        trans_questions.append(GoogleTranslator(source='auto', target=target_language).translate(str(entry)))
+
+    return trans_questions
+
+def translate_responses(responses, target_language):
+    if target_language=='en':
+        return responses
+    
+    trans_response = []
+    for entry in responses:
+        temp = {}
+        for key, val in entry.items():
+            temp[key] = GoogleTranslator(source='auto', target=target_language).translate(str(val))
+        trans_response.append(temp)
+    
+    return trans_response
+
+def translate_evaluations(evaluations, target_language):
+    if target_language=='en':
+        return evaluations
+    
+    trans_eval = {}
+    for key, val in evaluations.items():
+        trans_eval[key] = GoogleTranslator(source='auto', target=target_language).translate(str(val))
+
+    return trans_eval
 
 # query route --> if websearch is true then fetch from web and feed into model else directly feed into model
 # save frequently searched queries in database for faster retrieval
@@ -673,9 +710,9 @@ def gen_quiz3(module_id, source_language, websearch):
     else:
         quiz = generate_conversation_quiz(sub_module_names)
 
-    # translated_quiz = translate_quiz(quiz["quizData"], source_language)
+    translated_questions = translate_assignment(quiz["quizData"], source_language)
     print("quiz---------------",quiz)
-    return jsonify({"message": "Query successful", "quiz": quiz, "response": True}), 200
+    return jsonify({"message": "Query successful", "quiz": translated_questions, "response": True}), 200
 
 
 @users.route('/<int:module_id>/add_theory_score/<int:score>')

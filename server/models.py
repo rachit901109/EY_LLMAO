@@ -43,7 +43,7 @@ class CompletedModule(db.Model):
     date_completed = db.Column(db.DateTime, nullable=True)
     theory_quiz_score = db.Column(db.Integer, nullable=True)
     application_quiz_score = db.Column(db.Integer, nullable=True)
-    assignment_score = db.Column(db.Integer, nullable=True)
+    assignment_score = db.Column(db.JSON, nullable=True)
 
     user = db.relationship('User', back_populates='user_module_association')
     module = db.relationship('Module', back_populates='module_comp_association')
