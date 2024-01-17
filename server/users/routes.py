@@ -173,6 +173,44 @@ def getuser():
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
     
+    completed_modules = []
+    ongoing_modules = []
+
+    user_ongoing_modules = user.user_onmodule_association
+    user_completed_modules = user.user_module_association
+
+    for on_module in user_ongoing_modules:
+        temp = {}
+        module = Module.query.get(on_module.module_id)
+        topic = Topic.query.get(module.topic_id)
+        temp['module_name'] = module.module_name
+        temp['topic_name'] = topic.topic_name
+        temp['module_summary'] = module.summary
+        temp['level'] = module.level
+        temp['date_started'] = on_module.date_started.strftime("%d/%m/%Y %H:%M")
+        temp['quiz_score'] = [None, None, None]
+
+        ongoing_modules.append(temp)
+
+    for comp_module in user_completed_modules:
+        temp = {}
+        module = Module.query.get(comp_module.module_id)
+        topic = Topic.query.get(module.topic_id)
+        temp['module_name'] = module.module_name
+        temp['topic_name'] = topic.topic_name
+        temp['module_summary'] = module.summary
+        temp['level'] = module.level
+        
+        if comp_module.theory_quiz_score is not None and comp_module.application_quiz_score is not None and comp_module.assignment_score is not None:
+            temp['quiz_score'] = [comp_module.theory_quiz_score, comp_module.application_quiz_score, comp_module.assignment_score]
+            completed_modules.append(temp)
+        else:
+            onmodule = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module.module_id, level=module.level).first()
+            temp['date_started'] = onmodule.date_started.strftime("%d/%m/%Y %H:%M")
+            temp['quiz_score'] = [comp_module.theory_quiz_score, comp_module.application_quiz_score, comp_module.assignment_score]
+            ongoing_modules.append(temp)        
+
+    
     query_message = ""
     user_queries = user.user_query_association
     if user_queries is None:
@@ -180,7 +218,7 @@ def getuser():
         recommended_topics = popular_topics()
         recommended_topic_names = [Topic.query.get(topic_id).topic_name for topic_id in recommended_topics]
 
-        return jsonify({"message": "User found", "interests":user.interests, "query_message":query_message, "recommended_topics":recommended_topic_names, "response":True}), 200
+        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_topic_names, "user_ongoing_modules":ongoing_modules, "user_completed_module":comp_module, "response":True}), 200
     else:
         latest_query = Query.query.filter_by(user_id=1).order_by(desc(Query.date_search)).first() 
         base_module = Module.query.filter_by(topic_id=latest_query.topic_id).first()
@@ -190,19 +228,7 @@ def getuser():
             module = Module.query.get(module_id)
             recommended_module_summary[module.module_name] = module.summary
         
-    
-    # user_queries = [query.query_name for query in user.queries]
-    user_completed_modules = {}
-    user_ongoing_modules = {}
-    
-    # for topic in user.completed_topics:
-    #     if topic.date_completed is None:
-    #         user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
-    #     user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
-
-    response = {"message":"User found", "interests":user.interests, "recommendations":recommended_module_summary, "response":True}
-
-    return jsonify(response), 200
+        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_module_summary, "user_ongoing_modules":ongoing_modules, "user_completed_module":comp_module, "response":True}), 200
 
 
 # logout route
