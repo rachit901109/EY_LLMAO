@@ -42,6 +42,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
       const moduleid = localStorage.getItem('moduleid');
       const websearch = localStorage.getItem('websearch');
       const source_lang = localStorage.getItem('source_lang');
+      localStorage.setItem('quiztype', "first");
       const response = await axios.get(`/api/quiz/${moduleid}/${source_lang}/${websearch}`);
       setQuizData(response.data.quiz);
     } catch (error) {
@@ -56,6 +57,7 @@ const Sidebar = ({ data, setSelectedSubject, isLoading, setCurrentIndex, setQuiz
       const moduleid = localStorage.getItem('moduleid');
       const websearch = localStorage.getItem('websearch');
       const source_lang = localStorage.getItem('source_lang');
+      localStorage.setItem('quiztype', "second");
       const response = await axios.get(`/api/quiz2/${moduleid}/${source_lang}/${websearch}`);
       setQuiz2Data(response.data.quiz);
     } catch (error) {

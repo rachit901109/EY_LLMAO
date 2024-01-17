@@ -3,6 +3,8 @@ import { Box, Text, Button, Radio, RadioGroup, Spacer, Flex, Icon, Center, Stack
 import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import axios from 'axios';
+
 type QuizQuestion = {
   question: string;
   options: string[];
@@ -83,6 +85,29 @@ const Quiz: React.FC<QuizProps> = ({ data, trans }) => {
       titleText = 'Oops! Try Again.';
       bodyText = `Your score is ${score} out of ${data.length}. Check out the resources and try again!`;
     } else {
+      const quizType = localStorage.getItem('quiztype');
+
+      if (quizType === 'first') {
+        // Call the first API
+        axios.post('/api/add_theory_score', { score })
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else if (quizType === 'second') {
+        // Call the second API
+        axios.post('/api/second_api_route', { score })
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      } else {
+        console.error('Invalid quiztype value in localStorage');
+      }
       titleText = 'Congratulations!';
       bodyText = `You've passed the quiz with a score of ${score} out of ${data.length}. Well done! You can move to the next Quiz`;
     }
