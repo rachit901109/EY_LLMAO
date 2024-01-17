@@ -14,12 +14,39 @@ from gtts import gTTS
 from io import BytesIO
 from datetime import datetime
 from werkzeug.utils import secure_filename
-
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceBgeEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.document_loaders import PyPDFLoader
 
 users = Blueprint(name='users', import_name=__name__)
 
 # Detector for language detection
 detector = LanguageDetectorBuilder.from_all_languages().with_preloaded_language_models().build()
+
+device_type = 'cpu'
+
+model_name = "BAAI/bge-small-en-v1.5"
+
+encode_kwargs = {'normalize_embeddings': True} # set True to compute cosine similarity
+
+EMBEDDINGS = HuggingFaceBgeEmbeddings(
+    model_name=model_name,
+    model_kwargs={'device': device_type },
+    encode_kwargs=encode_kwargs
+)
+
+
+FEATURE_DOCS_PATH = 'assistant_data/Description.pdf'
+loader = PyPDFLoader(FEATURE_DOCS_PATH)
+docs = loader.load()
+docs_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+split_docs = docs_splitter.split_documents(docs)
+NYAYMITRA_FEATURES_VECTORSTORE = FAISS.from_documents(split_docs, EMBEDDINGS)
+NYAYMITRA_FEATURES_VECTORSTORE.save_local('assistant_data/faiss_index_assistant')
+print('CREATED VECTORSTORE')
+VECTORDB = FAISS.load_local('assistant_data/faiss_index_assistant', EMBEDDINGS)
+
 tools = [
     {
         'type': 'function',
@@ -103,7 +130,7 @@ def login():
         name="MINDCRAFT",
         instructions="You are a helpful assistant for the website Mindcraft. Use the functions provided to you to answer user's question about the Mindcraft platform. Help the user with navigating and getting information about the Mindcraft website.Provide the navigation links defined in the document whenever required",
         model="gpt-3.5-turbo-1106",
-        # tools=tools
+        tools=tools
     )
     thread = client.beta.threads.create()
 
@@ -173,6 +200,44 @@ def getuser():
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
     
+    completed_modules = []
+    ongoing_modules = []
+
+    user_ongoing_modules = user.user_onmodule_association
+    user_completed_modules = user.user_module_association
+
+    for on_module in user_ongoing_modules:
+        temp = {}
+        module = Module.query.get(on_module.module_id)
+        topic = Topic.query.get(module.topic_id)
+        temp['module_name'] = module.module_name
+        temp['topic_name'] = topic.topic_name
+        temp['module_summary'] = module.summary
+        temp['level'] = module.level
+        temp['date_started'] = on_module.date_started.strftime("%d/%m/%Y %H:%M")
+        temp['quiz_score'] = [None, None, None]
+
+        ongoing_modules.append(temp)
+
+    for comp_module in user_completed_modules:
+        temp = {}
+        module = Module.query.get(comp_module.module_id)
+        topic = Topic.query.get(module.topic_id)
+        temp['module_name'] = module.module_name
+        temp['topic_name'] = topic.topic_name
+        temp['module_summary'] = module.summary
+        temp['level'] = module.level
+        
+        if comp_module.theory_quiz_score is not None and comp_module.application_quiz_score is not None and comp_module.assignment_score is not None:
+            temp['quiz_score'] = [comp_module.theory_quiz_score, comp_module.application_quiz_score, comp_module.assignment_score]
+            completed_modules.append(temp)
+        else:
+            onmodule = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module.module_id, level=module.level).first()
+            temp['date_started'] = onmodule.date_started.strftime("%d/%m/%Y %H:%M")
+            temp['quiz_score'] = [comp_module.theory_quiz_score, comp_module.application_quiz_score, comp_module.assignment_score]
+            ongoing_modules.append(temp)        
+
+    
     query_message = ""
     user_queries = user.user_query_association
     if user_queries is None:
@@ -180,7 +245,7 @@ def getuser():
         recommended_topics = popular_topics()
         recommended_topic_names = [Topic.query.get(topic_id).topic_name for topic_id in recommended_topics]
 
-        return jsonify({"message": "User found", "interests":user.interests, "query_message":query_message, "recommended_topics":recommended_topic_names, "response":True}), 200
+        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_topic_names, "user_ongoing_modules":ongoing_modules, "user_completed_module":comp_module, "response":True}), 200
     else:
         latest_query = Query.query.filter_by(user_id=1).order_by(desc(Query.date_search)).first() 
         base_module = Module.query.filter_by(topic_id=latest_query.topic_id).first()
@@ -190,19 +255,7 @@ def getuser():
             module = Module.query.get(module_id)
             recommended_module_summary[module.module_name] = module.summary
         
-    
-    # user_queries = [query.query_name for query in user.queries]
-    user_completed_modules = {}
-    user_ongoing_modules = {}
-    
-    # for topic in user.completed_topics:
-    #     if topic.date_completed is None:
-    #         user_started_topics[topic.topic_name] = {"level":topic.level, "module":topic.module}
-    #     user_completed_topics[topic.topic_name] = {"level":topic.level, "module":topic.module, "date_completed":topic.date_completed, "quiz_score":topic.quiz_score}
-
-    response = {"message":"User found", "interests":user.interests, "recommendations":recommended_module_summary, "response":True}
-
-    return jsonify(response), 200
+        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_module_summary, "user_ongoing_modules":ongoing_modules, "user_completed_module":comp_module, "response":True}), 200
 
 
 # logout route
@@ -811,7 +864,7 @@ def submit_tool_outputs(thread_id, run_id, tools_to_call):
     return client.beta.threads.runs.submit_tool_outputs(thread_id=thread_id, run_id=run_id, tool_outputs=tools_outputs)
 
 
-def retrieval_augmented_generation(query, vectordb):
+def retrieval_augmented_generation(query, vectordb=VECTORDB):
     relevant_docs = vectordb.similarity_search(query)
     rel_docs = [doc.page_content for doc in relevant_docs]
     output = '\n'.join(rel_docs)
