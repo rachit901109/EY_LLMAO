@@ -251,7 +251,9 @@ def trending_module_summary_from_web(domain):
     module_generation_prompt = """As an educational assistant, your goal is to craft 4-6 \
   educational module names and brief summaries based on the search results. \
   Ensure the module names are relevant and provide a concise summary for each. \
-  The summary should highlight the key aspects of the modules in a way that interests the students into learning them.
+  The summary should highlight the key aspects of the modules in a way that interests the students into learning them. Example of a key: \
+  'Module 1: Advanced Test Automation Techniques' and example of the corresponding summary: \
+  'This module covers advanced automation techniques such as data-driven testing, cross-browser testing, and integrating automation into the CI/CD pipeline.', 'Module 2: Performance Testing and Tuning': 'This module focuses on advanced performance testing tools, techniques for load testing, stress testing, and tuning strategies to optimize software performance.'
   Format the output in JSON, with each key representing a complete module name and its corresponding value being the brief summary.
 
 Search Results: {search_result}
