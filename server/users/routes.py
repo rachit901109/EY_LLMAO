@@ -107,7 +107,7 @@ def login():
     )
     thread = client.beta.threads.create()
 
-    session['thread'] = thread
+    session['thread_id'] = thread.id
     session['assistant_id'] = assistant.id
 
 
@@ -838,26 +838,26 @@ def chatbot_route():
             trans_query = query
         assistant_id = session['assistant_id']
         print('ASSISTANT ID', assistant_id)
-        thread = session['thread']
-        print('THREAD ID', thread.id)
+        thread_id = session['thread_id']
+        print('THREAD ID', thread_id)
         print(trans_query)
         message = client.beta.threads.messages.create(
-            thread_id=thread.id,
+            thread_id=thread_id,
             role="user",
             content= trans_query,
         )
         run = client.beta.threads.runs.create(
-            thread_id=thread.id,
+            thread_id=thread_id,
             assistant_id=session['assistant_id'],
         )
-        run = wait_on_run(run.id, thread.id)
+        run = wait_on_run(run.id, thread_id)
 
         if run.status == 'failed':
             print(run.error)
         elif run.status == 'requires_action':
-            run = submit_tool_outputs(thread.id, run.id, run.required_action.submit_tool_outputs.tool_calls)
-            run = wait_on_run(run.id,thread.id)
-        messages = client.beta.threads.messages.list(thread_id=thread.id,order="asc")
+            run = submit_tool_outputs(thread_id, run.id, run.required_action.submit_tool_outputs.tool_calls)
+            run = wait_on_run(run.id,thread_id)
+        messages = client.beta.threads.messages.list(thread_id=thread_id,order="asc")
         print('message',messages)
         content = None
         for thread_message in messages.data:
