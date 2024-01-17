@@ -710,7 +710,7 @@ def gen_quiz3(module_id, source_language, websearch):
     else:
         quiz = generate_conversation_quiz(sub_module_names)
 
-    translated_questions = translate_assignment(quiz["quizData"], source_language)
+    translated_questions = translate_assignment(quiz, source_language)
     print("quiz---------------",quiz)
     return jsonify({"message": "Query successful", "quiz": translated_questions, "response": True}), 200
 
@@ -915,9 +915,9 @@ def save_voices():
 ###############################################################
     
 ####################quiz 3 evaluation##############################
-@users.route('/evaluate_quiz', methods=['POST'])
+@users.route('/evaluate_quiz/<string:source_language>', methods=['POST'])
 @cross_origin(supports_credentials=True)
-def evaluate_quiz():
+def evaluate_quiz(source_language):
     try:
         user_id = session.get("user_id", None)
         module_id = session.get("module_id", None)
@@ -931,8 +931,10 @@ def evaluate_quiz():
         # Get the responses from the request data
         responses = request.json.get('responses')
         print("responses",responses)
+        translated_responses_output =  translate_responses(responses,source_language)
         # Perform evaluation logic (replace this with your actual evaluation logic)
-        evaluation_result = evaluate_conversation_quiz(responses)
+        evaluation_result = evaluate_conversation_quiz(translated_responses_output)
+        translate_evaluation_result = translate_evaluations(evaluation_result,source_language)
         # evaluation_result = {
         #     "accuracy": 7,
         #     "completeness": 6,
@@ -943,7 +945,7 @@ def evaluate_quiz():
         # }
 
         # Return the evaluation result
-        return jsonify(evaluation_result), 200
+        return jsonify(translate_evaluation_result), 200
 
     except Exception as e:
         print(f"Error during evaluation: {str(e)}")
