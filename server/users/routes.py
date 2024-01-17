@@ -499,7 +499,7 @@ def query_module(module_id, source_language, websearch):
     db.session.commit()
 
     # add module to ongoing modules for user
-    ongoing_module = OngoingModule.query.filter_by(user_id=user.user_id, module_id=module_id, level=module.level).first()
+    ongoing_module = OngoingModule(user_id=user.user_id, module_id=module_id, level=module.level)
     db.session.add(ongoing_module)
     db.session.commit()
 
