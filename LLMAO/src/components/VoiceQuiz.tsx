@@ -74,7 +74,7 @@ const VoiceQuiz = ({ data, trans }) => {
 
     const handleFinish = async () => {
         console.log("Response", responses)
-        const response = await axios.post('/api/evaluate_quiz', { responses });
+        const response = await axios.post(`/api/evaluate_quiz/${source_lang}`, { responses });
         const evaluationResponse = response.data;
         console.log("Evaluation Response", evaluationResponse);
         setEvaluation(evaluationResponse);
