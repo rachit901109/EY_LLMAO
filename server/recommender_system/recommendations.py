@@ -6,7 +6,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 def recommend_module(module_id):
-    df_module = pd.read_csv("modules.csv")
+    df_module = pd.read_csv("server/recommender_system/modules.csv")
     X = np.array(df_module.summary)
 
     model = SentenceTransformer('all-distilroberta-v1')
@@ -25,6 +25,6 @@ def recommend_module(module_id):
 
 
 def popular_topics():
-    df_query = pd.read_csv('queries.csv')
+    df_query = pd.read_csv('server/recommender_system/queries.csv')
     most_queried_topics = df_query['topic_id'].value_counts().index.tolist()[:5]
     return most_queried_topics

@@ -245,7 +245,7 @@ def getuser():
         recommended_topics = popular_topics()
         recommended_topic_names = [Topic.query.get(topic_id).topic_name for topic_id in recommended_topics]
 
-        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_topic_names, "user_ongoing_modules":ongoing_modules, "user_completed_module":comp_module, "response":True}), 200
+        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_topic_names, "user_ongoing_modules":ongoing_modules, "user_completed_module":completed_modules, "response":True}), 200
     else:
         latest_query = Query.query.filter_by(user_id=1).order_by(desc(Query.date_search)).first() 
         base_module = Module.query.filter_by(topic_id=latest_query.topic_id).first()
@@ -255,7 +255,7 @@ def getuser():
             module = Module.query.get(module_id)
             recommended_module_summary[module.module_name] = module.summary
         
-        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_module_summary, "user_ongoing_modules":ongoing_modules, "user_completed_module":comp_module, "response":True}), 200
+        return jsonify({"message": "User found", "query_message":query_message, "recommended_topics":recommended_module_summary, "user_ongoing_modules":ongoing_modules, "user_completed_module":completed_modules, "response":True}), 200
 
 
 # logout route
@@ -791,7 +791,7 @@ def add_theory_score(score):
 
 @users.route('/add_application_score/<int:score>')
 @cross_origin(supports_credentials=True)
-def add_application_score(module_id, score):
+def add_application_score(score):
     user_id = session.get("user_id", None)
     if user_id is None:
         return jsonify({"message": "User not logged in", "response":False}), 401
@@ -809,9 +809,9 @@ def add_application_score(module_id, score):
     return jsonify({"message": "Score added successfully", "response": True}), 200
 
 
-@users.route('/<int:module_id>/add_assignment_score/<int:score>')
+@users.route('/add_assignment_score',methods=['POST'])
 @cross_origin(supports_credentials=True)
-def add_assignment_score(module_id, score):
+def add_assignment_score():
     user_id = session.get("user_id", None)
     if user_id is None:
         return jsonify({"message": "User not logged in", "response":False}), 401
@@ -820,7 +820,9 @@ def add_assignment_score(module_id, score):
     user = User.query.get(user_id)
     if user is None:
         return jsonify({"message": "User not found", "response":False}), 404
-    
+    request_data = request.get_json()
+    module_id = session.get("module_id", None)
+    score = request_data.get('evaluationResponse')
     module = Module.query.get(module_id)
     completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
     completed_module.assignment_score = score
