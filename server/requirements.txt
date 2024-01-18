@@ -1,10 +1,8 @@
 flask
 python-dotenv
 openai
-langchain
 pandas
 numpy
-pymongo
 chainlit
 flask-sqlalchemy
 flask-bcrypt
@@ -13,7 +11,6 @@ flask-cors
 flask-migrate
 deep-translator
 langdetect
-weasyprint
 tavily-python
 lingua-language-detector
 iso639-lang
