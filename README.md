@@ -17,6 +17,7 @@ Our solution offered the platform of **Mindcraft**, which is developed consideri
 - Backend: Flask
 - GenAI: OpenAI, Langchain, Tavily
 - Utility: Deeptranslator, GTTS, Lingua
+
 ### Build the Project:
 **Steps to run project:**
 1. Clone the repository:
