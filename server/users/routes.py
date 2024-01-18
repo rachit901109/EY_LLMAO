@@ -721,7 +721,7 @@ def gen_quiz2(module_id, source_language, websearch):
 
     # check if user has completed quiz1 or not
     completed_module = CompletedModule.query.filter_by(user_id=user_id, module_id=module_id, level=module.level).first()
-    if completed_module.theory_quiz_score is None:
+    if completed_module is None or completed_module.theory_quiz_score is None:
         return jsonify({"message": "User has not completed quiz1", "response":False}), 404
     
     sub_module_names = [submodule['title_for_the_content'] for submodule in module.submodule_content]
