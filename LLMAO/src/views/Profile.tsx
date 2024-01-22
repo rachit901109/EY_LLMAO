@@ -71,7 +71,7 @@ const Profile = () => {
         // Fetch user profile data from Flask backend
         axios.get('/api/user_profile')
             .then(response => {
-                console.log("profile",response.data.user_info)
+                console.log("profile", response.data.user_info)
                 setProfile(response.data.user_info);
                 setValue("fname", response.data.user_info.fname || '');
                 setValue("lname", response.data.user_info.lname || '');
@@ -203,12 +203,6 @@ const Profile = () => {
                                 <Text color="red.500">{displayError('course_name', errors)}</Text>
                             </FormControl>
                         </Flex>
-
-                        <FormControl mt={4} mb={4}>
-                            <FormLabel>Interests</FormLabel>
-                            <Input id="interests" {...register("interests")} />
-                            <Text color="red.500">{displayError('interests', errors)}</Text>
-                        </FormControl>
 
                         <FormControl mt={4} mb={4}>
                             <FormLabel>Interests</FormLabel>
