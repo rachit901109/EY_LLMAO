@@ -1,6 +1,7 @@
 # EY Techathon 4.0
 ## Team Name: LLMAO
-
+## Name : Hastansh Pandit
+## Department : AIML Third Year Sem V
 ### Problem statement - Challenge III:<br>
 #### **Education**
 Transforming Education with Generative AI: Personalized Learning and Intelligent Tutoring
